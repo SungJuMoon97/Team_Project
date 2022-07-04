@@ -8,9 +8,6 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 
-//////////////////////////////////////////////////////////////////////////
-// ATeam_ProjectCharacter
-
 ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 {
 	// Set size for collision capsule
@@ -50,9 +47,6 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
-
-//////////////////////////////////////////////////////////////////////////
-// Input
 
 void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
