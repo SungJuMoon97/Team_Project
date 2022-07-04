@@ -48,6 +48,16 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
+void ATeam_ProjectCharacter::AttackBeginOverlap()
+{
+	UE_LOG(LogTemp, Warning, TEXT("BeginOverlap"));
+}
+
+void ATeam_ProjectCharacter::AttackEndOverlap()
+{
+	UE_LOG(LogTemp, Warning, TEXT("EndOverlap"));
+}
+
 void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up gameplay key bindings
