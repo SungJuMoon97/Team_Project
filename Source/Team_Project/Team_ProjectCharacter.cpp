@@ -8,9 +8,6 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 
-//////////////////////////////////////////////////////////////////////////
-// ATeam_ProjectCharacter
-
 ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 {
 	// Set size for collision capsule
@@ -51,8 +48,15 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Input
+void ATeam_ProjectCharacter::AttackBeginOverlap()
+{
+	UE_LOG(LogTemp, Warning, TEXT("BeginOverlap"));
+}
+
+void ATeam_ProjectCharacter::AttackEndOverlap()
+{
+	UE_LOG(LogTemp, Warning, TEXT("EndOverlap"));
+}
 
 void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
@@ -77,7 +81,6 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	// handle touch devices
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &ATeam_ProjectCharacter::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &ATeam_ProjectCharacter::TouchStopped);
-	
 }
 
 void ATeam_ProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
