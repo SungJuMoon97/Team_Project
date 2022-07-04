@@ -11,19 +11,12 @@ class ATeam_ProjectCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
-
-	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FollowCamera;
+	
 public:
 	ATeam_ProjectCharacter();
 
 	void AttackBeginOverlap();
 	void AttackEndOverlap();
-
 
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
@@ -62,6 +55,13 @@ protected:
 	// End of APawn interface
 
 private:
+	/** Camera boom positioning the camera behind the character */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+		class USpringArmComponent* CameraBoom;
+
+	/** Follow camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+		class UCameraComponent* FollowCamera;
 
 private:
 
