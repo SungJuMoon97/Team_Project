@@ -60,6 +60,8 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ATeam_ProjectCharacter::AttackBeginOverlap);
+	PlayerInputComponent->BindAction("Attack", IE_Released, this, &ATeam_ProjectCharacter::AttackEndOverlap);
 
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ATeam_ProjectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &ATeam_ProjectCharacter::MoveRight);
@@ -75,6 +77,7 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	// handle touch devices
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &ATeam_ProjectCharacter::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &ATeam_ProjectCharacter::TouchStopped);
+	
 }
 
 void ATeam_ProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)

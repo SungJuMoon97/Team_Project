@@ -21,6 +21,11 @@ class ATeam_ProjectCharacter : public ACharacter
 public:
 	ATeam_ProjectCharacter();
 
+	void AttackBeginOverlap();
+	void AttackEndOverlap();
+
+
+public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Input)
 	float TurnRateGamepad;
@@ -55,6 +60,10 @@ protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
+
+private:
+
+private:
 
 public:
 	/** Returns CameraBoom subobject **/
