@@ -10,6 +10,7 @@
 #include "BarWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "MKKS_PlayerController.h"
+#include "InventoryComponent.h"
 
 ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 {
@@ -47,12 +48,10 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Health
-	MaxHealth = 25.f;
-	Health = 10.f;
-
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
@@ -66,7 +65,6 @@ void ATeam_ProjectCharacter::BeginPlay()
 		PlayerWidget = CreateWidget<UBarWidget>(FPC, PlayerWidgetClass);
 		check(PlayerWidget);
 		PlayerWidget->AddToViewport();
-		PlayerWidget->SetHealth(Health, MaxHealth);
 	}
 }
 
@@ -105,6 +103,11 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindTouch(IE_Released, this, &ATeam_ProjectCharacter::TouchStopped);
 }
 
+void ATeam_ProjectCharacter::Interact()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Interacting"));
+}
+
 void ATeam_ProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
 	Jump();
@@ -126,6 +129,7 @@ void ATeam_ProjectCharacter::LookUpAtRate(float Rate)
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
 }
+
 
 void ATeam_ProjectCharacter::MoveForward(float Value)
 {
