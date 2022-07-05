@@ -11,6 +11,9 @@ class ATeam_ProjectCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+	UPROPERTY(EditDefaultsOnly, Category = "CharacterInventory")
+	class UInventoryComponent* InventoryComponent;
+
 	
 public:
 	ATeam_ProjectCharacter();
@@ -64,6 +67,8 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
+	void Interact();
+
 
 private:
 	/** Camera boom positioning the camera behind the character */
@@ -74,13 +79,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
 
-	// Maximum amount of health to allow for player.
-	UPROPERTY(EditAnywhere)
-	float MaxHealth;
-
-	// Current health of player
-	UPROPERTY(EditAnywhere)
-	float Health;
+private:
 
 public:
 	/** Returns CameraBoom subobject **/

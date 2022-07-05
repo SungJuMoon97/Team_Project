@@ -10,6 +10,7 @@
 #include "BarWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "MKKS_PlayerController.h"
+#include "InventoryComponent.h"
 
 ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 {
@@ -47,12 +48,10 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Health
-	MaxHealth = 25.f;
-	Health = 10.f;
-
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
@@ -66,7 +65,6 @@ void ATeam_ProjectCharacter::BeginPlay()
 		PlayerWidget = CreateWidget<UBarWidget>(FPC, PlayerWidgetClass);
 		check(PlayerWidget);
 		PlayerWidget->AddToViewport();
-		PlayerWidget->SetHealth(Health, MaxHealth);
 	}
 }
 
@@ -89,6 +87,9 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ATeam_ProjectCharacter::DoAttack);
 	PlayerInputComponent->BindAction("Attack", IE_Released, this, &ATeam_ProjectCharacter::EndAttack);
 
+	// Interact key binding
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ATeam_ProjectCharacter::Interact);
+
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ATeam_ProjectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &ATeam_ProjectCharacter::MoveRight);
 
@@ -103,6 +104,28 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	// handle touch devices
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &ATeam_ProjectCharacter::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &ATeam_ProjectCharacter::TouchStopped);
+}
+
+void ATeam_ProjectCharacter::Interact()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Interacting"));
+
+	FVector Start = FollowCamera->GetComponentLocation();
+	// Distance to Interact = 500.0f;
+	FVector End = Start + FollowCamera->GetComponentRotation().Vector() * 500.0f;
+
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_WorldStatic, Params))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HIT ACTOR"));
+
+		if (HitResult.GetActor())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("HIT ACTOR: %s"), *HitResult.GetActor()->GetName());
+		}
+	}
 }
 
 void ATeam_ProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
@@ -126,6 +149,7 @@ void ATeam_ProjectCharacter::LookUpAtRate(float Rate)
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
 }
+
 
 void ATeam_ProjectCharacter::MoveForward(float Value)
 {
