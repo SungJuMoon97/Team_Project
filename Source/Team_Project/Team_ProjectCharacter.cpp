@@ -52,7 +52,7 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
-}
+	}
 
 void ATeam_ProjectCharacter::BeginPlay()
 {
@@ -117,13 +117,15 @@ void ATeam_ProjectCharacter::Interact()
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
+
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_WorldStatic, Params))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("HIT ACTOR"));
 
-		if (HitResult.GetActor())
+		if (AActor* HitActor = HitResult.GetActor())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("HIT ACTOR: %s"), *HitResult.GetActor()->GetName());
+			HitActor->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachSocket"));
 		}
 	}
 }
@@ -167,12 +169,12 @@ void ATeam_ProjectCharacter::MoveForward(float Value)
 
 void ATeam_ProjectCharacter::MoveRight(float Value)
 {
-	if ( (Controller != nullptr) && (Value != 0.0f) )
+	if ((Controller != nullptr) && (Value != 0.0f))
 	{
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
-	
+
 		// get right vector 
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
