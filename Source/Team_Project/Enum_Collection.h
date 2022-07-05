@@ -24,3 +24,11 @@ enum class EItemType : uint8
 	EIT_MAX UMETA(DisplayName = "EIT_MAX")
 };
 
+UENUM(BlueprintType)
+enum class  EStance : uint8 //기본자세와 전투자세
+{
+	ES_Default UMETA(DisplayName = "Default_Stance"),
+	ES_Combat UMETA(DisplayName = "Combat_Stance"),
+
+	ES_MAX UMETA(DisplayName = "ES_MAX")
+};
