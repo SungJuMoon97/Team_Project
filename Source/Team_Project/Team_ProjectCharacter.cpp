@@ -1,4 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Team_ProjectCharacter.h"
 #include "Camera/CameraComponent.h"
@@ -7,6 +6,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+
+#include "TimerManager.h"
 
 //////////////////////////////////////////////////////////////////////////
 // ATeam_ProjectCharacter
@@ -46,13 +47,24 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+	
+	//PlayerStatComp = CreateDefaultSubobject<UPlayerStatComponent>("PlayerStatComponent");
 
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+	Food = 100.f;
+	Water = 100.f;
+
+	MaxFood = 100.f;
+	MaxWater = 100.f;
+
+	FoodWaterDrainRate = 6.f;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Input
+void ATeam_ProjectCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ATeam_ProjectCharacter::DecreaseFoodWater, FoodWaterDrainRate, true, 6.f);
+}
 
 void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
@@ -125,5 +137,23 @@ void ATeam_ProjectCharacter::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+	}
+}
+
+/*FString ATeam_ProjectCharacter::ReturnPlayerStats()
+{
+	FString RetString = "Hunger: " + FString::SanitizeFloat(PlayerStatComp->GetHunger())
+		+ "Thirst: " + FString::SanitizeFloat(PlayerStatComp->GetThirst());
+	return RetString;
+}*/
+
+void ATeam_ProjectCharacter::DecreaseFoodWater()
+{
+	Food = Food - 15.f;
+	Water = Water - 35.f;
+
+	if (Food <= 0 || Water <= 0)
+	{
+		Destroy();
 	}
 }
