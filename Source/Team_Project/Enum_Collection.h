@@ -1,7 +1,7 @@
 #pragma once
 
 UENUM(BlueprintType)
-enum class WeaponType : uint32
+enum class WeaponType : uint8
 {
 	EWT_Fist UMETA(DisplayName = "Fist"),
 	EWT_Sword UMETA(DisplayName = "Sword"),
