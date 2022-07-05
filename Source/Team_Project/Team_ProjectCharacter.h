@@ -74,13 +74,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
 
-	// Maximum amount of health to allow for player.
-	UPROPERTY(EditAnywhere)
-	float MaxHealth;
 
-	// Current health of player
-	UPROPERTY(EditAnywhere)
-	float Health;
+
+private:
 
 public:
 	/** Returns CameraBoom subobject **/
