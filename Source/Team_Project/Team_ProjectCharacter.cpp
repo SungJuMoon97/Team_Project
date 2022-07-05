@@ -7,6 +7,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "BarWidget.h"
+#include "Blueprint/UserWidget.h"
+#include "MKKS_PlayerController.h"
 
 ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 {
@@ -46,6 +49,20 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+}
+
+void ATeam_ProjectCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (IsLocallyControlled() && PlayerWidgetClass)
+	{
+		AMKKS_PlayerController* FPC = GetController<AMKKS_PlayerController>();
+		check(FPC);
+		PlayerWidget = CreateWidget<UBarWidget>(FPC, PlayerWidgetClass);
+		check(PlayerWidget);
+		PlayerWidget->AddToViewport();
+	}
 }
 
 void ATeam_ProjectCharacter::DoAttack()
