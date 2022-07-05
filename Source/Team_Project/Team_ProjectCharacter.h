@@ -15,6 +15,8 @@ class ATeam_ProjectCharacter : public ACharacter
 public:
 	ATeam_ProjectCharacter();
 
+	virtual void BeginPlay() override;
+
 	void DoAttack();
 	void EndAttack();
 
@@ -22,6 +24,14 @@ public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Input)
 	float TurnRateGamepad;
+
+	// Widgetclass to spawn for the heads up display.
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UBarWidget> PlayerWidgetClass;
+
+	// The Widget instance that we are using as our HUD.
+	UPROPERTY()
+	class UBarWidget* PlayerWidget;
 
 protected:
 
@@ -54,6 +64,7 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
+
 private:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -62,6 +73,8 @@ private:
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
+
+
 
 private:
 
