@@ -15,8 +15,8 @@ class ATeam_ProjectCharacter : public ACharacter
 public:
 	ATeam_ProjectCharacter();
 
-	void AttackBeginOverlap();
-	void AttackEndOverlap();
+	void DoAttack();
+	void EndAttack();
 
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */

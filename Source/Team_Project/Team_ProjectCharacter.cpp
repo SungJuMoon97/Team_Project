@@ -48,12 +48,12 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
-void ATeam_ProjectCharacter::AttackBeginOverlap()
+void ATeam_ProjectCharacter::DoAttack()
 {
 	UE_LOG(LogTemp, Warning, TEXT("BeginOverlap"));
 }
 
-void ATeam_ProjectCharacter::AttackEndOverlap()
+void ATeam_ProjectCharacter::EndAttack()
 {
 	UE_LOG(LogTemp, Warning, TEXT("EndOverlap"));
 }
@@ -64,8 +64,8 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ATeam_ProjectCharacter::AttackBeginOverlap);
-	PlayerInputComponent->BindAction("Attack", IE_Released, this, &ATeam_ProjectCharacter::AttackEndOverlap);
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ATeam_ProjectCharacter::DoAttack);
+	PlayerInputComponent->BindAction("Attack", IE_Released, this, &ATeam_ProjectCharacter::EndAttack);
 
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ATeam_ProjectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &ATeam_ProjectCharacter::MoveRight);
