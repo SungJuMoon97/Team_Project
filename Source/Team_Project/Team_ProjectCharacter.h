@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Enum_Collection.h"
 #include "Team_ProjectCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -19,6 +20,12 @@ public:
 
 	void DoAttack();
 	void EndAttack();
+	
+	bool SetViewType(EViewType ViewType);
+	void ViewChange();
+
+	void SetDefaultStance();
+	void SetCombatStance();
 
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
@@ -64,6 +71,7 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
+	EViewType CurrentViewMode;
 
 private:
 	/** Camera boom positioning the camera behind the character */
@@ -83,5 +91,6 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	
 };
 

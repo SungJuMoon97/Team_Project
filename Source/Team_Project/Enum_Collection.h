@@ -32,3 +32,13 @@ enum class  EStance : uint8 //기본자세와 전투자세
 
 	ES_MAX UMETA(DisplayName = "ES_MAX")
 };
+
+UENUM(BlueprintType)
+enum class EViewType : uint8
+{
+	EVT_ThirdPerson UMETA(DisplayName = "ThirdPerson_View"),
+	EVT_FirstPerson UMETA(DisplayName = "FirstPerson_View"),
+
+
+	EVT_MAX UMETA(DisplayName = "EVT_MAX")
+};
