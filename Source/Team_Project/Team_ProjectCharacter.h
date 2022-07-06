@@ -31,6 +31,7 @@ public:
 protected:
 
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 
 	/** Called for forwards/backward input */
 	void MoveForward(float Value);
@@ -62,9 +63,31 @@ protected:
 
 
 protected:
+	//Sprinting, Stamina
+	void SprintStart();
+	void SprintEnd();
 
+	float RunSpeed = 600.f;
+	float SprintSpeed = 1200.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+		bool isSprinting;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+		float currentStamina;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+		float maxStamina;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+		float staminaSprintUsageRate;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+		float staminaRechargeRate;
+
+	//Food, Water
 	UFUNCTION(BlueprintCallable)
-	void DecreaseFoodWater();
+		void DecreaseFoodWater();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 		float MaxFood;

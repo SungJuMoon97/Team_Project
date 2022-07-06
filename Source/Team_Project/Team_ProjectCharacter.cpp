@@ -25,6 +25,8 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
+	isSprinting = false;
+
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
@@ -50,13 +52,18 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 	
 	//PlayerStatComp = CreateDefaultSubobject<UPlayerStatComponent>("PlayerStatComponent");
 
+	currentStamina = 1.0f;
+	maxStamina = 1.0f;
+	staminaSprintUsageRate = 0.05f;
+	staminaRechargeRate = 0.01f;
+
 	Food = 100.f;
 	Water = 100.f;
 
 	MaxFood = 100.f;
 	MaxWater = 100.f;
 
-	FoodWaterDrainRate = 6.f;
+	FoodWaterDrainRate = 20.f;
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
@@ -66,12 +73,36 @@ void ATeam_ProjectCharacter::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ATeam_ProjectCharacter::DecreaseFoodWater, FoodWaterDrainRate, true, 6.f);
 }
 
+void ATeam_ProjectCharacter::Tick(float DeltaTime)
+{
+	if (currentStamina <= 0)
+	{
+		SprintEnd();
+	}
+
+	if (isSprinting)
+	{
+		currentStamina = FMath::FInterpConstantTo(currentStamina, 0.0f, DeltaTime, staminaSprintUsageRate);
+	}
+
+	else 
+	{
+		if (currentStamina < maxStamina)
+		{
+			currentStamina = FMath::FInterpConstantTo(currentStamina, maxStamina, DeltaTime, staminaRechargeRate);
+		}
+	}
+}
+
 void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ATeam_ProjectCharacter::SprintStart);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ATeam_ProjectCharacter::SprintEnd);
 
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ATeam_ProjectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &ATeam_ProjectCharacter::MoveRight);
@@ -87,6 +118,23 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	// handle touch devices
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &ATeam_ProjectCharacter::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &ATeam_ProjectCharacter::TouchStopped);
+}
+
+void ATeam_ProjectCharacter::SprintStart()
+{
+	UE_LOG(LogTemp, Warning, TEXT("We are now sprinting."));
+	isSprinting = true;
+	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+}
+
+void ATeam_ProjectCharacter::SprintEnd()
+{
+	if(isSprinting == true)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("We have stopped sprinting."));
+		isSprinting = false;
+		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+	}
 }
 
 void ATeam_ProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
