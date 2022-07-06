@@ -86,7 +86,7 @@ void ATeam_ProjectCharacter::SetViewType(EViewType ViewType)
 		//CameraBoom->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ThirdPersonCameraSocket);
 		//CameraBoom->SetupAttachment(RootComponent);
 		CameraBoom->TargetArmLength = 200.0f; // The camera follows at this distance behind the character
-		CameraBoom->AddRelativeLocation(FVector(0.0f,30.0f,0.0f));
+		CameraBoom->AddRelativeLocation(FVector(0.0f,0.0f,50.0f));
 		CameraBoom->SetRelativeRotation(FRotator::ZeroRotator);
 		CameraBoom->bUsePawnControlRotation = false; // Rotate the arm based on the controller
 		bUseControllerRotationPitch = false;
@@ -105,8 +105,8 @@ void ATeam_ProjectCharacter::SetViewType(EViewType ViewType)
 		bUseControllerRotationPitch = false;
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationRoll = false;
-		CameraBoom->TargetArmLength = 30.0f;  // The camera follows at this distance behind the character
-		CameraBoom->AddRelativeLocation(FVector(0.0f,20.0f,0.0f));
+		CameraBoom->TargetArmLength = 0.0f;  // The camera follows at this distance behind the character
+		CameraBoom->AddRelativeLocation(FVector(0.0f,15.0f,0.0f));
 		FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 		CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 		FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
@@ -121,12 +121,15 @@ void ATeam_ProjectCharacter::ViewChange()
 	if (CurrentViewMode == EViewType::EVT_ThirdPerson)
 	{
 		CurrentViewMode = EViewType::EVT_FirstPerson;
+		CameraBoom->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
+		CameraBoom->AddRelativeLocation(FVector(0.0f, -30.0f, 0.0f));
 		SetViewType(CurrentViewMode);
 		UE_LOG(LogTemp, Warning, TEXT("ViewChange"));
 	}
 	else
 	{
 		CurrentViewMode = EViewType::EVT_ThirdPerson;
+		CameraBoom->AddRelativeLocation(FVector(0.0f, -20.0f, 0.0f));
 		SetViewType(CurrentViewMode);
 	}
 }
