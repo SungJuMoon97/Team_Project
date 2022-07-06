@@ -12,7 +12,7 @@
 #include "MKKS_PlayerController.h"
 #include "Enum_Collection.h"
 
-ATeam_ProjectCharacter::ATeam_ProjectCharacter(): CurrentViewMode(EViewType::EVT_ThirdPerson)
+ATeam_ProjectCharacter::ATeam_ProjectCharacter(): CurrentViewMode(EViewType::EVT_FirstPerson)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -35,12 +35,12 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter(): CurrentViewMode(EViewType::EVT
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	
+	CameraBoom->SetupAttachment(RootComponent);
 		
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+	
 	
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
@@ -70,43 +70,46 @@ void ATeam_ProjectCharacter::EndAttack()
 	UE_LOG(LogTemp, Warning, TEXT("EndOverlap"));
 }
 
-bool ATeam_ProjectCharacter::SetViewType(EViewType ViewType)
+void ATeam_ProjectCharacter::SetViewType(EViewType ViewType)
 {
 	switch (ViewType)
 	{
 	case EViewType::EVT_ThirdPerson:
 
+		CameraBoom->TargetArmLength = 400.0f; // The camera follows at this distance behind the character
+		CameraBoom->SetRelativeRotation(FRotator::ZeroRotator);
+		CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 		bUseControllerRotationPitch = false;
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationRoll = false;
-		CameraBoom->SetupAttachment(RootComponent);
-		CameraBoom->TargetArmLength = 400.0f; // The camera follows at this distance behind the character
-		CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+		FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 		FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 		GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
 		GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
-		
 		break;
+
 	case EViewType::EVT_FirstPerson:
 
 		bUseControllerRotationPitch = false;
 		bUseControllerRotationYaw = false;
 		bUseControllerRotationRoll = false;
-		CameraBoom->SetupAttachment(RootComponent);
 		CameraBoom->TargetArmLength = 10.0f; // The camera follows at this distance behind the character
+		FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 		CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 		FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 		GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
 		GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
 		break;
 	}
-	return false;
 }
 
 void ATeam_ProjectCharacter::ViewChange()
 {
 	if (CurrentViewMode == EViewType::EVT_ThirdPerson)
+	{
 		CurrentViewMode = EViewType::EVT_FirstPerson;
+		UE_LOG(LogTemp, Warning, TEXT("ViewChange"));
+	}
 	else
 		CurrentViewMode = EViewType::EVT_ThirdPerson;
 }

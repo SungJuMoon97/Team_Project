@@ -21,7 +21,7 @@ public:
 	void DoAttack();
 	void EndAttack();
 	
-	bool SetViewType(EViewType ViewType);
+	void SetViewType(EViewType ViewType);
 	void ViewChange();
 
 	void SetDefaultStance();
