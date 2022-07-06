@@ -17,12 +17,16 @@ public:
 	ATeam_ProjectCharacter();
 
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 
 	void DoAttack();
 	void EndAttack();
 	
-	void SetViewType(EViewType ViewType);
-	void ViewChange();
+	UFUNCTION()
+		void SetViewType(EViewType ViewType);
+	
+	UFUNCTION()
+		void ViewChange();
 
 	void SetDefaultStance();
 	void SetCombatStance();
@@ -39,6 +43,9 @@ public:
 	// The Widget instance that we are using as our HUD.
 	UPROPERTY()
 	class UBarWidget* PlayerWidget;
+
+	EViewType CurrentViewMode;
+	bool bThirdPersonView;
 
 protected:
 
@@ -71,7 +78,7 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
-	EViewType CurrentViewMode;
+	
 
 private:
 	/** Camera boom positioning the camera behind the character */
@@ -81,8 +88,6 @@ private:
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
-
-
 
 private:
 
