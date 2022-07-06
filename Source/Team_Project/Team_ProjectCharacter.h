@@ -11,6 +11,9 @@ class ATeam_ProjectCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+	UPROPERTY(EditDefaultsOnly, Category = "CharacterInventory")
+	class UInventoryComponent* InventoryComponent;
+
 	
 public:
 	ATeam_ProjectCharacter();
@@ -64,6 +67,8 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
+	void Interact();
+
 
 private:
 	/** Camera boom positioning the camera behind the character */
@@ -73,8 +78,6 @@ private:
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
-
-
 
 private:
 
