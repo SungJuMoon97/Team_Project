@@ -11,15 +11,16 @@
 #include "Blueprint/UserWidget.h"
 #include "MKKS_PlayerController.h"
 #include "Enum_Collection.h"
+#include "MKKS_PlayerAnimInstance.h"
 
-ATeam_ProjectCharacter::ATeam_ProjectCharacter()//:CurrentViewMode(EViewType::EVT_FirstPerson)
+ATeam_ProjectCharacter::ATeam_ProjectCharacter(): CurrentViewMode(EViewType::EVT_ThirdPerson)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
 	// set our turn rate for input
-	TurnRateGamepad = 50.f;
+	TurnRateGamepad = 45.f;
 
 	
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>
@@ -27,20 +28,39 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter()//:CurrentViewMode(EViewType::EV
 	if (Shinbi_Mesh.Succeeded())
 		GetMesh()->SetSkeletalMesh(Shinbi_Mesh.Object);
 
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+
+	CameraBoom->AttachToComponent(RootComponent,FAttachmentTransformRules::KeepWorldTransform);
+	CameraBoom->TargetArmLength = 200.0f;
+	CameraBoom->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f));
+
+	/*CameraBoom->bEnableCameraLag = true;
+	CameraBoom->CameraLagSpeed = 2;
+	CameraBoom->CameraLagMaxDistance = 1.5f;
+
+	CameraBoom->bEnableCameraRotationLag = true;
+	CameraBoom->CameraRotationLagSpeed = 4;
+	CameraBoom->CameraLagMaxTimeStep = 1;*/
+
+	//FollowCamera->SetupAttachment(RootComponent);
+	FollowCamera->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
+
+	
+	CameraBoom->bUsePawnControlRotation = true;
+
 	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
+	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
 
-	// Create a camera boom (pulls in towards the player if there is a collision)
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-
-	// Create a follow camera
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	
 	
 	SetViewType(EViewType::EVT_ThirdPerson);
-	//SetViewType(CurrentViewMode);
+	
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
@@ -75,43 +95,33 @@ void ATeam_ProjectCharacter::EndAttack()
 
 void ATeam_ProjectCharacter::SetViewType(EViewType ViewType)
 {
+	
 	FName FirstPersonCameraSocket(TEXT("FirstPersonCameraSocket"));
 	FName ThirdPersonCameraSocket(TEXT("ThirdPersonCameraSocket"));
 
 	switch (ViewType)
 	{
 	case EViewType::EVT_ThirdPerson:
-
-		CameraBoom->SetupAttachment(RootComponent,ThirdPersonCameraSocket);
-		//CameraBoom->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ThirdPersonCameraSocket);
-		//CameraBoom->SetupAttachment(RootComponent);
-		CameraBoom->TargetArmLength = 200.0f; // The camera follows at this distance behind the character
-		CameraBoom->AddRelativeLocation(FVector(0.0f,0.0f,50.0f));
-		CameraBoom->SetRelativeRotation(FRotator::ZeroRotator);
-		CameraBoom->bUsePawnControlRotation = false; // Rotate the arm based on the controller
-		bUseControllerRotationPitch = false;
 		bUseControllerRotationYaw = false;
-		bUseControllerRotationRoll = false;
-		FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-		FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-		GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-		GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
+		CameraBoom->bUsePawnControlRotation = true;
+		CameraBoom->TargetArmLength = 200.f;
+		CameraBoom->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f));
+		FollowCamera->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+		//FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+		FollowCamera->AttachToComponent(CameraBoom, FAttachmentTransformRules::SnapToTargetIncludingScale,USpringArmComponent::SocketName);
 		break;
 
 	case EViewType::EVT_FirstPerson:
-
-		//CameraBoom->SetupAttachment(RootComponent, FirstPersonCameraSocket);
-		CameraBoom->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FirstPersonCameraSocket);
-		bUseControllerRotationPitch = false;
-		bUseControllerRotationYaw = false;
-		bUseControllerRotationRoll = false;
-		CameraBoom->TargetArmLength = 0.0f;  // The camera follows at this distance behind the character
-		CameraBoom->AddRelativeLocation(FVector(0.0f,15.0f,0.0f));
-		FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-		CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
-		FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-		GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-		GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
+		//FollowCamera->SetupAttachment(RootComponent);
+		//CameraBoom->TargetArmLength = 0.0f;
+		//CameraBoom->SetRelativeLocation(FVector(10.0f, 0.0f, 67.5f));
+		//FollowCamera->SetupAttachment(RootComponent, FirstPersonCameraSocket);
+		//FollowCamera->AttachToComponent(CameraBoom, FAttachmentTransformRules::KeepWorldTransform,USpringArmComponent::SocketName);
+		bUseControllerRotationYaw = true;
+		FollowCamera->bUsePawnControlRotation = true;
+		FollowCamera->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f));
+		FollowCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale,FirstPersonCameraSocket);
+		FollowCamera->SetRelativeLocation(FVector(0.0f, 10.0f, 0.0f));
 		break;
 	}
 }
@@ -121,15 +131,12 @@ void ATeam_ProjectCharacter::ViewChange()
 	if (CurrentViewMode == EViewType::EVT_ThirdPerson)
 	{
 		CurrentViewMode = EViewType::EVT_FirstPerson;
-		CameraBoom->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
-		CameraBoom->AddRelativeLocation(FVector(0.0f, -30.0f, 0.0f));
 		SetViewType(CurrentViewMode);
 		UE_LOG(LogTemp, Warning, TEXT("ViewChange"));
 	}
 	else
 	{
 		CurrentViewMode = EViewType::EVT_ThirdPerson;
-		CameraBoom->AddRelativeLocation(FVector(0.0f, -20.0f, 0.0f));
 		SetViewType(CurrentViewMode);
 	}
 }
@@ -188,34 +195,88 @@ void ATeam_ProjectCharacter::TurnAtRate(float Rate)
 void ATeam_ProjectCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
+	//AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
+	if (Rate)
+	{
+		float temp = 0;
+		if (CurrentViewMode == EViewType::EVT_FirstPerson)
+		{
+			temp = FollowCamera->GetRelativeRotation().Pitch + Rate;
+			if(temp < 65 && temp >-65)
+				FollowCamera->AddLocalRotation(FRotator(Rate, 0, 0));
+				//AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
+		}
+		else
+		{
+			temp = CameraBoom->GetRelativeRotation().Pitch + Rate;
+			if(temp < 25 && temp > - 65)
+			{
+				CameraBoom->AddLocalRotation(FRotator(Rate, 0, 0));
+			}
+		}
+	}
 }
 
 void ATeam_ProjectCharacter::MoveForward(float Value)
 {
-	if ((Controller != nullptr) && (Value != 0.0f))
+	//if (Value != 0.0f)
+	//{
+	//	// add movement in that direction
+	//	AddMovementInput(GetActorForwardVector(), Value);
+	//}
+	if (CurrentViewMode == EViewType::EVT_FirstPerson)
 	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		if (Value != 0.0f)
+		{
+			// add movement in that direction
+			AddMovementInput(GetActorForwardVector(), Value);
+		}
+	}
+	else
+	{
+		if ((Controller != nullptr) && (Value != 0.0f))
+		{
+			// find out which way is forward
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-		// get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(Direction, Value);
+			// get forward vector
+			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+			AddMovementInput(Direction, Value);
+		}
 	}
 }
 
 void ATeam_ProjectCharacter::MoveRight(float Value)
 {
-	if ( (Controller != nullptr) && (Value != 0.0f) )
+
+	//if (Value != 0.0f)
+	//{
+	//	// add movement in that direction
+	//	AddMovementInput(GetActorRightVector(), Value);
+	//}
+
+	if (CurrentViewMode == EViewType::EVT_FirstPerson)
 	{
-		// find out which way is right
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-	
-		// get right vector 
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		// add movement in that direction
-		AddMovementInput(Direction, Value);
+		if (Value != 0.0f)
+		{
+			// add movement in that direction
+			AddMovementInput(GetActorRightVector(), Value);
+		}
 	}
+	else
+	{
+		if ((Controller != nullptr) && (Value != 0.0f))
+		{
+			// find out which way is right
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+			// get right vector 
+			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+			// add movement in that direction
+			AddMovementInput(Direction, Value);
+		}
+	}
+	
 }
