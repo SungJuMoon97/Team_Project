@@ -25,11 +25,14 @@ public:
 	UFUNCTION()
 		void SetViewType(EViewType ViewType);
 	
-	UFUNCTION()
+	UFUNCTION(EditAnywhere)
 		void ViewChange();
 
-	UFUNCTION()
+	UFUNCTION(EditAnywhere)
 		void StanceChange();
+
+	UFUNCTION()
+		void SetStanceType(EStance StanceType);
 
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
@@ -45,6 +48,7 @@ public:
 	class UBarWidget* PlayerWidget;
 
 	EViewType CurrentViewMode;
+	EStance CurrentStanceMode;
 	bool bThirdPersonView;
 
 protected:

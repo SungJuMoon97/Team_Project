@@ -13,7 +13,8 @@
 #include "Enum_Collection.h"
 #include "MKKS_PlayerAnimInstance.h"
 
-ATeam_ProjectCharacter::ATeam_ProjectCharacter(): CurrentViewMode(EViewType::EVT_ThirdPerson)
+ATeam_ProjectCharacter::ATeam_ProjectCharacter():
+	CurrentViewMode(EViewType::EVT_ThirdPerson), CurrentStanceMode(EStance::ES_Default)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
@@ -130,6 +131,22 @@ void ATeam_ProjectCharacter::ViewChange()
 
 void ATeam_ProjectCharacter::StanceChange()
 {
+	if (CurrentStanceMode == EStance::ES_Default)
+	{
+		CurrentStanceMode = EStance::ES_Combat;
+		SetStanceType(CurrentStanceMode);
+		UE_LOG(LogTemp, Warning, TEXT("StanceChanged"));
+	}
+	else
+	{
+		CurrentStanceMode = EStance::ES_Default;
+		SetStanceType(CurrentStanceMode);
+	}
+}
+
+void ATeam_ProjectCharacter::SetStanceType(EStance StanceType)
+{
+
 }
 
 
