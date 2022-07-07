@@ -11,6 +11,7 @@
 #include "Blueprint/UserWidget.h"
 #include "MKKS_PlayerController.h"
 #include "InventoryComponent.h"
+#include "InstanceItem.h"
 
 ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 {
@@ -108,8 +109,18 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 
 void ATeam_ProjectCharacter::Interact()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Interacting"));
+	if (HeldActor)
+	{
+		ReleaseActor();
+	}
+	else
+	{
+		GrabActor();
+	}
+}
 
+void ATeam_ProjectCharacter::GrabActor()
+{
 	FVector Start = FollowCamera->GetComponentLocation();
 	// Distance to Interact = 500.0f;
 	FVector End = Start + FollowCamera->GetComponentRotation().Vector() * 500.0f;
@@ -124,10 +135,36 @@ void ATeam_ProjectCharacter::Interact()
 
 		if (AActor* HitActor = HitResult.GetActor())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("HIT ACTOR: %s"), *HitResult.GetActor()->GetName());
-			HitActor->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachSocket"));
+			if (Cast<AInstanceItem>(HitActor))
+			{
+
+
+				HeldActor = HitActor;
+				if (HeldActor->GetRootComponent()->IsSimulatingPhysics())
+				{
+					if (UPrimitiveComponent* PrimComponent = Cast<UPrimitiveComponent>(HeldActor->GetComponentByClass(UPrimitiveComponent::StaticClass())))
+					{
+						PrimComponent->SetSimulatePhysics(false);
+						HeldActor->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachSocket"));
+					}
+				}
+				else
+				{
+					HeldActor->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachSocket"));
+				}
+			}
 		}
 	}
+}
+
+void ATeam_ProjectCharacter::ReleaseActor()
+{
+		HeldActor->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+		if (UPrimitiveComponent* PrimComponent = Cast<UPrimitiveComponent>(HeldActor->GetComponentByClass(UPrimitiveComponent::StaticClass())))
+		{
+			PrimComponent->SetSimulatePhysics(true);
+		}
+		HeldActor = nullptr;
 }
 
 void ATeam_ProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)

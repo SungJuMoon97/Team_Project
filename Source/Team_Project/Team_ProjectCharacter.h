@@ -68,7 +68,9 @@ protected:
 	// End of APawn interface
 
 	void Interact();
-
+	void GrabActor();
+	void ReleaseActor();
+	AActor* HeldActor;
 
 private:
 	/** Camera boom positioning the camera behind the character */
