@@ -21,6 +21,4 @@ class TEAM_PROJECT_API IPickup_Interface
 public:
 	virtual AActor* Pickup(ATeam_ProjectCharacter* PickingUpActor) { return nullptr; }
 	virtual void Puton() = 0;
-	virtual void Drop() = 0;
-	
 };

@@ -30,5 +30,4 @@ protected:
 public:
 	virtual AActor* Pickup(ATeam_ProjectCharacter* PickingUpActor) override;
 	virtual void Puton() override;
-	virtual void Drop() override;
 };

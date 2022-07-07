@@ -159,14 +159,7 @@ void ATeam_ProjectCharacter::ReleaseActor()
 
 void ATeam_ProjectCharacter::AddToInventory()
 {
-	if (HeldActor)
-	{
-		PutOutActor();
-	}
-	else
-	{
 		PutActor();
-	}
 }
 
 void ATeam_ProjectCharacter::PutActor()
@@ -192,16 +185,6 @@ void ATeam_ProjectCharacter::PutActor()
 			}
 		}
 	}
-}
-
-void ATeam_ProjectCharacter::PutOutActor()
-{
-	HeldActor->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
-	if (UPrimitiveComponent* PrimComponent = Cast<UPrimitiveComponent>(HeldActor->GetComponentByClass(UPrimitiveComponent::StaticClass())))
-	{
-		PrimComponent->SetSimulatePhysics(true);
-	}
-	HeldActor = nullptr;
 }
 
 void ATeam_ProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)

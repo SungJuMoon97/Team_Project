@@ -42,9 +42,6 @@ AActor* AInstanceItem::Pickup(ATeam_ProjectCharacter* PickingUpActor)
 void AInstanceItem::Puton()
 {
 	// hide actor and disable collision
-}
-
-void AInstanceItem::Drop()
-{
-	// drop actor an enable collision
+	Mesh->SetHiddenInGame(true);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

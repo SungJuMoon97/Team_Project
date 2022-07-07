@@ -28,4 +28,7 @@ protected:
 
 public:
 	void AddItemToInventory(AActor* Item);
+
+	UFUNCTION(BlueprintCallable, Category = "CharacterInventory")
+		TArray<AActor*>GetInventoryItems() const { return Items; }
 };

@@ -10,10 +10,6 @@ UCLASS(config=Game)
 class ATeam_ProjectCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
-	UPROPERTY(EditDefaultsOnly, Category = "CharacterInventory")
-	class UInventoryComponent* InventoryComponent;
-
 	
 public:
 	ATeam_ProjectCharacter();
@@ -76,7 +72,9 @@ protected:
 	// Add Item To Inventory Key
 	void AddToInventory();
 	void PutActor();
-	void PutOutActor();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "CharacterInventory")
+	class UInventoryComponent* InventoryComponent;
 
 private:
 	/** Camera boom positioning the camera behind the character */

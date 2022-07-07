@@ -2,6 +2,7 @@
 
 
 #include "InventoryComponent.h"
+#include "Pickup_Interface.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
@@ -23,10 +24,9 @@ void UInventoryComponent::BeginPlay()
 
 void UInventoryComponent::AddItemToInventory(AActor* Item)
 {
-	if (Item)
+	if (Items.Num() < MaxItemsInInventory && Item)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("PICKED UP ACTOR: %s"), *Item->GetName());
 		Items.Add(Item);
 	}
 }
-
