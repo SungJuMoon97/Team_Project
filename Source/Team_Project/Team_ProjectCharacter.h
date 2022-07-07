@@ -25,10 +25,10 @@ public:
 	UFUNCTION()
 		void SetViewType(EViewType ViewType);
 	
-	UFUNCTION(EditAnywhere)
+	UFUNCTION()
 		void ViewChange();
 
-	UFUNCTION(EditAnywhere)
+	UFUNCTION()
 		void StanceChange();
 
 	UFUNCTION()

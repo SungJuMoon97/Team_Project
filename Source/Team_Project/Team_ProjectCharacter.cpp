@@ -146,7 +146,15 @@ void ATeam_ProjectCharacter::StanceChange()
 
 void ATeam_ProjectCharacter::SetStanceType(EStance StanceType)
 {
+	switch (StanceType)
+	{
+	case EStance::ES_Default:
 
+		break;
+	case EStance::ES_Combat:
+
+		break;
+	}
 }
 
 
