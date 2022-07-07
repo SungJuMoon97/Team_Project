@@ -4,10 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Pickup_Interface.h"
 #include "InstanceItem.generated.h"
 
+class UStaticMeshComponent;
+class ATeam_ProjectCharacter;
+
 UCLASS()
-class TEAM_PROJECT_API AInstanceItem : public AActor
+class TEAM_PROJECT_API AInstanceItem : public AActor, public IPickup_Interface
 {
 	GENERATED_BODY()
 	
@@ -22,4 +26,7 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere, Category = "InsItem")
 	UStaticMeshComponent* Mesh;
+
+public:
+	virtual AActor* Pickup(ATeam_ProjectCharacter* PickingUpActor) override;
 };

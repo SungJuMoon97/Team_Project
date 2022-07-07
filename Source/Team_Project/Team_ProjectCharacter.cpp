@@ -12,6 +12,7 @@
 #include "MKKS_PlayerController.h"
 #include "InventoryComponent.h"
 #include "InstanceItem.h"
+#include "Pickup_Interface.h"
 
 ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 {
@@ -135,23 +136,9 @@ void ATeam_ProjectCharacter::GrabActor()
 
 		if (AActor* HitActor = HitResult.GetActor())
 		{
-			if (Cast<AInstanceItem>(HitActor))
+			if (IPickup_Interface* Interface = Cast<IPickup_Interface>(HitActor))
 			{
-
-
-				HeldActor = HitActor;
-				if (HeldActor->GetRootComponent()->IsSimulatingPhysics())
-				{
-					if (UPrimitiveComponent* PrimComponent = Cast<UPrimitiveComponent>(HeldActor->GetComponentByClass(UPrimitiveComponent::StaticClass())))
-					{
-						PrimComponent->SetSimulatePhysics(false);
-						HeldActor->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachSocket"));
-					}
-				}
-				else
-				{
-					HeldActor->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachSocket"));
-				}
+				HeldActor = Interface->Pickup(this);
 			}
 		}
 	}

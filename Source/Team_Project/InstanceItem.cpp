@@ -1,5 +1,6 @@
 #include "InstanceItem.h"
 #include "Components/StaticMeshComponent.h"
+#include "Team_ProjectCharacter.h"
 
 // Sets default values
 AInstanceItem::AInstanceItem()
@@ -17,6 +18,25 @@ void AInstanceItem::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+AActor* AInstanceItem::Pickup(ATeam_ProjectCharacter* PickingUpActor)
+{
+	if (GetRootComponent()->IsSimulatingPhysics())
+	{
+		if (UPrimitiveComponent* PrimComponent = Cast<UPrimitiveComponent>(GetComponentByClass(UPrimitiveComponent::StaticClass())))
+		{
+			PrimComponent->SetSimulatePhysics(false);
+			AttachToComponent(PickingUpActor->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachSocket"));
+			return this;
+		}
+	}
+	else
+	{
+		AttachToComponent(PickingUpActor->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachSocket"));
+		return this;
+	}
+	return nullptr;
 }
 
 
