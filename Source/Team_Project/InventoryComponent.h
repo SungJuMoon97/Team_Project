@@ -24,7 +24,7 @@ protected:
 	int32 MaxItemsInInventory;
 		
 	UPROPERTY(BlueprintReadOnly, Category = "CharacterInventory")
-		TArray<AActor*> Items;
+	TArray<AActor*> Items;
 
 public:
 	void AddItemToInventory(AActor* Item);

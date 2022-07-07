@@ -39,4 +39,12 @@ AActor* AInstanceItem::Pickup(ATeam_ProjectCharacter* PickingUpActor)
 	return nullptr;
 }
 
+void AInstanceItem::Puton()
+{
+	// hide actor and disable collision
+}
 
+void AInstanceItem::Drop()
+{
+	// drop actor an enable collision
+}

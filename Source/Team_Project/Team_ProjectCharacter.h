@@ -67,10 +67,16 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
+	// Pickup and Drop Key
 	void Interact();
 	void GrabActor();
 	void ReleaseActor();
 	AActor* HeldActor;
+
+	// Add Item To Inventory Key
+	void AddToInventory();
+	void PutActor();
+	void PutOutActor();
 
 private:
 	/** Camera boom positioning the camera behind the character */

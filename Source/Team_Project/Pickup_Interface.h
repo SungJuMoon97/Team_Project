@@ -20,4 +20,7 @@ class TEAM_PROJECT_API IPickup_Interface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	virtual AActor* Pickup(ATeam_ProjectCharacter* PickingUpActor) { return nullptr; }
+	virtual void Puton() = 0;
+	virtual void Drop() = 0;
+	
 };

@@ -54,7 +54,7 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
-	}
+}
 
 void ATeam_ProjectCharacter::BeginPlay()
 {
@@ -91,6 +91,9 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 
 	// Interact key binding
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ATeam_ProjectCharacter::Interact);
+	// AddToInventory binding
+	PlayerInputComponent->BindAction("AddToInventory", IE_Pressed, this, &ATeam_ProjectCharacter::AddToInventory);
+
 
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ATeam_ProjectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &ATeam_ProjectCharacter::MoveRight);
@@ -152,6 +155,52 @@ void ATeam_ProjectCharacter::ReleaseActor()
 			PrimComponent->SetSimulatePhysics(true);
 		}
 		HeldActor = nullptr;
+}
+
+void ATeam_ProjectCharacter::AddToInventory()
+{
+	if (HeldActor)
+	{
+		PutActor();
+	}
+	else
+	{
+		PutOutActor();
+	}
+}
+
+void ATeam_ProjectCharacter::PutActor()
+{
+	FVector Start = FollowCamera->GetComponentLocation();
+	// Distance to Interact = 500.0f;
+	FVector End = Start + FollowCamera->GetComponentRotation().Vector() * 500.0f;
+
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_WorldStatic, Params))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HIT ACTOR"));
+
+		if (AActor* HitActor = HitResult.GetActor())
+		{
+			if (IPickup_Interface* Interface = Cast<IPickup_Interface>(HitActor))
+			{
+				InventoryComponent->AddItemToInventory(HitActor);
+			}
+		}
+	}
+}
+
+void ATeam_ProjectCharacter::PutOutActor()
+{
+	HeldActor->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+	if (UPrimitiveComponent* PrimComponent = Cast<UPrimitiveComponent>(HeldActor->GetComponentByClass(UPrimitiveComponent::StaticClass())))
+	{
+		PrimComponent->SetSimulatePhysics(true);
+	}
+	HeldActor = nullptr;
 }
 
 void ATeam_ProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
