@@ -32,18 +32,9 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter(): CurrentViewMode(EViewType::EVT
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 
 	CameraBoom->AttachToComponent(RootComponent,FAttachmentTransformRules::KeepWorldTransform);
-	CameraBoom->TargetArmLength = 200.0f;
+	CameraBoom->TargetArmLength = 150.0f;
 	CameraBoom->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f));
 
-	/*CameraBoom->bEnableCameraLag = true;
-	CameraBoom->CameraLagSpeed = 2;
-	CameraBoom->CameraLagMaxDistance = 1.5f;
-
-	CameraBoom->bEnableCameraRotationLag = true;
-	CameraBoom->CameraRotationLagSpeed = 4;
-	CameraBoom->CameraLagMaxTimeStep = 1;*/
-
-	//FollowCamera->SetupAttachment(RootComponent);
 	FollowCamera->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
 
 	
@@ -57,10 +48,7 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter(): CurrentViewMode(EViewType::EVT
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
 
-	
-	
-	SetViewType(EViewType::EVT_ThirdPerson);
-	
+	ViewChange();
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
@@ -102,26 +90,25 @@ void ATeam_ProjectCharacter::SetViewType(EViewType ViewType)
 	switch (ViewType)
 	{
 	case EViewType::EVT_ThirdPerson:
-		bUseControllerRotationYaw = false;
+		bUseControllerRotationYaw = true;
 		CameraBoom->bUsePawnControlRotation = true;
-		CameraBoom->TargetArmLength = 200.f;
+		CameraBoom->TargetArmLength = 150.f;
+		CameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 		CameraBoom->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f));
 		FollowCamera->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
-		//FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 		FollowCamera->AttachToComponent(CameraBoom, FAttachmentTransformRules::SnapToTargetIncludingScale,USpringArmComponent::SocketName);
+		GetCharacterMovement()->bOrientRotationToMovement = false;
 		break;
 
 	case EViewType::EVT_FirstPerson:
-		//FollowCamera->SetupAttachment(RootComponent);
-		//CameraBoom->TargetArmLength = 0.0f;
-		//CameraBoom->SetRelativeLocation(FVector(10.0f, 0.0f, 67.5f));
-		//FollowCamera->SetupAttachment(RootComponent, FirstPersonCameraSocket);
-		//FollowCamera->AttachToComponent(CameraBoom, FAttachmentTransformRules::KeepWorldTransform,USpringArmComponent::SocketName);
+		
 		bUseControllerRotationYaw = true;
 		FollowCamera->bUsePawnControlRotation = true;
+		CameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, -70.0f));
 		FollowCamera->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f));
 		FollowCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale,FirstPersonCameraSocket);
 		FollowCamera->SetRelativeLocation(FVector(0.0f, 10.0f, 0.0f));
+		GetCharacterMovement()->bOrientRotationToMovement = false;
 		break;
 	}
 }
@@ -141,15 +128,10 @@ void ATeam_ProjectCharacter::ViewChange()
 	}
 }
 
-void ATeam_ProjectCharacter::SetDefaultStance()
+void ATeam_ProjectCharacter::StanceChange()
 {
-
 }
 
-void ATeam_ProjectCharacter::SetCombatStance()
-{
-
-}
 
 void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
@@ -160,6 +142,7 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ATeam_ProjectCharacter::DoAttack);
 	PlayerInputComponent->BindAction("Attack", IE_Released, this, &ATeam_ProjectCharacter::EndAttack);
 	PlayerInputComponent->BindAction("ViewChange", IE_Pressed, this, &ATeam_ProjectCharacter::ViewChange);
+	PlayerInputComponent->BindAction("StanceChange", IE_Pressed, this, &ATeam_ProjectCharacter::StanceChange);
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ATeam_ProjectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &ATeam_ProjectCharacter::MoveRight);
 

@@ -28,8 +28,8 @@ public:
 	UFUNCTION()
 		void ViewChange();
 
-	void SetDefaultStance();
-	void SetCombatStance();
+	UFUNCTION()
+		void StanceChange();
 
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
@@ -88,10 +88,6 @@ private:
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement,
-		meta = (AllowPrivateAccess = "true"))
-		class ATeam_ProjectCharacter* PlayerCharacter;
 
 private:
 
