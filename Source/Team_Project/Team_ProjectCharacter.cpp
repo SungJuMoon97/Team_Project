@@ -161,11 +161,11 @@ void ATeam_ProjectCharacter::AddToInventory()
 {
 	if (HeldActor)
 	{
-		PutActor();
+		PutOutActor();
 	}
 	else
 	{
-		PutOutActor();
+		PutActor();
 	}
 }
 
@@ -187,6 +187,7 @@ void ATeam_ProjectCharacter::PutActor()
 		{
 			if (IPickup_Interface* Interface = Cast<IPickup_Interface>(HitActor))
 			{
+				Interface->Puton();
 				InventoryComponent->AddItemToInventory(HitActor);
 			}
 		}

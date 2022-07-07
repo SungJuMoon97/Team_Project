@@ -19,7 +19,6 @@ void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
 }
 
 void UInventoryComponent::AddItemToInventory(AActor* Item)
