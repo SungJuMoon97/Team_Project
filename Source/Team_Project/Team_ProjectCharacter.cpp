@@ -13,6 +13,8 @@
 #include "InventoryComponent.h"
 #include "InstanceItem.h"
 #include "Pickup_Interface.h"
+#include "Team_ProjectGameMode.h"
+#include "InventoryPanel.h"
 
 ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 {
@@ -94,6 +96,8 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	// AddToInventory binding
 	PlayerInputComponent->BindAction("AddToInventory", IE_Pressed, this, &ATeam_ProjectCharacter::AddToInventory);
 
+	// OpenInventory binding
+	PlayerInputComponent->BindAction("OpenInventory", IE_Pressed, this, &ATeam_ProjectCharacter::OpenInventory);
 
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ATeam_ProjectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &ATeam_ProjectCharacter::MoveRight);
@@ -160,6 +164,10 @@ void ATeam_ProjectCharacter::ReleaseActor()
 void ATeam_ProjectCharacter::AddToInventory()
 {
 		PutActor();
+
+		PlayerWidget = CreateWidget<UBarWidget>(GetWorld(), PlayerWidgetClass);
+		check(PlayerWidget);
+		PlayerWidget->AddToViewport();
 }
 
 void ATeam_ProjectCharacter::PutActor()
@@ -185,6 +193,15 @@ void ATeam_ProjectCharacter::PutActor()
 			}
 		}
 	}
+}
+
+void ATeam_ProjectCharacter::OpenInventory()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Inventory Open"));
+
+	PlayerInventoryPanel = CreateWidget<UInventoryPanel>(GetWorld(), PlayerInventoryPanelClass);
+	check(PlayerInventoryPanel);
+	PlayerInventoryPanel->AddToViewport();
 }
 
 void ATeam_ProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)

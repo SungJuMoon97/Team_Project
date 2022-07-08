@@ -32,6 +32,16 @@ public:
 	UPROPERTY()
 	class UBarWidget* PlayerWidget;
 
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UInventoryPanel> PlayerInventoryPanelClass;
+
+	// The Widget instance that we are using as our HUD.
+	UPROPERTY()
+		class UInventoryPanel* PlayerInventoryPanel;
+
+
+
+
 protected:
 
 	/** Called for forwards/backward input */
@@ -72,6 +82,9 @@ protected:
 	// Add Item To Inventory Key
 	void AddToInventory();
 	void PutActor();
+
+	// Open Inventory
+	void OpenInventory();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "CharacterInventory")
 	class UInventoryComponent* InventoryComponent;
