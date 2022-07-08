@@ -17,25 +17,25 @@ class TEAM_PROJECT_API UMKKS_PlayerAnimInstance : public UAnimInstance
 public:
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack,
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Attack,
 		meta = (AllowPrivateAccess = "true"))
 		bool bDoAttacking;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement,
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		bool bIsInAir;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement,
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		bool bIsSprint;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement,
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		bool bSitting;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement,
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
-		bool bLyingDown;
+		bool bLyingDown;//누워있느냐?
 
 
 

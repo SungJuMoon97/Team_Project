@@ -12,6 +12,7 @@
 #include "MKKS_PlayerController.h"
 #include "Enum_Collection.h"
 #include "MKKS_PlayerAnimInstance.h"
+#include "Kismet/GameplayStatics.h"
 
 ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	CurrentViewMode(EViewType::EVT_ThirdPerson), CurrentStanceMode(EStance::ES_Default)
@@ -131,15 +132,19 @@ void ATeam_ProjectCharacter::ViewChange()
 
 void ATeam_ProjectCharacter::StanceChange()
 {
+	PlayerController = Cast<APlayerController>(GetController());
+	if(PlayerController == MKKS_Controller)
 	if (CurrentStanceMode == EStance::ES_Default)
 	{
 		CurrentStanceMode = EStance::ES_Combat;
 		SetStanceType(CurrentStanceMode);
+		MKKS_Controller->bShowMouseCursor = true;
 		UE_LOG(LogTemp, Warning, TEXT("StanceChanged"));
 	}
 	else
 	{
 		CurrentStanceMode = EStance::ES_Default;
+		MKKS_Controller->bShowMouseCursor = false;
 		SetStanceType(CurrentStanceMode);
 	}
 }
