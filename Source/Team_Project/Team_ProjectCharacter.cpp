@@ -30,18 +30,22 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	if (Shinbi_Mesh.Succeeded())
 		GetMesh()->SetSkeletalMesh(Shinbi_Mesh.Object);
 
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	FName FirstPersonCameraSocket(TEXT("FirstPersonCameraSocket"));
+	FName ThirdPersonCameraSocket(TEXT("ThirdPersonCameraSocket"));
+	FirstPersonCameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("FirstPersonCameraBoom"));
+	FirstPersonFollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonFollowCamera"));
+	ThirdPersonCameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("ThirdPersonCameraBoom"));
+	ThirdPersonFollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdPersonFollowCamera"));
 
-	CameraBoom->AttachToComponent(RootComponent,FAttachmentTransformRules::KeepWorldTransform);
-	CameraBoom->TargetArmLength = 150.0f;
-	CameraBoom->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f));
+	ThirdPersonCameraBoom->TargetArmLength = 150.f;
+	ThirdPersonCameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
+	ThirdPersonCameraBoom->SetupAttachment(RootComponent);
+	ThirdPersonFollowCamera->SetupAttachment(ThirdPersonCameraBoom, USpringArmComponent::SocketName);
 
-	FollowCamera->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
-
-	
-	CameraBoom->bUsePawnControlRotation = true;
-
+	//FirstPersonFollowCamera->AttachToComponent(GetMesh(),FAttachmentTransformRules::KeepWorldTransform,FirstPersonCameraSocket);
+	FirstPersonFollowCamera->SetupAttachment(GetMesh(), FirstPersonCameraSocket);
+	FirstPersonFollowCamera->SetRelativeRotation(FRotator(0.0f, 90.0f, -90.0f));
+	FirstPersonFollowCamera->SetRelativeLocation(FVector(0.0f, 10.0f, 0.0f));
 	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
@@ -50,7 +54,12 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
 
-	ViewChange();
+	bUseControllerRotationYaw = true;
+	FirstPersonFollowCamera->bUsePawnControlRotation = true;
+	ThirdPersonCameraBoom->bUsePawnControlRotation = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+
+	SetViewType(CurrentViewMode);
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
@@ -73,44 +82,63 @@ void ATeam_ProjectCharacter::Tick(float DeltaTime)
 
 }
 
-void ATeam_ProjectCharacter::DoAttack()
+void ATeam_ProjectCharacter::BeginLeftHand()
 {
-	UE_LOG(LogTemp, Warning, TEXT("BeginOverlap"));
+	UE_LOG(LogTemp, Warning, TEXT("BeginLeftHand"));
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (CurrentStanceMode == EStance::ES_Default)
+	{
+		CurrentStanceMode = EStance::ES_Combat;
+		UE_LOG(LogTemp, Warning, TEXT("Change"));
+		return;
+	}
+
+	if (CurrentViewMode == EViewType::EVT_FirstPerson)
+	{
+
+	}
+	else
+	{
+		if (AnimInstance && LeftPunchingMontage)
+		{
+			AnimInstance->Montage_Play(LeftPunchingMontage);
+			UE_LOG(LogTemp, Warning, TEXT("Punch"));
+		}
+	}
+	
 }
 
-void ATeam_ProjectCharacter::EndAttack()
+void ATeam_ProjectCharacter::EndALeftHand()
 {
-	UE_LOG(LogTemp, Warning, TEXT("EndOverlap"));
+	UE_LOG(LogTemp, Warning, TEXT("EndALeftHand"));
+}
+
+void ATeam_ProjectCharacter::BeginRightHand()
+{
+}
+
+void ATeam_ProjectCharacter::EndRightHand()
+{
 }
 
 void ATeam_ProjectCharacter::SetViewType(EViewType ViewType)
 {
 	
-	FName FirstPersonCameraSocket(TEXT("FirstPersonCameraSocket"));
-	FName ThirdPersonCameraSocket(TEXT("ThirdPersonCameraSocket"));
-
 	switch (ViewType)
 	{
 	case EViewType::EVT_ThirdPerson:
-		bUseControllerRotationYaw = true;
-		CameraBoom->bUsePawnControlRotation = true;
-		CameraBoom->TargetArmLength = 150.f;
-		CameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
-		CameraBoom->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f));
-		FollowCamera->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
-		FollowCamera->AttachToComponent(CameraBoom, FAttachmentTransformRules::SnapToTargetIncludingScale,USpringArmComponent::SocketName);
-		GetCharacterMovement()->bOrientRotationToMovement = false;
+		FirstPersonFollowCamera->Deactivate();
+		ThirdPersonFollowCamera->Activate();
+
 		break;
 
 	case EViewType::EVT_FirstPerson:
+		FirstPersonFollowCamera->SetRelativeRotation(FRotator(0.0f, 90.0f, -90.0f));
+		FirstPersonFollowCamera->SetRelativeLocation(FVector(0.0f, 10.0f, 0.0f));
+		ThirdPersonFollowCamera->Deactivate();
+		FirstPersonFollowCamera->Activate();
 		
-		bUseControllerRotationYaw = true;
-		FollowCamera->bUsePawnControlRotation = true;
-		CameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, -70.0f));
-		FollowCamera->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f));
-		FollowCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale,FirstPersonCameraSocket);
-		FollowCamera->SetRelativeLocation(FVector(0.0f, 10.0f, 0.0f));
-		GetCharacterMovement()->bOrientRotationToMovement = false;
 		break;
 	}
 }
@@ -138,13 +166,13 @@ void ATeam_ProjectCharacter::StanceChange()
 	{
 		CurrentStanceMode = EStance::ES_Combat;
 		SetStanceType(CurrentStanceMode);
-		MKKS_Controller->bShowMouseCursor = true;
+		PlayerController->bShowMouseCursor = true;
 		UE_LOG(LogTemp, Warning, TEXT("StanceChanged"));
 	}
 	else
 	{
 		CurrentStanceMode = EStance::ES_Default;
-		MKKS_Controller->bShowMouseCursor = false;
+		PlayerController->bShowMouseCursor = false;
 		SetStanceType(CurrentStanceMode);
 	}
 }
@@ -169,8 +197,10 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ATeam_ProjectCharacter::DoAttack);
-	PlayerInputComponent->BindAction("Attack", IE_Released, this, &ATeam_ProjectCharacter::EndAttack);
+	PlayerInputComponent->BindAction("LeftHand", IE_Pressed, this, &ATeam_ProjectCharacter::BeginLeftHand);
+	PlayerInputComponent->BindAction("LeftHand", IE_Released, this, &ATeam_ProjectCharacter::EndALeftHand);
+	PlayerInputComponent->BindAction("RightHand", IE_Pressed, this, &ATeam_ProjectCharacter::BeginRightHand);
+	PlayerInputComponent->BindAction("RightHand", IE_Released, this, &ATeam_ProjectCharacter::EndRightHand);
 	PlayerInputComponent->BindAction("ViewChange", IE_Pressed, this, &ATeam_ProjectCharacter::ViewChange);
 	PlayerInputComponent->BindAction("StanceChange", IE_Pressed, this, &ATeam_ProjectCharacter::StanceChange);
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ATeam_ProjectCharacter::MoveForward);
@@ -208,26 +238,8 @@ void ATeam_ProjectCharacter::TurnAtRate(float Rate)
 void ATeam_ProjectCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
-	//AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
-	if (Rate)
-	{
-		float temp = 0;
-		if (CurrentViewMode == EViewType::EVT_FirstPerson)
-		{
-			temp = FollowCamera->GetRelativeRotation().Pitch + Rate;
-			if(temp < 65 && temp >-65)
-				FollowCamera->AddLocalRotation(FRotator(Rate, 0, 0));
-				//AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
-		}
-		else
-		{
-			temp = CameraBoom->GetRelativeRotation().Pitch + Rate;
-			if(temp < 25 && temp > - 65)
-			{
-				CameraBoom->AddLocalRotation(FRotator(Rate, 0, 0));
-			}
-		}
-	}
+	AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
+
 }
 
 void ATeam_ProjectCharacter::MoveForward(float Value)
