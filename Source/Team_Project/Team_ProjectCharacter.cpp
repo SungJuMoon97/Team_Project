@@ -13,9 +13,11 @@
 #include "Enum_Collection.h"
 #include "MKKS_PlayerAnimInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 
 ATeam_ProjectCharacter::ATeam_ProjectCharacter():
-	CurrentViewMode(EViewType::EVT_ThirdPerson), CurrentStanceMode(EStance::ES_Default)
+	CurrentViewMode(EViewType::EVT_FirstPerson), CurrentStanceMode(EStance::ES_Default),CurrentWeapon(EWeaponType::EWT_Fist),
+	BareHandDamage(10)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
@@ -59,7 +61,7 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	ThirdPersonCameraBoom->bUsePawnControlRotation = true;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 
-	SetViewType(CurrentViewMode);
+	//SetViewType(CurrentViewMode);
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
@@ -100,9 +102,13 @@ void ATeam_ProjectCharacter::BeginLeftHand()
 	}
 	else
 	{
-		if (AnimInstance && LeftPunchingMontage)
+		if (AnimInstance && LeftPunchingMontage && (CurrentWeapon ==EWeaponType::EWT_Fist) )
 		{
+			//PlayAnimMontage(LeftPunchingMontage, 1, NAME_None);
+			
+
 			AnimInstance->Montage_Play(LeftPunchingMontage);
+			bDoAttacking = true;
 			UE_LOG(LogTemp, Warning, TEXT("Punch"));
 		}
 	}
@@ -112,14 +118,78 @@ void ATeam_ProjectCharacter::BeginLeftHand()
 void ATeam_ProjectCharacter::EndALeftHand()
 {
 	UE_LOG(LogTemp, Warning, TEXT("EndALeftHand"));
+	bDoAttacking = false;
 }
 
 void ATeam_ProjectCharacter::BeginRightHand()
 {
+	UE_LOG(LogTemp, Warning, TEXT("BeginRightHand"));
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (CurrentStanceMode == EStance::ES_Default)
+	{
+		CurrentStanceMode = EStance::ES_Combat;
+		UE_LOG(LogTemp, Warning, TEXT("Change"));
+		return;
+	}
+
+	if (CurrentViewMode == EViewType::EVT_FirstPerson)
+	{
+
+	}
+	else
+	{
+		if (AnimInstance && RightPunchingMontage && (CurrentWeapon == EWeaponType::EWT_Fist))
+		{
+			//PlayAnimMontage(LeftPunchingMontage, 1, NAME_None);
+
+
+			AnimInstance->Montage_Play(RightPunchingMontage);
+			bDoAttacking = true;
+			UE_LOG(LogTemp, Warning, TEXT("Punch"));
+		}
+	}
+
 }
 
 void ATeam_ProjectCharacter::EndRightHand()
 {
+	UE_LOG(LogTemp, Warning, TEXT("EndARightHand"));
+	bDoAttacking = false;
+}
+
+void ATeam_ProjectCharacter::FinalDamage()
+{
+	static const FName LineTracesingleName(TEXT("LineTraceSingleForObjects"));
+
+	FHitResult HitResult;
+	FCollisionQueryParams Params(NAME_None, false, this);
+	FVector StartLocation = GetActorLocation();
+	FVector EndLocation = GetActorLocation()+ GetActorForwardVector()*400.0f;
+
+	bool IsHitResult = GetWorld()->LineTraceSingleByObjectType(
+	HitResult,
+		StartLocation,
+		EndLocation,
+		ECollisionChannel::ECC_WorldStatic,
+		Params);
+
+	if (true)
+	{
+		FColor DrawColor = IsHitResult ? FColor::Green : FColor::Red;
+		const float DebugLifeTime = 5.0f;
+		DrawDebugLine(GetWorld(), StartLocation, EndLocation, DrawColor, false, DebugLifeTime);
+	}
+
+	if (IsHitResult)
+	{
+
+	}
+	else
+	{
+
+	}
+
 }
 
 void ATeam_ProjectCharacter::SetViewType(EViewType ViewType)
@@ -145,6 +215,7 @@ void ATeam_ProjectCharacter::SetViewType(EViewType ViewType)
 
 void ATeam_ProjectCharacter::ViewChange()
 {
+
 	if (CurrentViewMode == EViewType::EVT_ThirdPerson)
 	{
 		CurrentViewMode = EViewType::EVT_FirstPerson;
@@ -160,32 +231,35 @@ void ATeam_ProjectCharacter::ViewChange()
 
 void ATeam_ProjectCharacter::StanceChange()
 {
-	PlayerController = Cast<APlayerController>(GetController());
-	if(PlayerController == MKKS_Controller)
 	if (CurrentStanceMode == EStance::ES_Default)
 	{
 		CurrentStanceMode = EStance::ES_Combat;
 		SetStanceType(CurrentStanceMode);
-		PlayerController->bShowMouseCursor = true;
+			
 		UE_LOG(LogTemp, Warning, TEXT("StanceChanged"));
 	}
 	else
 	{
 		CurrentStanceMode = EStance::ES_Default;
-		PlayerController->bShowMouseCursor = false;
 		SetStanceType(CurrentStanceMode);
 	}
 }
 
 void ATeam_ProjectCharacter::SetStanceType(EStance StanceType)
 {
+	//APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
 	switch (StanceType)
 	{
 	case EStance::ES_Default:
-
+		bCombatState = false;
+		
+		//MKKS_Controller->bShowMouseCursor = false;
 		break;
 	case EStance::ES_Combat:
-
+		bCombatState = true;
+		//MKKS_Controller->bShowMouseCursor = true;
 		break;
 	}
 }

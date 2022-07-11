@@ -15,6 +15,8 @@ class TEAM_PROJECT_API UMKKS_PlayerAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 
 public:
+
+
 	UFUNCTION(BlueprintCallable)
 		void UpdateAnimationProperties(float DeltaTime);
 
@@ -25,27 +27,31 @@ private:
 		meta = (AllowPrivateAccess = "true"))
 		class ATeam_ProjectCharacter* Team_ProjectCharacter;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement,
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		float Speed;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement,
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		bool bIsInAir;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement,
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		bool bIsSprint;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement,
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement,
+		meta = (AllowPrivateAccess = "true"))
+		bool bCombatState;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		bool bSitting;//앉아있느냐
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement,
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		bool bLyingDown;//누워있느냐?
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement,
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		bool bIsAccelerating;
 

@@ -24,6 +24,7 @@ public:
 	
 	void BeginRightHand();
 	void EndRightHand();
+	void FinalDamage();
 
 	UFUNCTION()
 		void SetViewType(EViewType ViewType);
@@ -52,7 +53,9 @@ public:
 
 	EViewType CurrentViewMode;
 	EStance CurrentStanceMode;
+	EWeaponType CurrentWeapon;
 	bool bThirdPersonView;
+	float BareHandDamage;//맨손공격력
 
 protected:
 
@@ -104,9 +107,6 @@ private:
 		class UCameraComponent* ThirdPersonFollowCamera;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
-		class APlayerController* PlayerController;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
 		class AMKKS_PlayerController* MKKS_Controller;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
@@ -116,7 +116,8 @@ private:
 		class UAnimMontage* RightPunchingMontage;
 
 private:
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
+		meta = (AllowPrivateAccess = "true"))
 	bool bDoAttacking;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
