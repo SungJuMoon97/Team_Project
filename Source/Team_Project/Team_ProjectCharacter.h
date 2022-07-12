@@ -19,6 +19,8 @@ public:
 	void DoAttack();
 	void EndAttack();
 
+	
+
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Input)
@@ -85,6 +87,7 @@ protected:
 
 	// Open Inventory
 	void OpenInventory();
+	bool bIsInventoryOpen;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "CharacterInventory")
 	class UInventoryComponent* InventoryComponent;
@@ -105,5 +108,6 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE bool GetInventoryOpen() const { return bIsInventoryOpen; }
 };
 

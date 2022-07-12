@@ -16,7 +16,8 @@
 #include "Team_ProjectGameMode.h"
 #include "InventoryPanel.h"
 
-ATeam_ProjectCharacter::ATeam_ProjectCharacter()
+ATeam_ProjectCharacter::ATeam_ProjectCharacter():
+	bIsInventoryOpen(false)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -197,12 +198,34 @@ void ATeam_ProjectCharacter::PutActor()
 
 void ATeam_ProjectCharacter::OpenInventory()
 {
+	if (!bIsInventoryOpen)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Inventory Open"));
+
+		PlayerInventoryPanel = CreateWidget<UInventoryPanel>(GetWorld(), PlayerInventoryPanelClass);
+		check(PlayerInventoryPanel);
+		PlayerInventoryPanel->AddToViewport();
+		bIsInventoryOpen = true;
+	}
+	else
+	{
+		PlayerInventoryPanel->RemoveFromViewport();
+		bIsInventoryOpen = false;
+	}
+}
+
+/*
+void ATeam_ProjectCharacter::OpenInventory()
+{
 	UE_LOG(LogTemp, Warning, TEXT("Inventory Open"));
 
 	PlayerInventoryPanel = CreateWidget<UInventoryPanel>(GetWorld(), PlayerInventoryPanelClass);
 	check(PlayerInventoryPanel);
 	PlayerInventoryPanel->AddToViewport();
 }
+*/
+
+
 
 void ATeam_ProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
