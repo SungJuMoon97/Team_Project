@@ -2,6 +2,8 @@
 
 
 #include "Item.h"
+#include "InventoryComponent.h"
+#include "Team_ProjectCharacter.h"
 
 // Sets default values
 AItem::AItem()

@@ -19,12 +19,4 @@ class TEAM_PROJECT_API UInventoryPanel : public UUserWidget
 
 public:
 
-	UPROPERTY(meta = (BindWidget))
-	UWrapBox* InventoryPanel;
-
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* WeightInfo;
-
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* CapacityInfo;
 };

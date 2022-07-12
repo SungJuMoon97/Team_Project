@@ -24,6 +24,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+
+
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties",
 		meta = (AllowPrivateAccess = "true"))
