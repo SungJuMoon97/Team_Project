@@ -17,7 +17,7 @@
 
 ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	CurrentViewMode(EViewType::EVT_FirstPerson), CurrentStanceMode(EStance::ES_Default),CurrentWeapon(EWeaponType::EWT_Fist),
-	BareHandDamage(10)
+	BareHandDamage(10),bLeftHandAction(false),bRightHandAction(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
@@ -84,7 +84,7 @@ void ATeam_ProjectCharacter::Tick(float DeltaTime)
 
 }
 
-void ATeam_ProjectCharacter::BeginLeftHand()
+void ATeam_ProjectCharacter::LeftHand()
 {
 	UE_LOG(LogTemp, Warning, TEXT("BeginLeftHand"));
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -113,15 +113,11 @@ void ATeam_ProjectCharacter::BeginLeftHand()
 		}
 	}
 	
-}
-
-void ATeam_ProjectCharacter::EndALeftHand()
-{
 	UE_LOG(LogTemp, Warning, TEXT("EndALeftHand"));
 	bDoAttacking = false;
 }
 
-void ATeam_ProjectCharacter::BeginRightHand()
+void ATeam_ProjectCharacter::RightHand()
 {
 	UE_LOG(LogTemp, Warning, TEXT("BeginRightHand"));
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -150,46 +146,8 @@ void ATeam_ProjectCharacter::BeginRightHand()
 		}
 	}
 
-}
-
-void ATeam_ProjectCharacter::EndRightHand()
-{
 	UE_LOG(LogTemp, Warning, TEXT("EndARightHand"));
 	bDoAttacking = false;
-}
-
-void ATeam_ProjectCharacter::FinalDamage()
-{
-	static const FName LineTracesingleName(TEXT("LineTraceSingleForObjects"));
-
-	FHitResult HitResult;
-	FCollisionQueryParams Params(NAME_None, false, this);
-	FVector StartLocation = GetActorLocation();
-	FVector EndLocation = GetActorLocation()+ GetActorForwardVector()*400.0f;
-
-	bool IsHitResult = GetWorld()->LineTraceSingleByObjectType(
-	HitResult,
-		StartLocation,
-		EndLocation,
-		ECollisionChannel::ECC_WorldStatic,
-		Params);
-
-	if (true)
-	{
-		FColor DrawColor = IsHitResult ? FColor::Green : FColor::Red;
-		const float DebugLifeTime = 5.0f;
-		DrawDebugLine(GetWorld(), StartLocation, EndLocation, DrawColor, false, DebugLifeTime);
-	}
-
-	if (IsHitResult)
-	{
-
-	}
-	else
-	{
-
-	}
-
 }
 
 void ATeam_ProjectCharacter::SetViewType(EViewType ViewType)
@@ -271,10 +229,8 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	PlayerInputComponent->BindAction("LeftHand", IE_Pressed, this, &ATeam_ProjectCharacter::BeginLeftHand);
-	PlayerInputComponent->BindAction("LeftHand", IE_Released, this, &ATeam_ProjectCharacter::EndALeftHand);
-	PlayerInputComponent->BindAction("RightHand", IE_Pressed, this, &ATeam_ProjectCharacter::BeginRightHand);
-	PlayerInputComponent->BindAction("RightHand", IE_Released, this, &ATeam_ProjectCharacter::EndRightHand);
+	PlayerInputComponent->BindAction("LeftHand", IE_Pressed, this, &ATeam_ProjectCharacter::LeftHand);
+	PlayerInputComponent->BindAction("RightHand", IE_Pressed, this, &ATeam_ProjectCharacter::RightHand);;
 	PlayerInputComponent->BindAction("ViewChange", IE_Pressed, this, &ATeam_ProjectCharacter::ViewChange);
 	PlayerInputComponent->BindAction("StanceChange", IE_Pressed, this, &ATeam_ProjectCharacter::StanceChange);
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ATeam_ProjectCharacter::MoveForward);

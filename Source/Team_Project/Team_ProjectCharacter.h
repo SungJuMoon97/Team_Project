@@ -19,12 +19,8 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-	void BeginLeftHand();
-	void EndALeftHand();
-	
-	void BeginRightHand();
-	void EndRightHand();
-	void FinalDamage();
+	void LeftHand();
+	void RightHand();
 
 	UFUNCTION()
 		void SetViewType(EViewType ViewType);
@@ -132,6 +128,13 @@ private:
 		meta = (AllowPrivateAccess = "true"))
 	bool bCombatState;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
+		meta = (AllowPrivateAccess = "true"))
+		bool bLeftHandAction;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
+		meta = (AllowPrivateAccess = "true"))
+		bool bRightHandAction;
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetFirstPersonCameraBoom() const { return FirstPersonCameraBoom; }
@@ -148,5 +151,9 @@ public:
 	FORCEINLINE bool GetLyingDown() const { return bLyingDown; }
 
 	FORCEINLINE bool GetCombatState() const { return bCombatState; }
+
+	FORCEINLINE bool GetLeftHandAction() const { return bLeftHandAction; }
+
+	FORCEINLINE bool GetRightHandAction() const { return bRightHandAction; }
 };
 
