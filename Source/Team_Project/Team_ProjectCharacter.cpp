@@ -165,10 +165,6 @@ void ATeam_ProjectCharacter::ReleaseActor()
 void ATeam_ProjectCharacter::AddToInventory()
 {
 		PutActor();
-
-		PlayerWidget = CreateWidget<UBarWidget>(GetWorld(), PlayerWidgetClass);
-		check(PlayerWidget);
-		PlayerWidget->AddToViewport();
 }
 
 void ATeam_ProjectCharacter::PutActor()
@@ -213,19 +209,6 @@ void ATeam_ProjectCharacter::OpenInventory()
 		bIsInventoryOpen = false;
 	}
 }
-
-/*
-void ATeam_ProjectCharacter::OpenInventory()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Inventory Open"));
-
-	PlayerInventoryPanel = CreateWidget<UInventoryPanel>(GetWorld(), PlayerInventoryPanelClass);
-	check(PlayerInventoryPanel);
-	PlayerInventoryPanel->AddToViewport();
-}
-*/
-
-
 
 void ATeam_ProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {

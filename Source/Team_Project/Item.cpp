@@ -4,6 +4,8 @@
 #include "Item.h"
 #include "InventoryComponent.h"
 #include "Team_ProjectCharacter.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/BoxComponent.h"
 
 // Sets default values
 AItem::AItem()

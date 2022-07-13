@@ -11,7 +11,7 @@ UInventoryComponent::UInventoryComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	MaxItemsInInventory = 5;
+	MaxItemsInInventory = 2;
 }
 
 
@@ -30,3 +30,19 @@ void UInventoryComponent::AddItemToInventory(AActor* Item)
 		Items.Add(Item);
 	}
 }
+
+void UInventoryComponent::DropItem(AActor* Item)
+{
+	// test later if returned find is valid for if statement
+	if (int FoundIndex = Items.Find(Item))
+	{
+		if (IPickup_Interface* Interface = Cast<IPickup_Interface>(Item))
+		{
+			// Set actor location somewhere infront of us
+			UE_LOG(LogTemp, Warning, TEXT("DROPPING ACTOR %s"), *Item->GetName());
+			Interface->Drop();
+			Items.RemoveAt(FoundIndex);
+		}
+	}
+}
+

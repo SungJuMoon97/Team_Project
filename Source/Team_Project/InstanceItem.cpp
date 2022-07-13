@@ -45,3 +45,10 @@ void AInstanceItem::Puton()
 	Mesh->SetHiddenInGame(true);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
+
+void AInstanceItem::Drop()
+{
+	// drop actor and enable collision
+	Mesh->SetHiddenInGame(false);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+}
