@@ -13,6 +13,13 @@ AItem::AItem()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	Weight = 1.f;
+	ItemDisplayName = FText::FromString("Item");
+	UseActionText = FText::FromString("Use");
+
+
+	
+
 }
 
 // Called when the game starts or when spawned

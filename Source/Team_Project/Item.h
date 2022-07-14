@@ -15,6 +15,11 @@ public:
 	// Sets default values for this actor's properties
 	AItem();
 
+	// virtual class UWorld* GetWorld() const { return World; };
+
+	UPROPERTY(Transient)
+	class UWorld* World;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -37,7 +42,7 @@ public:
 	UPROPERTY()
 	class UInventoryComponent* OwningInventory;
 
-	virtual void Use(class ATeam_ProjectCharacter* character) PURE_VIRTUAL(UItem, );
+	virtual void Use(class ATeam_ProjectCharacter* Character) PURE_VIRTUAL(AItem, );
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnUse(class ATeam_ProjectCharacter* Character);

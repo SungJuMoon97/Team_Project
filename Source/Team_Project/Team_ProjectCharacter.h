@@ -10,7 +10,7 @@ UCLASS(config=Game)
 class ATeam_ProjectCharacter : public ACharacter
 {
 	GENERATED_BODY()
-	
+
 public:
 	ATeam_ProjectCharacter();
 
@@ -19,7 +19,6 @@ public:
 	void DoAttack();
 	void EndAttack();
 
-	
 
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
@@ -35,14 +34,14 @@ public:
 	class UBarWidget* PlayerWidget;
 
 	UPROPERTY(EditAnywhere)
-		TSubclassOf<class UInventoryPanel> PlayerInventoryPanelClass;
+	TSubclassOf<class UInventoryPanel> PlayerInventoryPanelClass;
 
 	// The Widget instance that we are using as our HUD.
 	UPROPERTY()
-		class UInventoryPanel* PlayerInventoryPanel;
+	class UInventoryPanel* PlayerInventoryPanel;
 
-
-
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float Health;
 
 protected:
 
@@ -89,8 +88,11 @@ protected:
 	void OpenInventory();
 	bool bIsInventoryOpen;
 
+	UFUNCTION(BlueprintCallable, Category = "Items")
+	void UseItem(class AItem* Item);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "CharacterInventory")
-	class UInventoryComponent* InventoryComponent;
+	class UInventoryComponent* Inventory;
 
 private:
 	/** Camera boom positioning the camera behind the character */

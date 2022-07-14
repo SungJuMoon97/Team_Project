@@ -15,6 +15,7 @@
 #include "Pickup_Interface.h"
 #include "Team_ProjectGameMode.h"
 #include "InventoryPanel.h"
+#include "Item.h"
 
 ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	bIsInventoryOpen(false)
@@ -56,7 +57,8 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
-	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
+	Health = 100.f;
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
@@ -186,7 +188,7 @@ void ATeam_ProjectCharacter::PutActor()
 			if (IPickup_Interface* Interface = Cast<IPickup_Interface>(HitActor))
 			{
 				Interface->Puton();
-				InventoryComponent->AddItemToInventory(HitActor);
+				// InventoryComponent->AddItemToInventory(HitActor);
 			}
 		}
 	}
@@ -207,6 +209,15 @@ void ATeam_ProjectCharacter::OpenInventory()
 	{
 		PlayerInventoryPanel->RemoveFromViewport();
 		bIsInventoryOpen = false;
+	}
+}
+
+void ATeam_ProjectCharacter::UseItem(AItem* Item)
+{
+	if (Item)
+	{
+		Item->Use(this);
+		Item->OnUse(this); // BP event
 	}
 }
 

@@ -3,6 +3,7 @@
 
 #include "InventoryComponent.h"
 #include "Pickup_Interface.h"
+#include "Item.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
@@ -11,7 +12,8 @@ UInventoryComponent::UInventoryComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	MaxItemsInInventory = 2;
+	// MaxItemsInInventory = 2;
+	Capacity = 20;
 }
 
 
@@ -20,8 +22,14 @@ void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	for (auto& Item : DefaultItems)
+	{
+		AddItem(Item);
+	}
+
 }
 
+/*
 void UInventoryComponent::AddItemToInventory(AActor* Item)
 {
 	if (Items.Num() < MaxItemsInInventory && Item)
@@ -44,5 +52,37 @@ void UInventoryComponent::DropItem(AActor* Item)
 			Items.RemoveAt(FoundIndex);
 		}
 	}
+}
+*/
+
+bool UInventoryComponent::AddItem(AItem* Item)
+{
+	if (Items.Num() >= Capacity || !Item)
+	{
+		return false;
+	}
+
+	Item->OwningInventory = this;
+	Item-> World = GetWorld();
+	Items.Add(Item);
+	return false;
+	// Update UI
+	OnInventoryUpdated.Broadcast();
+
+	return true;
+}
+
+bool UInventoryComponent::RemoveItem(AItem* Item)
+{
+	if (Item)
+	{
+		Item->OwningInventory = nullptr;
+		Item->World = nullptr;
+		Items.RemoveSingle(Item);
+		OnInventoryUpdated.Broadcast();
+
+		return true;
+	}
+	return false;
 }
 
