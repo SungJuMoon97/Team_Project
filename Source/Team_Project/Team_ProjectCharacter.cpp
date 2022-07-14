@@ -272,18 +272,21 @@ void ATeam_ProjectCharacter::SetStanding(EStanding StandingType)
 			GetCharacterMovement()->MaxWalkSpeed = 500.0f;
 		if(CurrentStanceMode == EStance::ES_Combat)
 			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+		ThirdPersonCameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 		break;
 	case EStanding::ESD_Crouching:
 		bCrouching = true;
 		bLayingDown = false;
 		if (CurrentStanceMode == EStance::ES_Combat|| CurrentStanceMode == EStance::ES_Default)
 			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+		ThirdPersonCameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 		break;
 	case EStanding::ESD_LayingDown:
 		bCrouching = false;
 		bLayingDown = true;
 		if (CurrentStanceMode == EStance::ES_Combat || CurrentStanceMode == EStance::ES_Default)
 			GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+		ThirdPersonCameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, -10.0f));
 		break;
 	}
 }
