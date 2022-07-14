@@ -117,6 +117,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
 		class AMKKS_PlayerController* MKKS_Controller;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
+		class UMKKS_PlayerAnimInstance* PlayerAnim;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 		class UAnimMontage* LeftPunchingMontage;
 
@@ -130,11 +133,15 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
+	bool bCrouching;//웅크리고있느냐
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
+		meta = (AllowPrivateAccess = "true"))
 	bool bSitting;//앉아있느냐
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
-	bool bLyingDown;//누워있느냐?
+	bool bLayingDown;//누워있느냐?
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
@@ -142,11 +149,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
-		bool bLeftHandAction;
+	bool bLeftHandAction;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
-		bool bRightHandAction;
+	bool bRightHandAction;
+
 
 public:
 	/** Returns CameraBoom subobject **/
@@ -161,7 +169,9 @@ public:
 
 	FORCEINLINE bool GetSitting() const { return bSitting; }
 
-	FORCEINLINE bool GetLyingDown() const { return bLyingDown; }
+	FORCEINLINE bool GetCrouching() const { return bCrouching; }
+
+	FORCEINLINE bool GetLyingDown() const { return bLayingDown; }
 
 	FORCEINLINE bool GetCombatState() const { return bCombatState; }
 

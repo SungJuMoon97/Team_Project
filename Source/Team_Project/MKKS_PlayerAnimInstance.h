@@ -23,6 +23,9 @@ public:
 	virtual void NativeInitializeAnimation() override;
 
 private:
+	
+
+private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		class ATeam_ProjectCharacter* Team_ProjectCharacter;
@@ -49,7 +52,11 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
-		bool bLyingDown;//누워있느냐?
+		bool bCrouching;//앉아있느냐
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
+		meta = (AllowPrivateAccess = "true"))
+		bool bLayingDown;//누워있느냐?
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))

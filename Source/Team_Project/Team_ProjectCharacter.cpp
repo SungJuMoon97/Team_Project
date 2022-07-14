@@ -24,7 +24,8 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	CurrentWeapon(EWeaponType::EWT_Fist), CurrentHandWeapon(EWeaponHand::EWH_Fist),
 	BareHandDamage(10), bLeftHandAction(false), bRightHandAction(false), bDoAttacking(false),
 	//if Character Sitting or Lying or Standing
-	bSitting(false),bLyingDown(false),CurrentStanding(EStanding::ESD_Standing),
+	CurrentStanding(EStanding::ESD_Standing),
+	bSitting(false), bLayingDown(false),bCrouching(false),
 	inputTime(2.0f)
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -39,6 +40,9 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 		Shinbi_Mesh(TEXT("SkeletalMesh'/Game/Retarget/Meshes/Shinbi_NoWeapon.Shinbi_NoWeapon'"));
 	if (Shinbi_Mesh.Succeeded())
 		GetMesh()->SetSkeletalMesh(Shinbi_Mesh.Object);
+
+	if (PlayerAnim == nullptr)
+		PlayerAnim = Cast<UMKKS_PlayerAnimInstance>(GetMesh()->GetAnimInstance());
 
 	FName FirstPersonCameraSocket(TEXT("FirstPersonCameraSocket"));
 	FName ThirdPersonCameraSocket(TEXT("ThirdPersonCameraSocket"));
@@ -56,13 +60,13 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	FirstPersonFollowCamera->SetupAttachment(GetMesh(), FirstPersonCameraSocket);
 	FirstPersonFollowCamera->SetRelativeRotation(FRotator(0.0f, 90.0f, -90.0f));
 	FirstPersonFollowCamera->SetRelativeLocation(FVector(0.0f, 10.0f, 0.0f));
-	GetCharacterMovement()->JumpZVelocity = 700.f;
+	GetCharacterMovement()->JumpZVelocity = 300.f;
 	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 350.f;
+	GetCharacterMovement()->MaxWalkSpeed = 500.0f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 100.0f, 0.0f); // ...at this rotation rate
 
 	bUseControllerRotationYaw = true;
 	FirstPersonFollowCamera->bUsePawnControlRotation = true;
@@ -98,7 +102,7 @@ void ATeam_ProjectCharacter::LeftHand()
 {
 	UE_LOG(LogTemp, Warning, TEXT("BeginLeftHand"));
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	
+
 	if (CurrentStanceMode == EStance::ES_Default)
 	{
 		CurrentStanceMode = EStance::ES_Combat;
@@ -220,33 +224,39 @@ void ATeam_ProjectCharacter::StanceChange()
 	{
 		CurrentStanceMode = EStance::ES_Combat;
 		SetStanceType(CurrentStanceMode);
-		GetCharacterMovement()->MaxWalkSpeed = 200.f;
+		
 			
 		UE_LOG(LogTemp, Warning, TEXT("StanceChanged"));
 	}
 	else
 	{
 		CurrentStanceMode = EStance::ES_Default;
-		GetCharacterMovement()->MaxWalkSpeed = 350.f;
+		
 		SetStanceType(CurrentStanceMode);
 	}
 }
 
 void ATeam_ProjectCharacter::SetStanceType(EStance StanceType)
 {
-	//APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-
 	switch (StanceType)
 	{
 	case EStance::ES_Default:
 		bCombatState = false;
+
+		if(CurrentStanding == EStanding::ESD_Standing)
+			GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+		if (CurrentStanding == EStanding::ESD_Crouching)
+			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+		if(CurrentStanding == EStanding::ESD_Sitting || CurrentStanding == EStanding::ESD_LayingDown)
+			GetCharacterMovement()->MaxWalkSpeed = 0.0f;
 		
-		//MKKS_Controller->bShowMouseCursor = false;
 		break;
 	case EStance::ES_Combat:
 		bCombatState = true;
-		//MKKS_Controller->bShowMouseCursor = true;
+		if (CurrentStanding == EStanding::ESD_Standing || CurrentStanding == EStanding::ESD_Crouching)
+			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+		if (CurrentStanding == EStanding::ESD_Sitting || CurrentStanding == EStanding::ESD_LayingDown)
+			GetCharacterMovement()->MaxWalkSpeed = 0.0f;
 		break;
 	}
 }
@@ -256,13 +266,24 @@ void ATeam_ProjectCharacter::SetStanding(EStanding StandingType)
 	switch (StandingType)
 	{
 	case EStanding::ESD_Standing:
-
+		bLayingDown = false;
+		bCrouching = false;
+		if(CurrentStanceMode == EStance::ES_Default)
+			GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+		if(CurrentStanceMode == EStance::ES_Combat)
+			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 		break;
-	case EStanding::ESD_Sitting:
-
+	case EStanding::ESD_Crouching:
+		bCrouching = true;
+		bLayingDown = false;
+		if (CurrentStanceMode == EStance::ES_Combat|| CurrentStanceMode == EStance::ES_Default)
+			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 		break;
-	case EStanding::ESD_LyingDown:
-
+	case EStanding::ESD_LayingDown:
+		bCrouching = false;
+		bLayingDown = true;
+		if (CurrentStanceMode == EStance::ES_Combat || CurrentStanceMode == EStance::ES_Default)
+			GetCharacterMovement()->MaxWalkSpeed = 0.0f;
 		break;
 	}
 }
@@ -273,30 +294,26 @@ void ATeam_ProjectCharacter::StandingChange()
 	{
 		if (inputTime <= PCInputTime)
 		{
-			bLyingDown = true;
-			CurrentStanding = EStanding::ESD_LyingDown;
+			CurrentStanding = EStanding::ESD_LayingDown;
 			SetStanding(CurrentStanding);
 			UE_LOG(LogTemp, Warning, TEXT("LyingDown"));
 			return;
 		}
 
-		bSitting = true;
-		CurrentStanding = EStanding::ESD_Sitting;
+		CurrentStanding = EStanding::ESD_Crouching;
 		SetStanding(CurrentStanding);
 		UE_LOG(LogTemp, Warning, TEXT("Sitting"));
 	}
-	else if (CurrentStanding == EStanding::ESD_Sitting)
+	else if (CurrentStanding == EStanding::ESD_Crouching)
 	{
 		if (inputTime <= PCInputTime)
 		{
-			bLyingDown = true;
-			CurrentStanding = EStanding::ESD_LyingDown;
+			CurrentStanding = EStanding::ESD_LayingDown;
 			SetStanding(CurrentStanding);
 			UE_LOG(LogTemp, Warning, TEXT("LyingDown"));
 			return;
 		}
 
-		bSitting = false;
 		CurrentStanding = EStanding::ESD_Standing;
 		SetStanding(CurrentStanding);
 		UE_LOG(LogTemp, Warning, TEXT("Standing"));
@@ -305,15 +322,14 @@ void ATeam_ProjectCharacter::StandingChange()
 	{
 		if (inputTime <= PCInputTime)
 		{
-			bLyingDown = false;
+			
 			CurrentStanding = EStanding::ESD_Standing;
 			SetStanding(CurrentStanding);
 			UE_LOG(LogTemp, Warning, TEXT("Standing"));
 			return;
 		}
 
-		bSitting = true;
-		CurrentStanding = EStanding::ESD_Sitting;
+		CurrentStanding = EStanding::ESD_Crouching;
 		SetStanding(CurrentStanding);
 		UE_LOG(LogTemp, Warning, TEXT("Sitting"));
 	}

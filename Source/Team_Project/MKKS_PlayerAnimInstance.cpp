@@ -52,10 +52,33 @@ void UMKKS_PlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 
 		bSitting = Team_ProjectCharacter->GetSitting();
 
-		bLyingDown = Team_ProjectCharacter->GetLyingDown();
+		bCrouching = Team_ProjectCharacter->GetCrouching();
 
-		if (bSitting && bLyingDown)
+		bLayingDown = Team_ProjectCharacter->GetLyingDown();
+
+		if (bSitting || bCrouching && bLayingDown)
+		{
 			bSitting = false;
+			bCrouching = false;
+		}
+
+		if ((Team_ProjectCharacter->CurrentStanceMode == EStance::ES_Combat)&&(bLayingDown == true))
+		{
+			bCombatState = false;
+			Team_ProjectCharacter->CurrentStanceMode = EStance::ES_Default;
+			Team_ProjectCharacter->SetStanceType(Team_ProjectCharacter->CurrentStanceMode);
+			
+		}
+
+		if ((Team_ProjectCharacter->CurrentStanding == EStanding::ESD_LayingDown) && (MoveForwardBack != 0.0f || MoveRightLeft != 0.0f))
+		{
+			bCrouching = true;
+			bLayingDown = false;
+			Team_ProjectCharacter->CurrentStanding = EStanding::ESD_Crouching;
+			Team_ProjectCharacter->SetStanding(Team_ProjectCharacter->CurrentStanding);
+			UE_LOG(LogTemp, Warning, TEXT("Laying to Crouch"));
+		}
+
 	}
 
 }
@@ -64,3 +87,5 @@ void UMKKS_PlayerAnimInstance::NativeInitializeAnimation()
 {
 	Team_ProjectCharacter = Cast<ATeam_ProjectCharacter>(TryGetPawnOwner());
 }
+
+
