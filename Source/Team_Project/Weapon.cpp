@@ -30,9 +30,6 @@ void AWeapon::GetWeaponType(EWeaponType Value)
 	case EWeaponType::EWT_Spear:
 
 		break;
-	case EWeaponType::EWT_Pole:
-
-		break;
 	case EWeaponType::EWT_Bow:
 
 		break;

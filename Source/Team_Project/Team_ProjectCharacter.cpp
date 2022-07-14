@@ -14,10 +14,11 @@
 #include "MKKS_PlayerAnimInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "MKKS_PlayerAnimInstance.h"
 
 ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	CurrentViewMode(EViewType::EVT_FirstPerson), CurrentStanceMode(EStance::ES_Default),CurrentWeapon(EWeaponType::EWT_Fist),
-	BareHandDamage(10),bLeftHandAction(false),bRightHandAction(false)
+	BareHandDamage(10),bLeftHandAction(false),bRightHandAction(false),CurrentHandWeapon(EWeaponHand::EWH_Fist)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
@@ -62,6 +63,7 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 
 	//SetViewType(CurrentViewMode);
+	
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
@@ -88,29 +90,36 @@ void ATeam_ProjectCharacter::LeftHand()
 {
 	UE_LOG(LogTemp, Warning, TEXT("BeginLeftHand"));
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-
+	
 	if (CurrentStanceMode == EStance::ES_Default)
 	{
 		CurrentStanceMode = EStance::ES_Combat;
 		UE_LOG(LogTemp, Warning, TEXT("Change"));
+		bCombatState = true;
+		GetCharacterMovement()->MaxWalkSpeed = 100.f;
 		return;
 	}
 
-	if (CurrentViewMode == EViewType::EVT_FirstPerson)
-	{
 
-	}
-	else
+	if (!this->GetCharacterMovement()->IsFalling())
 	{
-		if (AnimInstance && LeftPunchingMontage && (CurrentWeapon ==EWeaponType::EWT_Fist) )
+		if (CurrentViewMode == EViewType::EVT_FirstPerson)
 		{
-			//PlayAnimMontage(LeftPunchingMontage, 1, NAME_None);
-			
 
-			AnimInstance->Montage_Play(LeftPunchingMontage);
-			bDoAttacking = true;
-			UE_LOG(LogTemp, Warning, TEXT("Punch"));
 		}
+		else
+		{
+			if (AnimInstance && LeftPunchingMontage && (CurrentWeapon == EWeaponType::EWT_Fist))
+			{
+				//PlayAnimMontage(LeftPunchingMontage, 1, NAME_None);
+
+
+				AnimInstance->Montage_Play(LeftPunchingMontage);
+				bDoAttacking = true;
+				UE_LOG(LogTemp, Warning, TEXT("Punch"));
+			}
+		}
+
 	}
 	
 	UE_LOG(LogTemp, Warning, TEXT("EndALeftHand"));
@@ -126,26 +135,30 @@ void ATeam_ProjectCharacter::RightHand()
 	{
 		CurrentStanceMode = EStance::ES_Combat;
 		UE_LOG(LogTemp, Warning, TEXT("Change"));
+		bCombatState = true;
+		GetCharacterMovement()->MaxWalkSpeed = 100.f;
 		return;
 	}
 
-	if (CurrentViewMode == EViewType::EVT_FirstPerson)
+	if (!this->GetCharacterMovement()->IsFalling())
 	{
-
-	}
-	else
-	{
-		if (AnimInstance && RightPunchingMontage && (CurrentWeapon == EWeaponType::EWT_Fist))
+		if (CurrentViewMode == EViewType::EVT_FirstPerson)
 		{
-			//PlayAnimMontage(LeftPunchingMontage, 1, NAME_None);
+
+		}
+		else
+		{
+			if (AnimInstance && RightPunchingMontage && (CurrentWeapon == EWeaponType::EWT_Fist))
+			{
+				//PlayAnimMontage(LeftPunchingMontage, 1, NAME_None);
 
 
-			AnimInstance->Montage_Play(RightPunchingMontage);
-			bDoAttacking = true;
-			UE_LOG(LogTemp, Warning, TEXT("Punch"));
+				AnimInstance->Montage_Play(RightPunchingMontage);
+				bDoAttacking = true;
+				UE_LOG(LogTemp, Warning, TEXT("Punch"));
+			}
 		}
 	}
-
 	UE_LOG(LogTemp, Warning, TEXT("EndARightHand"));
 	bDoAttacking = false;
 }
@@ -193,12 +206,14 @@ void ATeam_ProjectCharacter::StanceChange()
 	{
 		CurrentStanceMode = EStance::ES_Combat;
 		SetStanceType(CurrentStanceMode);
+		GetCharacterMovement()->MaxWalkSpeed = 100.f;
 			
 		UE_LOG(LogTemp, Warning, TEXT("StanceChanged"));
 	}
 	else
 	{
 		CurrentStanceMode = EStance::ES_Default;
+		GetCharacterMovement()->MaxWalkSpeed = 500.f;
 		SetStanceType(CurrentStanceMode);
 	}
 }

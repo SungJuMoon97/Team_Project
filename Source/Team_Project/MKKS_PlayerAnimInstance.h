@@ -23,35 +23,35 @@ public:
 	virtual void NativeInitializeAnimation() override;
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement,
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		class ATeam_ProjectCharacter* Team_ProjectCharacter;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement,
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		float Speed;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement,
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		bool bIsInAir;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement,
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		bool bIsSprint;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement,
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		bool bCombatState;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement,
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		bool bSitting;//앉아있느냐
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement,
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		bool bLyingDown;//누워있느냐?
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement,
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		bool bIsAccelerating;
 
@@ -62,5 +62,15 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		float LastMovementOffsetYaw;//스탑무빙 바로 전의 프레임의 OffsetYaw 값
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
+		meta = (AllowPrivateAccess = "true"))
+		float MoveForwardBack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
+		meta = (AllowPrivateAccess = "true"))
+		float MoveRightLeft;
+
+public:
 
 };

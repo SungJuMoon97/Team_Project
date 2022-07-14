@@ -50,6 +50,7 @@ public:
 	EViewType CurrentViewMode;
 	EStance CurrentStanceMode;
 	EWeaponType CurrentWeapon;
+	EWeaponHand CurrentHandWeapon;
 	bool bThirdPersonView;
 	float BareHandDamage;//맨손공격력
 
@@ -135,6 +136,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
 		bool bRightHandAction;
+
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetFirstPersonCameraBoom() const { return FirstPersonCameraBoom; }
@@ -155,5 +157,6 @@ public:
 	FORCEINLINE bool GetLeftHandAction() const { return bLeftHandAction; }
 
 	FORCEINLINE bool GetRightHandAction() const { return bRightHandAction; }
+
 };
 

@@ -16,8 +16,10 @@ class TEAM_PROJECT_API UDealDamageNotify : public UAnimNotifyState
 	
 
 public:
+
+
 	UFUNCTION(BlueprintCallable)
-		void HandCheck();
+		void HandCheck(ATeam_ProjectCharacter* Character);
 
 private:
 

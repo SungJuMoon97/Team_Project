@@ -6,6 +6,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Team_ProjectCharacter.h"
+#include "MKKS_PlayerController.h"
 
 void UMKKS_PlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 {
@@ -39,16 +40,22 @@ void UMKKS_PlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 		MovementOffsetYaw = UKismetMathLibrary::NormalizedDeltaRotator(
 			MovementRotation, AimRotation).Yaw;
 
+		MoveForwardBack = Team_ProjectCharacter->GetInputAxisValue(TEXT("Move Forward / Backward"));
+		MoveRightLeft = Team_ProjectCharacter->GetInputAxisValue(TEXT("Move Right / Left"));
+
 		if (Team_ProjectCharacter->GetVelocity().Size() > 0.0f)
 		{
 			LastMovementOffsetYaw = MovementOffsetYaw;
 		}
 
-		if(Team_ProjectCharacter)
-			bSitting = Team_ProjectCharacter->GetSitting();
-		else
-			bLyingDown = Team_ProjectCharacter->GetLyingDown();
+		bCombatState = Team_ProjectCharacter->GetCombatState();
 
+		bSitting = Team_ProjectCharacter->GetSitting();
+
+		bLyingDown = Team_ProjectCharacter->GetLyingDown();
+
+		if (bSitting && bLyingDown)
+			bSitting = false;
 	}
 
 }

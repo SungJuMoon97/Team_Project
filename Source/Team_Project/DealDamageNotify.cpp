@@ -9,7 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 
-void UDealDamageNotify::HandCheck()
+void UDealDamageNotify::HandCheck(ATeam_ProjectCharacter* Character)
 {
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
@@ -18,21 +18,20 @@ void UDealDamageNotify::HandCheck()
 	FVector StartLocation;
 	FVector EndLocation;
 	
-	if (Team_ProjectCharacter == nullptr)
-		return;
+	Character = Team_ProjectCharacter;
 
-	if (Team_ProjectCharacter->GetLeftHandAction())
+	if (Character->GetLeftHandAction())
 	{
-		StartLocation = Team_ProjectCharacter->GetMesh()->GetSocketLocation(TEXT("hand_l"));
-		EndLocation = Team_ProjectCharacter->GetMesh()->GetSocketLocation(TEXT("hand_l"));
+		StartLocation = Character->GetMesh()->GetSocketLocation(TEXT("hand_l"));
+		EndLocation = Character->GetMesh()->GetSocketLocation(TEXT("hand_l"));
 	}
 	else
 	{
-		StartLocation = Team_ProjectCharacter->GetMesh()->GetSocketLocation(TEXT("hand_r"));
-		EndLocation = Team_ProjectCharacter->GetMesh()->GetSocketLocation(TEXT("hand_r"));
+		StartLocation = Character->GetMesh()->GetSocketLocation(TEXT("hand_r"));
+		EndLocation = Character->GetMesh()->GetSocketLocation(TEXT("hand_r"));
 	}
 
-	if (Team_ProjectCharacter->GetLeftHandAction())
+	if (Character->GetLeftHandAction())
 	{
 		bResult = GetWorld()->SweepSingleByChannel(
 			HitResult,
