@@ -17,8 +17,15 @@
 #include "MKKS_PlayerAnimInstance.h"
 
 ATeam_ProjectCharacter::ATeam_ProjectCharacter():
-	CurrentViewMode(EViewType::EVT_FirstPerson), CurrentStanceMode(EStance::ES_Default),CurrentWeapon(EWeaponType::EWT_Fist),
-	BareHandDamage(10),bLeftHandAction(false),bRightHandAction(false),CurrentHandWeapon(EWeaponHand::EWH_Fist)
+	//if your View and Stance make a change
+	CurrentViewMode(EViewType::EVT_FirstPerson), CurrentStanceMode(EStance::ES_Default),
+	bCombatState(false),
+	//if you HandAction Default Setting
+	CurrentWeapon(EWeaponType::EWT_Fist), CurrentHandWeapon(EWeaponHand::EWH_Fist),
+	BareHandDamage(10), bLeftHandAction(false), bRightHandAction(false), bDoAttacking(false),
+	//if Character Sitting or Lying or Standing
+	bSitting(false),bLyingDown(false),CurrentStanding(EStanding::ESD_Standing),
+	inputTime(2.0f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
@@ -51,7 +58,7 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	FirstPersonFollowCamera->SetRelativeLocation(FVector(0.0f, 10.0f, 0.0f));
 	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	GetCharacterMovement()->MaxWalkSpeed = 350.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
@@ -84,6 +91,7 @@ void ATeam_ProjectCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	InputTimeCheck();
 }
 
 void ATeam_ProjectCharacter::LeftHand()
@@ -163,6 +171,12 @@ void ATeam_ProjectCharacter::RightHand()
 	bDoAttacking = false;
 }
 
+void ATeam_ProjectCharacter::InputTimeCheck()
+{
+	PCInputTime = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetInputKeyTimeDown(FKey("X")) * 10.0f;
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("How long was the key pressed: %f"), PCInputTime));
+}
+
 void ATeam_ProjectCharacter::SetViewType(EViewType ViewType)
 {
 	
@@ -206,14 +220,14 @@ void ATeam_ProjectCharacter::StanceChange()
 	{
 		CurrentStanceMode = EStance::ES_Combat;
 		SetStanceType(CurrentStanceMode);
-		GetCharacterMovement()->MaxWalkSpeed = 100.f;
+		GetCharacterMovement()->MaxWalkSpeed = 200.f;
 			
 		UE_LOG(LogTemp, Warning, TEXT("StanceChanged"));
 	}
 	else
 	{
 		CurrentStanceMode = EStance::ES_Default;
-		GetCharacterMovement()->MaxWalkSpeed = 500.f;
+		GetCharacterMovement()->MaxWalkSpeed = 350.f;
 		SetStanceType(CurrentStanceMode);
 	}
 }
@@ -237,6 +251,74 @@ void ATeam_ProjectCharacter::SetStanceType(EStance StanceType)
 	}
 }
 
+void ATeam_ProjectCharacter::SetStanding(EStanding StandingType)
+{
+	switch (StandingType)
+	{
+	case EStanding::ESD_Standing:
+
+		break;
+	case EStanding::ESD_Sitting:
+
+		break;
+	case EStanding::ESD_LyingDown:
+
+		break;
+	}
+}
+
+void ATeam_ProjectCharacter::StandingChange()
+{
+	if (CurrentStanding == EStanding::ESD_Standing)
+	{
+		if (inputTime <= PCInputTime)
+		{
+			bLyingDown = true;
+			CurrentStanding = EStanding::ESD_LyingDown;
+			SetStanding(CurrentStanding);
+			UE_LOG(LogTemp, Warning, TEXT("LyingDown"));
+			return;
+		}
+
+		bSitting = true;
+		CurrentStanding = EStanding::ESD_Sitting;
+		SetStanding(CurrentStanding);
+		UE_LOG(LogTemp, Warning, TEXT("Sitting"));
+	}
+	else if (CurrentStanding == EStanding::ESD_Sitting)
+	{
+		if (inputTime <= PCInputTime)
+		{
+			bLyingDown = true;
+			CurrentStanding = EStanding::ESD_LyingDown;
+			SetStanding(CurrentStanding);
+			UE_LOG(LogTemp, Warning, TEXT("LyingDown"));
+			return;
+		}
+
+		bSitting = false;
+		CurrentStanding = EStanding::ESD_Standing;
+		SetStanding(CurrentStanding);
+		UE_LOG(LogTemp, Warning, TEXT("Standing"));
+	}
+	else
+	{
+		if (inputTime <= PCInputTime)
+		{
+			bLyingDown = false;
+			CurrentStanding = EStanding::ESD_Standing;
+			SetStanding(CurrentStanding);
+			UE_LOG(LogTemp, Warning, TEXT("Standing"));
+			return;
+		}
+
+		bSitting = true;
+		CurrentStanding = EStanding::ESD_Sitting;
+		SetStanding(CurrentStanding);
+		UE_LOG(LogTemp, Warning, TEXT("Sitting"));
+	}
+}
+
 
 void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
@@ -248,9 +330,10 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAction("RightHand", IE_Pressed, this, &ATeam_ProjectCharacter::RightHand);;
 	PlayerInputComponent->BindAction("ViewChange", IE_Pressed, this, &ATeam_ProjectCharacter::ViewChange);
 	PlayerInputComponent->BindAction("StanceChange", IE_Pressed, this, &ATeam_ProjectCharacter::StanceChange);
+	PlayerInputComponent->BindAction("StandingChange", IE_Released, this, &ATeam_ProjectCharacter::StandingChange);
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ATeam_ProjectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &ATeam_ProjectCharacter::MoveRight);
-
+	
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick

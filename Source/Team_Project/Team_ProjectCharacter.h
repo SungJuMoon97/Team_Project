@@ -22,6 +22,8 @@ public:
 	void LeftHand();
 	void RightHand();
 
+	void InputTimeCheck();
+
 	UFUNCTION()
 		void SetViewType(EViewType ViewType);
 	
@@ -33,6 +35,12 @@ public:
 
 	UFUNCTION()
 		void SetStanceType(EStance StanceType);
+
+	UFUNCTION()
+		void SetStanding(EStanding StandingType);
+
+	UFUNCTION()
+		void StandingChange();
 
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
@@ -49,10 +57,13 @@ public:
 
 	EViewType CurrentViewMode;
 	EStance CurrentStanceMode;
+	EStanding CurrentStanding;
 	EWeaponType CurrentWeapon;
 	EWeaponHand CurrentHandWeapon;
 	bool bThirdPersonView;
 	float BareHandDamage;//맨손공격력
+	float inputTime;
+	float PCInputTime;
 
 protected:
 
