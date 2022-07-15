@@ -23,6 +23,7 @@ public:
 	void RightHand();
 
 	void InputTimeCheck();
+	void CameraOption();
 
 	UFUNCTION()
 		void SetViewType(EViewType ViewType);

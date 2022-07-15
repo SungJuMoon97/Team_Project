@@ -181,6 +181,26 @@ void ATeam_ProjectCharacter::InputTimeCheck()
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("How long was the key pressed: %f"), PCInputTime));
 }
 
+void ATeam_ProjectCharacter::CameraOption()
+{
+	if (!bLayingDown)
+	{
+		bUseControllerRotationYaw = true;
+		/*FirstPersonFollowCamera->bUsePawnControlRotation = true;
+		ThirdPersonCameraBoom->bUsePawnControlRotation = true;
+		GetCharacterMovement()->bOrientRotationToMovement = true;*/
+		UE_LOG(LogTemp, Warning, TEXT("gojung"));
+	}
+	else// if (bLayingDown)
+	{
+		bUseControllerRotationYaw = false;
+		/*FirstPersonFollowCamera->bUsePawnControlRotation = false;
+		ThirdPersonCameraBoom->bUsePawnControlRotation = false;
+		GetCharacterMovement()->bOrientRotationToMovement = false;*/
+		UE_LOG(LogTemp, Warning, TEXT("gojung_Anim"));
+	}
+}
+
 void ATeam_ProjectCharacter::SetViewType(EViewType ViewType)
 {
 	
@@ -189,7 +209,7 @@ void ATeam_ProjectCharacter::SetViewType(EViewType ViewType)
 	case EViewType::EVT_ThirdPerson:
 		FirstPersonFollowCamera->Deactivate();
 		ThirdPersonFollowCamera->Activate();
-
+		CameraOption();
 		break;
 
 	case EViewType::EVT_FirstPerson:
@@ -197,7 +217,7 @@ void ATeam_ProjectCharacter::SetViewType(EViewType ViewType)
 		FirstPersonFollowCamera->SetRelativeLocation(FVector(0.0f, 10.0f, 0.0f));
 		ThirdPersonFollowCamera->Deactivate();
 		FirstPersonFollowCamera->Activate();
-		
+		CameraOption();
 		break;
 	}
 }
@@ -243,20 +263,35 @@ void ATeam_ProjectCharacter::SetStanceType(EStance StanceType)
 	case EStance::ES_Default:
 		bCombatState = false;
 
-		if(CurrentStanding == EStanding::ESD_Standing)
+		if (CurrentStanding == EStanding::ESD_Standing)
+		{
 			GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+			CameraOption();
+		}
 		if (CurrentStanding == EStanding::ESD_Crouching)
+		{
 			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
-		if(CurrentStanding == EStanding::ESD_Sitting || CurrentStanding == EStanding::ESD_LayingDown)
+			CameraOption();
+		}	
+		if (CurrentStanding == EStanding::ESD_Sitting || CurrentStanding == EStanding::ESD_LayingDown)
+		{
 			GetCharacterMovement()->MaxWalkSpeed = 0.0f;
-		
+			CameraOption();
+		}
 		break;
+
 	case EStance::ES_Combat:
 		bCombatState = true;
 		if (CurrentStanding == EStanding::ESD_Standing || CurrentStanding == EStanding::ESD_Crouching)
+		{
 			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+			CameraOption();
+		}	
 		if (CurrentStanding == EStanding::ESD_Sitting || CurrentStanding == EStanding::ESD_LayingDown)
+		{
 			GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+			CameraOption();
+		}
 		break;
 	}
 }
@@ -268,24 +303,38 @@ void ATeam_ProjectCharacter::SetStanding(EStanding StandingType)
 	case EStanding::ESD_Standing:
 		bLayingDown = false;
 		bCrouching = false;
-		if(CurrentStanceMode == EStance::ES_Default)
+		if (CurrentStanceMode == EStance::ES_Default)
+		{
+			CameraOption();
 			GetCharacterMovement()->MaxWalkSpeed = 500.0f;
-		if(CurrentStanceMode == EStance::ES_Combat)
+		}
+		if (CurrentStanceMode == EStance::ES_Combat)
+		{
+			CameraOption();
 			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+		}
 		ThirdPersonCameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 		break;
+
 	case EStanding::ESD_Crouching:
 		bCrouching = true;
 		bLayingDown = false;
-		if (CurrentStanceMode == EStance::ES_Combat|| CurrentStanceMode == EStance::ES_Default)
+		if (CurrentStanceMode == EStance::ES_Combat || CurrentStanceMode == EStance::ES_Default)
+		{
+			CameraOption();
 			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+		}	
 		ThirdPersonCameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 		break;
+
 	case EStanding::ESD_LayingDown:
 		bCrouching = false;
 		bLayingDown = true;
 		if (CurrentStanceMode == EStance::ES_Combat || CurrentStanceMode == EStance::ES_Default)
+		{
+			CameraOption();
 			GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+		}
 		ThirdPersonCameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, -10.0f));
 		break;
 	}
