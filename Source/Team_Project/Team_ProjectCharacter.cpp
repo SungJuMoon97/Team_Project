@@ -186,17 +186,11 @@ void ATeam_ProjectCharacter::CameraOption()
 	if (!bLayingDown)
 	{
 		bUseControllerRotationYaw = true;
-		/*FirstPersonFollowCamera->bUsePawnControlRotation = true;
-		ThirdPersonCameraBoom->bUsePawnControlRotation = true;
-		GetCharacterMovement()->bOrientRotationToMovement = true;*/
 		UE_LOG(LogTemp, Warning, TEXT("gojung"));
 	}
 	else// if (bLayingDown)
 	{
 		bUseControllerRotationYaw = false;
-		/*FirstPersonFollowCamera->bUsePawnControlRotation = false;
-		ThirdPersonCameraBoom->bUsePawnControlRotation = false;
-		GetCharacterMovement()->bOrientRotationToMovement = false;*/
 		UE_LOG(LogTemp, Warning, TEXT("gojung_Anim"));
 	}
 }
