@@ -178,7 +178,7 @@ public:
 
 	FORCEINLINE bool GetRightHandAction() const { return bRightHandAction; }
 
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	
 	FORCEINLINE bool GetInventoryOpen() const { return bIsInventoryOpen; }
 };
 
