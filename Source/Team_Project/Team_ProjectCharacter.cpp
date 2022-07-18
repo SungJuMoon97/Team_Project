@@ -32,7 +32,7 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	//if Character Sitting or Lying or Standing
 	CurrentStanding(EStanding::ESD_Standing),
 	bSitting(false), bLayingDown(false),bCrouching(false),
-	inputTime(2.0f)
+	inputTime(2.0f),
 	bIsInventoryOpen(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
