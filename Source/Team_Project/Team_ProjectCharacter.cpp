@@ -428,9 +428,9 @@ void ATeam_ProjectCharacter::Interact()
 
 void ATeam_ProjectCharacter::GrabActor()
 {
-	FVector Start = FollowCamera->GetComponentLocation();
+	FVector Start = GetMesh()->GetComponentLocation();
 	// Distance to Interact = 500.0f;
-	FVector End = Start + FollowCamera->GetComponentRotation().Vector() * 500.0f;
+	FVector End = Start + GetMesh()->GetComponentRotation().Vector() * 500.0f;
 
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
@@ -515,16 +515,6 @@ void ATeam_ProjectCharacter::UseItem(AItem* Item)
 		Item->Use(this);
 		Item->OnUse(this); // BP event
 	}
-}
-
-void ATeam_ProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
-{
-	Jump();
-}
-
-void ATeam_ProjectCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
-{
-	StopJumping();
 }
 
 void ATeam_ProjectCharacter::TurnAtRate(float Rate)
