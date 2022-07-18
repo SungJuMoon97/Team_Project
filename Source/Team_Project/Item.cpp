@@ -17,9 +17,42 @@ AItem::AItem()
 	ItemDisplayName = FText::FromString("Item");
 	UseActionText = FText::FromString("Use");
 
-
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("InsItemMesh"));
 	
 
+}
+
+AActor* AItem::Pickup(ATeam_ProjectCharacter* PickingUpActor)
+{
+	if (GetRootComponent()->IsSimulatingPhysics())
+	{
+		if (UPrimitiveComponent* PrimComponent = Cast<UPrimitiveComponent>(GetComponentByClass(UPrimitiveComponent::StaticClass())))
+		{
+			PrimComponent->SetSimulatePhysics(false);
+			AttachToComponent(PickingUpActor->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachSocket"));
+			return this;
+		}
+	}
+	else
+	{
+		AttachToComponent(PickingUpActor->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachSocket"));
+		return this;
+	}
+	return nullptr;
+}
+
+void AItem::Puton()
+{
+	// hide actor and disable collision
+	Mesh->SetHiddenInGame(true);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AItem::Drop()
+{
+	// drop actor and enable collision
+	Mesh->SetHiddenInGame(false);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 // Called when the game starts or when spawned

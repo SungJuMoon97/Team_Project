@@ -4,7 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Pickup_Interface.h"
 #include "Item.generated.h"
+
+class UStaticMeshComponent;
+class ATeam_ProjectCharacter;
 
 UCLASS(Abstract, BlueprintType, Blueprintable, DefaultToInstanced)
 class TEAM_PROJECT_API AItem : public AActor
@@ -19,6 +23,14 @@ public:
 
 	UPROPERTY(Transient)
 	class UWorld* World;
+
+	// Pickup Actor and attach to socket
+	virtual AActor* Pickup(ATeam_ProjectCharacter* PickingUpActor); // override;
+
+	// hide actor and disable collision
+	virtual void Puton(); // override;
+
+	virtual void Drop(); // override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -81,6 +93,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Properties",
 		meta = (AllowPrivateAccess = "true"))
 		class UstaticMesh* PickupMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties",
+		meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* Mesh;
 
 	// The thumbnail fot this item
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Item Properties",
