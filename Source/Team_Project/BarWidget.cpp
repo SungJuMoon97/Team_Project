@@ -5,7 +5,7 @@
 #include "Components/ProgressBar.h"
 
 void UBarWidget::SetHealth(float CurrentHealth, float MaxHealth)
-{
+{	
 	if (HealthBar)
 	{
 		HealthBar->SetPercent(CurrentHealth / MaxHealth);

@@ -12,10 +12,6 @@ class ATeam_ProjectCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, Category = "CharacterInventory")
-	class UInventoryComponent* InventoryComponent;
-
-	
 public:
 	ATeam_ProjectCharacter();
 
@@ -66,6 +62,16 @@ public:
 	float inputTime;
 	float PCInputTime;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UInventoryPanel> PlayerInventoryPanelClass;
+
+	// The Widget instance that we are using as our HUD.
+	UPROPERTY()
+	class UInventoryPanel* PlayerInventoryPanel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float Health;
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -78,12 +84,29 @@ protected:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Pickup and Drop Key
 	void Interact();
+	void GrabActor();
+	void ReleaseActor();
+	AActor* HeldActor;
+
+	// Add Item To Inventory Key
+	void AddToInventory();
+	void PutActor();
+
+	// Open Inventory
+	void OpenInventory();
+	bool bIsInventoryOpen;
+
+	UFUNCTION(BlueprintCallable, Category = "Items")
+	void UseItem(class AItem* Item);
 private:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class USpringArmComponent* FirstPersonCameraBoom;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "CharacterInventory")
+	class UInventoryComponent* Inventory;
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FirstPersonFollowCamera;
@@ -138,14 +161,9 @@ private:
 
 
 public:
-	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetFirstPersonCameraBoom() const { return FirstPersonCameraBoom; }
-	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonFollowCamera() const { return FirstPersonFollowCamera; }
-
-	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetThirdPersonCameraBoom() const { return ThirdPersonCameraBoom; }
-	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetThirdPersonFollowCamera() const { return ThirdPersonFollowCamera; }
 
 	FORCEINLINE bool GetSitting() const { return bSitting; }
@@ -160,5 +178,7 @@ public:
 
 	FORCEINLINE bool GetRightHandAction() const { return bRightHandAction; }
 
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE bool GetInventoryOpen() const { return bIsInventoryOpen; }
 };
 
