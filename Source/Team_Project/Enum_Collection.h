@@ -7,7 +7,6 @@ enum class EWeaponType : uint8
 	EWT_Sword UMETA(DisplayName = "Sword"),
 	EWT_Hammer UMETA(DisplayName = "Hammer"),
 	EWT_Spear UMETA(DisplayName = "Spear"),
-	EWT_Pole UMETA(DisplayName = "Pole"),
 	EWT_Bow UMETA(DisplayName = "Bow"),
 
 	EWT_MAX UMETA(DisplayName = "EWT_MAX")
@@ -31,4 +30,35 @@ enum class  EStance : uint8 //기본자세와 전투자세
 	ES_Combat UMETA(DisplayName = "Combat_Stance"),
 
 	ES_MAX UMETA(DisplayName = "ES_MAX")
+};
+
+UENUM(BlueprintType)
+enum class EViewType : uint8
+{
+	EVT_ThirdPerson UMETA(DisplayName = "ThirdPerson_View"),
+	EVT_FirstPerson UMETA(DisplayName = "FirstPerson_View"),
+
+
+	EVT_MAX UMETA(DisplayName = "EVT_MAX")
+};
+
+UENUM(BlueprintType)
+enum class EWeaponHand : uint8
+{
+	EWH_OneHanded UMETA(DisplayName = "OneHandedWeapon"),
+	EWH_TwoHanded UMETA(DisplayName = "TwoHandedWeapon"),
+	EWH_Fist UMETA(DisplayName = "FistWeapon"),
+
+	EWH_MAX UMETA(DisplayName = "EWH_MAX")
+};
+
+UENUM(BlueprintType)
+enum class EStanding : uint8
+{
+	ESD_Standing UMETA(DisplayName = "Standing"),
+	ESD_Sitting UMETA(DisplayName = "Sitting"),
+	ESD_Crouching UMETA(DisplayName = "Crouching"),
+	ESD_LayingDown UMETA(DisplayName = "LyingDown"),
+
+	ESD_MAX UMETA(DisplayName = "ESD_MAX")
 };
