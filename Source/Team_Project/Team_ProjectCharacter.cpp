@@ -16,6 +16,11 @@
 #include "DrawDebugHelpers.h"
 #include "MKKS_PlayerAnimInstance.h"
 #include "InventoryComponent.h"
+#include "InstanceItem.h"
+#include "Pickup_Interface.h"
+#include "Team_ProjectGameMode.h"
+#include "InventoryPanel.h"
+#include "Item.h"
 
 ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	//if your View and Stance make a change
@@ -27,7 +32,8 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	//if Character Sitting or Lying or Standing
 	CurrentStanding(EStanding::ESD_Standing),
 	bSitting(false), bLayingDown(false),bCrouching(false),
-	inputTime(2.0f)
+	inputTime(2.0f),
+	bIsInventoryOpen(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
@@ -72,8 +78,9 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	FirstPersonFollowCamera->bUsePawnControlRotation = true;
 	ThirdPersonCameraBoom->bUsePawnControlRotation = true;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
-	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
-	}
+	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
+	Health = 100.f;
+}
 
 void ATeam_ProjectCharacter::BeginPlay()
 {
@@ -392,20 +399,32 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAction("StanceChange", IE_Pressed, this, &ATeam_ProjectCharacter::StanceChange);
 	PlayerInputComponent->BindAction("StandingChange", IE_Released, this, &ATeam_ProjectCharacter::StandingChange);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ATeam_ProjectCharacter::Interact);
-
+	// AddToInventory binding
+	PlayerInputComponent->BindAction("AddToInventory", IE_Pressed, this, &ATeam_ProjectCharacter::AddToInventory);
+	// OpenInventory binding
+	PlayerInputComponent->BindAction("OpenInventory", IE_Pressed, this, &ATeam_ProjectCharacter::OpenInventory);
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ATeam_ProjectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &ATeam_ProjectCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("Turn Right / Left Gamepad", this, &ATeam_ProjectCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("Look Up / Down Gamepad", this, &ATeam_ProjectCharacter::LookUpAtRate);
-
 }
 
 void ATeam_ProjectCharacter::Interact()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Interacting"));
+	if (HeldActor)
+	{
+		ReleaseActor();
+	}
+	else
+	{
+		GrabActor();
+	}
+}
 
+void ATeam_ProjectCharacter::GrabActor()
+{
 	FVector Start = GetMesh()->GetComponentLocation();
 	// Distance to Interact = 500.0f;
 	FVector End = Start + GetMesh()->GetComponentRotation().Vector() * 500.0f;
@@ -420,9 +439,78 @@ void ATeam_ProjectCharacter::Interact()
 
 		if (AActor* HitActor = HitResult.GetActor())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("HIT ACTOR: %s"), *HitResult.GetActor()->GetName());
-			HitActor->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachSocket"));
+			if (IPickup_Interface* Interface = Cast<IPickup_Interface>(HitActor))
+			{
+				HeldActor = Interface->Pickup(this);
+			}
 		}
+	}
+}
+
+void ATeam_ProjectCharacter::ReleaseActor()
+{
+		HeldActor->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+		if (UPrimitiveComponent* PrimComponent = Cast<UPrimitiveComponent>(HeldActor->GetComponentByClass(UPrimitiveComponent::StaticClass())))
+		{
+			PrimComponent->SetSimulatePhysics(true);
+		}
+		HeldActor = nullptr;
+}
+
+void ATeam_ProjectCharacter::AddToInventory()
+{
+		PutActor();
+}
+
+void ATeam_ProjectCharacter::PutActor()
+{
+	FVector Start = GetMesh()->GetComponentLocation();
+	// Distance to Interact = 500.0f;
+	FVector End = Start + GetMesh()->GetComponentRotation().Vector() * 500.0f;
+
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_WorldStatic, Params))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HIT ACTOR"));
+
+		if (AActor* HitActor = HitResult.GetActor())
+		{
+			if (IPickup_Interface* Interface = Cast<IPickup_Interface>(HitActor))
+			{
+				Interface->Puton();
+				// InventoryComponent->AddItemToInventory(HitActor);
+			}
+		}
+	}
+}
+
+void ATeam_ProjectCharacter::OpenInventory()
+{
+	if (!bIsInventoryOpen)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Inventory Open"));
+
+		PlayerInventoryPanel = CreateWidget<UInventoryPanel>(GetWorld(), PlayerInventoryPanelClass);
+		check(PlayerInventoryPanel);
+		PlayerInventoryPanel->AddToViewport();
+		bIsInventoryOpen = true;
+	}
+	else
+	{
+		PlayerInventoryPanel->RemoveFromViewport();
+		bIsInventoryOpen = false;
+	}
+}
+
+void ATeam_ProjectCharacter::UseItem(AItem* Item)
+{
+	if (Item)
+	{
+		Item->Use(this);
+		Item->OnUse(this); // BP event
 	}
 }
 
