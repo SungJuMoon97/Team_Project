@@ -57,7 +57,6 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	ThirdPersonCameraBoom->SetupAttachment(RootComponent);
 	ThirdPersonFollowCamera->SetupAttachment(ThirdPersonCameraBoom, USpringArmComponent::SocketName);
 
-	//FirstPersonFollowCamera->AttachToComponent(GetMesh(),FAttachmentTransformRules::KeepWorldTransform,FirstPersonCameraSocket);
 	FirstPersonFollowCamera->SetupAttachment(GetMesh(), FirstPersonCameraSocket);
 	FirstPersonFollowCamera->SetRelativeRotation(FRotator(0.0f, 90.0f, -90.0f));
 	FirstPersonFollowCamera->SetRelativeLocation(FVector(0.0f, 10.0f, 0.0f));
@@ -396,27 +395,20 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ATeam_ProjectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &ATeam_ProjectCharacter::MoveRight);
-	
-	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
-	// "turn" handles devices that provide an absolute delta, such as a mouse.
-	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
 	PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("Turn Right / Left Gamepad", this, &ATeam_ProjectCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("Look Up / Down Gamepad", this, &ATeam_ProjectCharacter::LookUpAtRate);
 
-	// handle touch devices
-	PlayerInputComponent->BindTouch(IE_Pressed, this, &ATeam_ProjectCharacter::TouchStarted);
-	PlayerInputComponent->BindTouch(IE_Released, this, &ATeam_ProjectCharacter::TouchStopped);
 }
 
 void ATeam_ProjectCharacter::Interact()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Interacting"));
 
-	FVector Start = FollowCamera->GetComponentLocation();
+	FVector Start = GetMesh()->GetComponentLocation();
 	// Distance to Interact = 500.0f;
-	FVector End = Start + FollowCamera->GetComponentRotation().Vector() * 500.0f;
+	FVector End = Start + GetMesh()->GetComponentRotation().Vector() * 500.0f;
 
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
@@ -432,16 +424,6 @@ void ATeam_ProjectCharacter::Interact()
 			HitActor->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachSocket"));
 		}
 	}
-}
-
-void ATeam_ProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
-{
-	Jump();
-}
-
-void ATeam_ProjectCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
-{
-	StopJumping();
 }
 
 void ATeam_ProjectCharacter::TurnAtRate(float Rate)
@@ -460,11 +442,6 @@ void ATeam_ProjectCharacter::LookUpAtRate(float Rate)
 
 void ATeam_ProjectCharacter::MoveForward(float Value)
 {
-	//if (Value != 0.0f)
-	//{
-	//	// add movement in that direction
-	//	AddMovementInput(GetActorForwardVector(), Value);
-	//}
 	if (CurrentViewMode == EViewType::EVT_FirstPerson)
 	{
 		if (Value != 0.0f)
@@ -490,12 +467,6 @@ void ATeam_ProjectCharacter::MoveForward(float Value)
 
 void ATeam_ProjectCharacter::MoveRight(float Value)
 {
-
-	//if (Value != 0.0f)
-	//{
-	//	// add movement in that direction
-	//	AddMovementInput(GetActorRightVector(), Value);
-	//}
 
 	if (CurrentViewMode == EViewType::EVT_FirstPerson)
 	{
