@@ -11,8 +11,14 @@
 #include "Blueprint/UserWidget.h"
 #include "MKKS_PlayerController.h"
 #include "InventoryComponent.h"
+#include "InstanceItem.h"
+#include "Pickup_Interface.h"
+#include "Team_ProjectGameMode.h"
+#include "InventoryPanel.h"
+#include "Item.h"
 
-ATeam_ProjectCharacter::ATeam_ProjectCharacter()
+ATeam_ProjectCharacter::ATeam_ProjectCharacter():
+	bIsInventoryOpen(false)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -51,8 +57,9 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
-	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
-	}
+	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
+	Health = 100.f;
+}
 
 void ATeam_ProjectCharacter::BeginPlay()
 {
@@ -89,6 +96,11 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 
 	// Interact key binding
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ATeam_ProjectCharacter::Interact);
+	// AddToInventory binding
+	PlayerInputComponent->BindAction("AddToInventory", IE_Pressed, this, &ATeam_ProjectCharacter::AddToInventory);
+
+	// OpenInventory binding
+	PlayerInputComponent->BindAction("OpenInventory", IE_Pressed, this, &ATeam_ProjectCharacter::OpenInventory);
 
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ATeam_ProjectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &ATeam_ProjectCharacter::MoveRight);
@@ -108,8 +120,18 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 
 void ATeam_ProjectCharacter::Interact()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Interacting"));
+	if (HeldActor)
+	{
+		ReleaseActor();
+	}
+	else
+	{
+		GrabActor();
+	}
+}
 
+void ATeam_ProjectCharacter::GrabActor()
+{
 	FVector Start = FollowCamera->GetComponentLocation();
 	// Distance to Interact = 500.0f;
 	FVector End = Start + FollowCamera->GetComponentRotation().Vector() * 500.0f;
@@ -124,9 +146,78 @@ void ATeam_ProjectCharacter::Interact()
 
 		if (AActor* HitActor = HitResult.GetActor())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("HIT ACTOR: %s"), *HitResult.GetActor()->GetName());
-			HitActor->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachSocket"));
+			if (IPickup_Interface* Interface = Cast<IPickup_Interface>(HitActor))
+			{
+				HeldActor = Interface->Pickup(this);
+			}
 		}
+	}
+}
+
+void ATeam_ProjectCharacter::ReleaseActor()
+{
+		HeldActor->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+		if (UPrimitiveComponent* PrimComponent = Cast<UPrimitiveComponent>(HeldActor->GetComponentByClass(UPrimitiveComponent::StaticClass())))
+		{
+			PrimComponent->SetSimulatePhysics(true);
+		}
+		HeldActor = nullptr;
+}
+
+void ATeam_ProjectCharacter::AddToInventory()
+{
+		PutActor();
+}
+
+void ATeam_ProjectCharacter::PutActor()
+{
+	FVector Start = FollowCamera->GetComponentLocation();
+	// Distance to Interact = 500.0f;
+	FVector End = Start + FollowCamera->GetComponentRotation().Vector() * 500.0f;
+
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_WorldStatic, Params))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HIT ACTOR"));
+
+		if (AActor* HitActor = HitResult.GetActor())
+		{
+			if (IPickup_Interface* Interface = Cast<IPickup_Interface>(HitActor))
+			{
+				Interface->Puton();
+				// InventoryComponent->AddItemToInventory(HitActor);
+			}
+		}
+	}
+}
+
+void ATeam_ProjectCharacter::OpenInventory()
+{
+	if (!bIsInventoryOpen)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Inventory Open"));
+
+		PlayerInventoryPanel = CreateWidget<UInventoryPanel>(GetWorld(), PlayerInventoryPanelClass);
+		check(PlayerInventoryPanel);
+		PlayerInventoryPanel->AddToViewport();
+		bIsInventoryOpen = true;
+	}
+	else
+	{
+		PlayerInventoryPanel->RemoveFromViewport();
+		bIsInventoryOpen = false;
+	}
+}
+
+void ATeam_ProjectCharacter::UseItem(AItem* Item)
+{
+	if (Item)
+	{
+		Item->Use(this);
+		Item->OnUse(this); // BP event
 	}
 }
 

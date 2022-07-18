@@ -11,10 +11,6 @@ class ATeam_ProjectCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, Category = "CharacterInventory")
-	class UInventoryComponent* InventoryComponent;
-
-	
 public:
 	ATeam_ProjectCharacter();
 
@@ -22,6 +18,7 @@ public:
 
 	void DoAttack();
 	void EndAttack();
+
 
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
@@ -35,6 +32,16 @@ public:
 	// The Widget instance that we are using as our HUD.
 	UPROPERTY()
 	class UBarWidget* PlayerWidget;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UInventoryPanel> PlayerInventoryPanelClass;
+
+	// The Widget instance that we are using as our HUD.
+	UPROPERTY()
+	class UInventoryPanel* PlayerInventoryPanel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float Health;
 
 protected:
 
@@ -67,8 +74,25 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
 
+	// Pickup and Drop Key
 	void Interact();
+	void GrabActor();
+	void ReleaseActor();
+	AActor* HeldActor;
 
+	// Add Item To Inventory Key
+	void AddToInventory();
+	void PutActor();
+
+	// Open Inventory
+	void OpenInventory();
+	bool bIsInventoryOpen;
+
+	UFUNCTION(BlueprintCallable, Category = "Items")
+	void UseItem(class AItem* Item);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "CharacterInventory")
+	class UInventoryComponent* Inventory;
 
 private:
 	/** Camera boom positioning the camera behind the character */
@@ -86,5 +110,6 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE bool GetInventoryOpen() const { return bIsInventoryOpen; }
 };
 
