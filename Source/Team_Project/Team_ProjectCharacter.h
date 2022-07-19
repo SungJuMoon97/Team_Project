@@ -170,6 +170,10 @@ protected:
 	void SprintEnd();
 	void Stamina(float DeltaTime);
 
+	//CurrentHungry, Thirsty
+	UFUNCTION(BlueprintCallable)
+		void DecreaseFoodWater();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 		bool bSprint;
 
@@ -185,28 +189,25 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
 		float staminaRechargeRate;
 
-	//CurrentHungry, Water
-	UFUNCTION(BlueprintCallable)
-		void DecreaseFoodWater();
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 		float MaxHungry;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 		float CurrentHungry;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 		float MaxThirsty;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
-		float CurrentCurrent;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
+		float CurrentThirsty;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 		float FoodWaterDrainRate;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
-		float hungryRate;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
+		float HungryRate;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 		float ThirstyRate;
 public:
 	FORCEINLINE class USpringArmComponent* GetFirstPersonCameraBoom() const { return FirstPersonCameraBoom; }

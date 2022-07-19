@@ -57,6 +57,13 @@ void UMKKS_PlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 
 		bLayingDown = Team_ProjectCharacter->GetLyingDown();
 
+		if (bSprint && MoveRightLeft != 0)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("We have stopped sprinting."));
+			Team_ProjectCharacter->CurrentStanding = EStanding::ESD_Standing;
+			Team_ProjectCharacter->SetStanding(Team_ProjectCharacter->CurrentStanding);
+		}
+
 		if (bSitting || bCrouching || bLayingDown)
 		{
 			bSprint = false;

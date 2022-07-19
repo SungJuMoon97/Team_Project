@@ -79,5 +79,6 @@ private:
 		float MoveRightLeft;
 
 public:
-
+	FORCEINLINE float GetMoveForwardBack() const { return MoveForwardBack; }
+	FORCEINLINE float GetMoveRightLeft() const { return MoveRightLeft; }
 };

@@ -39,8 +39,8 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	//PlayerStat
 	Health(100.f),MaxStamina(1.0f), MaxHungry(100.0f),MaxThirsty(100.0f),
 	currentStamina(1.0f),staminaSprintUsageRate(0.05f),staminaRechargeRate(0.01f),
-	CurrentHungry(100.0f), CurrentCurrent(100.f),
-	FoodWaterDrainRate(1.0f)//배고픔목마름줄어드는시간
+	CurrentHungry(100.0f), CurrentThirsty(100.f),HungryRate(1.0f),ThirstyRate(1.0f),
+	FoodWaterDrainRate(10.0f)//배고픔목마름줄어드는시간
 {
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
@@ -528,9 +528,13 @@ void ATeam_ProjectCharacter::OpenInventory()
 
 void ATeam_ProjectCharacter::SprintStart()
 {
-	UE_LOG(LogTemp, Warning, TEXT("We are now sprinting."));
-	CurrentStanding = EStanding::ESD_Sprinting;
-	SetStanding(CurrentStanding);
+	if (GetInputAxisValue(TEXT("Move Right / Left")) == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("We are now sprinting."));
+		CurrentStanding = EStanding::ESD_Sprinting;
+		SetStanding(CurrentStanding);
+	}
+	
 }
 
 void ATeam_ProjectCharacter::SprintEnd()
@@ -642,11 +646,11 @@ void ATeam_ProjectCharacter::MoveRight(float Value)
 
 void ATeam_ProjectCharacter::DecreaseFoodWater()
 {
-	CurrentHungry = CurrentHungry - 15.f;
-	CurrentCurrent = CurrentCurrent - 35.f;
+	CurrentHungry = CurrentHungry - HungryRate;
+	CurrentThirsty = CurrentThirsty - ThirstyRate;
 
-	if (CurrentHungry <= 0 || CurrentCurrent <= 0)
+	if (CurrentHungry <= 0 || CurrentThirsty <= 0)
 	{
-		Destroy();
+		//Destroy();
 	}
 }
