@@ -52,6 +52,7 @@ public:
 	UPROPERTY()
 	class UBarWidget* PlayerWidget;
 
+	FTimerHandle TimerHandle;
 	EViewType CurrentViewMode;
 	EStance CurrentStanceMode;
 	EStanding CurrentStanding;
@@ -158,11 +159,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
 	bool bRightHandAction;
-
-protected:
-	// APawn interface
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 
 protected:
 	//Sprinting, Stamina

@@ -348,13 +348,6 @@ void ATeam_ProjectCharacter::SetStanding(EStanding StandingType)
 		ThirdPersonCameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 		break;
 
-
-
-}
-
-//////////////////////////////////////////////////////////////////////////
-// Input
-
 	case EStanding::ESD_LayingDown:
 		bCrouching = false;
 		bLayingDown = true;
@@ -536,6 +529,8 @@ void ATeam_ProjectCharacter::OpenInventory()
 		PlayerInventoryPanel->RemoveFromViewport();
 		bIsInventoryOpen = false;
 	}
+}
+
 void ATeam_ProjectCharacter::SprintStart()
 {
 	UE_LOG(LogTemp, Warning, TEXT("We are now sprinting."));
@@ -551,11 +546,6 @@ void ATeam_ProjectCharacter::SprintEnd()
 		isSprinting = false;
 		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
 	}
-}
-
-void ATeam_ProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
-{
-	Jump();
 }
 
 void ATeam_ProjectCharacter::UseItem(AItem* Item)
@@ -633,13 +623,6 @@ void ATeam_ProjectCharacter::MoveRight(float Value)
 	}
 	
 }
-
-/*FString ATeam_ProjectCharacter::ReturnPlayerStats()
-{
-	FString RetString = "Hunger: " + FString::SanitizeFloat(PlayerStatComp->GetHunger())
-		+ "Thirst: " + FString::SanitizeFloat(PlayerStatComp->GetThirst());
-	return RetString;
-}*/
 
 void ATeam_ProjectCharacter::DecreaseFoodWater()
 {
