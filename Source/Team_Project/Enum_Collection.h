@@ -59,6 +59,7 @@ enum class EStanding : uint8
 	ESD_Sitting UMETA(DisplayName = "Sitting"),
 	ESD_Crouching UMETA(DisplayName = "Crouching"),
 	ESD_LayingDown UMETA(DisplayName = "LyingDown"),
+	ESD_Sprinting UMETA(DisplayName = "Sprinting"),
 
 	ESD_MAX UMETA(DisplayName = "ESD_MAX")
 };

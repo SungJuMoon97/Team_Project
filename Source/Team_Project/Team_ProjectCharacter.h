@@ -62,6 +62,10 @@ public:
 	float BareHandDamage;//맨손공격력
 	float inputTime;
 	float PCInputTime;
+	float DefaultSpeed;
+	float CrouchSpeed;
+	float CombatSpeed;
+	float SprintSpeed;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UInventoryPanel> PlayerInventoryPanelClass;
@@ -166,17 +170,14 @@ protected:
 	void SprintEnd();
 	void Stamina(float DeltaTime);
 
-	float RunSpeed = 600.f;
-	float SprintSpeed = 1200.f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-		bool bIsSprinting;
+		bool bSprint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
 		float currentStamina;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
-		float maxStamina;
+		float MaxStamina;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
 		float staminaSprintUsageRate;
@@ -203,6 +204,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 		float FoodWaterDrainRate;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+		float hungryRate;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+		float ThirstyRate;
 public:
 	FORCEINLINE class USpringArmComponent* GetFirstPersonCameraBoom() const { return FirstPersonCameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFirstPersonFollowCamera() const { return FirstPersonFollowCamera; }
@@ -210,18 +215,12 @@ public:
 	FORCEINLINE class UCameraComponent* GetThirdPersonFollowCamera() const { return ThirdPersonFollowCamera; }
 
 	FORCEINLINE bool GetSitting() const { return bSitting; }
-
 	FORCEINLINE bool GetCrouching() const { return bCrouching; }
-
 	FORCEINLINE bool GetLyingDown() const { return bLayingDown; }
-
 	FORCEINLINE bool GetCombatState() const { return bCombatState; }
-
 	FORCEINLINE bool GetLeftHandAction() const { return bLeftHandAction; }
-
 	FORCEINLINE bool GetRightHandAction() const { return bRightHandAction; }
-
-	
 	FORCEINLINE bool GetInventoryOpen() const { return bIsInventoryOpen; }
+	FORCEINLINE bool GetIsSprint() const { return bSprint; }
 };
 

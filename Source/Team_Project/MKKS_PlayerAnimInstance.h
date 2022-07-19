@@ -40,10 +40,6 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
-		bool bIsSprint;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
-		meta = (AllowPrivateAccess = "true"))
 		bool bCombatState;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
@@ -61,6 +57,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
 		bool bIsAccelerating;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
+		meta = (AllowPrivateAccess = "true"))
+		bool bSprint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))

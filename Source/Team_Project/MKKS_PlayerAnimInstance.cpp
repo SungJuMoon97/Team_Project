@@ -47,6 +47,7 @@ void UMKKS_PlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 		{
 			LastMovementOffsetYaw = MovementOffsetYaw;
 		}
+		bSprint = Team_ProjectCharacter->GetIsSprint();
 
 		bCombatState = Team_ProjectCharacter->GetCombatState();
 
@@ -56,10 +57,15 @@ void UMKKS_PlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 
 		bLayingDown = Team_ProjectCharacter->GetLyingDown();
 
-		if (bSitting || bCrouching && bLayingDown)
+		if (bSitting || bCrouching || bLayingDown)
 		{
-			bSitting = false;
-			bCrouching = false;
+			bSprint = false;
+		
+			if (bSitting || bCrouching && bLayingDown)
+			{
+				bSitting = false;
+				bCrouching = false;
+			}
 		}
 
 		if ((Team_ProjectCharacter->CurrentStanceMode == EStance::ES_Combat)&&(bLayingDown == true))

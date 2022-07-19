@@ -22,18 +22,23 @@
 #include "Item.h"
 #include "TimerManager.h"
 
-ATeam_ProjectCharacter::ATeam_ProjectCharacter():
+ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	//if your View and Stance make a change
 	CurrentViewMode(EViewType::EVT_FirstPerson), CurrentStanceMode(EStance::ES_Default),
-	bCombatState(false), bIsSprinting(false),
+	bCombatState(false), bSprint(false),
+	//CurrentSpeed
+	DefaultSpeed(500.0f), CrouchSpeed(200.0f), CombatSpeed(200.0f), SprintSpeed(800.0f),
 	//if you HandAction Default Setting
 	CurrentWeapon(EWeaponType::EWT_Fist), CurrentHandWeapon(EWeaponHand::EWH_Fist),
 	BareHandDamage(10), bLeftHandAction(false), bRightHandAction(false), bDoAttacking(false),
 	//if Character Sitting or Lying or Standing
 	CurrentStanding(EStanding::ESD_Standing),
-	bSitting(false), bLayingDown(false),bCrouching(false),
+	bSitting(false), bLayingDown(false), bCrouching(false),
 	inputTime(2.0f),
-	bIsInventoryOpen(false)
+	bIsInventoryOpen(false),
+	//PlayerStat
+	Health(100.f),MaxStamina(1.0f), MaxFood(100.0f),MaxWater(100.0f),
+	FoodWaterDrainRate(1.0f)//배고픔목마름줄어드는시간
 {
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
@@ -69,7 +74,7 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	FirstPersonFollowCamera->SetRelativeLocation(FVector(0.0f, 10.0f, 0.0f));
 	GetCharacterMovement()->JumpZVelocity = 300.f;
 	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
@@ -80,19 +85,12 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	ThirdPersonCameraBoom->bUsePawnControlRotation = true;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
-	Health = 100.f;
 	currentStamina = 1.0f;
-	maxStamina = 1.0f;
 	staminaSprintUsageRate = 0.05f;
 	staminaRechargeRate = 0.01f;
 
 	Food = 100.f;
 	Water = 100.f;
-
-	MaxFood = 100.f;
-	MaxWater = 100.f;
-
-	FoodWaterDrainRate = 20.f;
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
@@ -128,7 +126,7 @@ void ATeam_ProjectCharacter::LeftHand()
 		CurrentStanceMode = EStance::ES_Combat;
 		UE_LOG(LogTemp, Warning, TEXT("Change"));
 		bCombatState = true;
-		GetCharacterMovement()->MaxWalkSpeed = 100.f;
+		GetCharacterMovement()->MaxWalkSpeed = CombatSpeed;
 		return;
 	}
 
@@ -137,7 +135,7 @@ void ATeam_ProjectCharacter::LeftHand()
 	{
 		if (CurrentViewMode == EViewType::EVT_FirstPerson)
 		{
-
+			bLeftHandAction = false;
 		}
 		else
 		{
@@ -156,6 +154,7 @@ void ATeam_ProjectCharacter::LeftHand()
 	
 	UE_LOG(LogTemp, Warning, TEXT("EndALeftHand"));
 	bDoAttacking = false;
+	bLeftHandAction = false;
 }
 
 void ATeam_ProjectCharacter::RightHand()
@@ -168,7 +167,7 @@ void ATeam_ProjectCharacter::RightHand()
 		CurrentStanceMode = EStance::ES_Combat;
 		UE_LOG(LogTemp, Warning, TEXT("Change"));
 		bCombatState = true;
-		GetCharacterMovement()->MaxWalkSpeed = 100.f;
+		GetCharacterMovement()->MaxWalkSpeed = CombatSpeed;
 		return;
 	}
 
@@ -176,7 +175,7 @@ void ATeam_ProjectCharacter::RightHand()
 	{
 		if (CurrentViewMode == EViewType::EVT_FirstPerson)
 		{
-
+			bRightHandAction = true;
 		}
 		else
 		{
@@ -193,6 +192,7 @@ void ATeam_ProjectCharacter::RightHand()
 	}
 	UE_LOG(LogTemp, Warning, TEXT("EndARightHand"));
 	bDoAttacking = false;
+	bRightHandAction = false;
 }
 
 void ATeam_ProjectCharacter::InputTimeCheck()
@@ -279,12 +279,12 @@ void ATeam_ProjectCharacter::SetStanceType(EStance StanceType)
 
 		if (CurrentStanding == EStanding::ESD_Standing)
 		{
-			GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+			GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
 			CameraOption();
 		}
 		if (CurrentStanding == EStanding::ESD_Crouching)
 		{
-			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+			GetCharacterMovement()->MaxWalkSpeed = CrouchSpeed;
 			CameraOption();
 		}	
 		if (CurrentStanding == EStanding::ESD_Sitting || CurrentStanding == EStanding::ESD_LayingDown)
@@ -298,7 +298,7 @@ void ATeam_ProjectCharacter::SetStanceType(EStance StanceType)
 		bCombatState = true;
 		if (CurrentStanding == EStanding::ESD_Standing || CurrentStanding == EStanding::ESD_Crouching)
 		{
-			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+			GetCharacterMovement()->MaxWalkSpeed = CombatSpeed;
 			CameraOption();
 		}	
 		if (CurrentStanding == EStanding::ESD_Sitting || CurrentStanding == EStanding::ESD_LayingDown)
@@ -317,22 +317,43 @@ void ATeam_ProjectCharacter::SetStanding(EStanding StandingType)
 	case EStanding::ESD_Standing:
 		bLayingDown = false;
 		bCrouching = false;
+		bSprint = false;
 		if (CurrentStanceMode == EStance::ES_Default)
 		{
 			CameraOption();
-			GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+			GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
 		}
 		if (CurrentStanceMode == EStance::ES_Combat)
 		{
 			CameraOption();
-			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+			GetCharacterMovement()->MaxWalkSpeed = CombatSpeed;
 		}
 		ThirdPersonCameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
+		break;
+
+	case EStanding::ESD_Crouching:
+		bCrouching = true;
+		bLayingDown = false;
+		bSprint = false;
+		if (CurrentStanceMode == EStance::ES_Combat || CurrentStanceMode == EStance::ES_Default)
+		{
+			CameraOption();
+			GetCharacterMovement()->MaxWalkSpeed = CrouchSpeed;
+		}
+		ThirdPersonCameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+		break;
+
+	case EStanding::ESD_Sprinting:
+		bCrouching = false;
+		bLayingDown = false;
+		bSprint = true;
+		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
 		break;
 
 	case EStanding::ESD_LayingDown:
 		bCrouching = false;
 		bLayingDown = true;
+		bSprint = false;
 		if (CurrentStanceMode == EStance::ES_Combat || CurrentStanceMode == EStance::ES_Default)
 		{
 			CameraOption();
@@ -388,12 +409,12 @@ void ATeam_ProjectCharacter::StandingChange()
 		SetStanding(CurrentStanding);
 		UE_LOG(LogTemp, Warning, TEXT("Sitting"));
 	}
+	
 }
 
 
 void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
-	// Set up gameplay key bindings
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
@@ -403,14 +424,10 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAction("StanceChange", IE_Pressed, this, &ATeam_ProjectCharacter::StanceChange);
 	PlayerInputComponent->BindAction("StandingChange", IE_Released, this, &ATeam_ProjectCharacter::StandingChange);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ATeam_ProjectCharacter::Interact);
-	// AddToInventory binding
 	PlayerInputComponent->BindAction("AddToInventory", IE_Pressed, this, &ATeam_ProjectCharacter::AddToInventory);
-	// OpenInventory binding
 	PlayerInputComponent->BindAction("OpenInventory", IE_Pressed, this, &ATeam_ProjectCharacter::OpenInventory);
-
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ATeam_ProjectCharacter::SprintStart);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ATeam_ProjectCharacter::SprintEnd);
-
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ATeam_ProjectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &ATeam_ProjectCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &APawn::AddControllerYawInput);
@@ -516,17 +533,17 @@ void ATeam_ProjectCharacter::OpenInventory()
 void ATeam_ProjectCharacter::SprintStart()
 {
 	UE_LOG(LogTemp, Warning, TEXT("We are now sprinting."));
-	bIsSprinting = true;
-	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+	CurrentStanding = EStanding::ESD_Sprinting;
+	SetStanding(CurrentStanding);
 }
 
 void ATeam_ProjectCharacter::SprintEnd()
 {
-	if(bIsSprinting == true)
+	if(bSprint == true)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("We have stopped sprinting."));
-		bIsSprinting = false;
-		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+		CurrentStanding = EStanding::ESD_Standing;
+		SetStanding(CurrentStanding);
 	}
 }
 
@@ -537,7 +554,7 @@ void ATeam_ProjectCharacter::Stamina(float DeltaTime)
 		SprintEnd();
 	}
 
-	if (bIsSprinting)
+	if (bSprint)
 	{
 		currentStamina = FMath::FInterpConstantTo(currentStamina, 0.0f, DeltaTime, staminaSprintUsageRate);
 	}
