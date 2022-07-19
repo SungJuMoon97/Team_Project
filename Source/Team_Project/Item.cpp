@@ -43,6 +43,7 @@ AActor* AItem::Pickup(ATeam_ProjectCharacter* PickingUpActor)
 
 void AItem::Puton()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Hide!"));
 	// hide actor and disable collision
 	Mesh->SetHiddenInGame(true);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);

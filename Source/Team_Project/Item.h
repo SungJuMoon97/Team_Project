@@ -60,8 +60,6 @@ public:
 	void OnUse(class ATeam_ProjectCharacter* Character);
 
 
-
-
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties",
 		meta = (AllowPrivateAccess = "true"))
