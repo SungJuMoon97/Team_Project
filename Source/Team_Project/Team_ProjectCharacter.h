@@ -169,7 +169,7 @@ protected:
 	float SprintSpeed = 1200.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-		bool isSprinting;
+		bool bIsSprinting;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
 		float currentStamina;

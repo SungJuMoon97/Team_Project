@@ -20,13 +20,12 @@
 #include "Team_ProjectGameMode.h"
 #include "InventoryPanel.h"
 #include "Item.h"
-
 #include "TimerManager.h"
 
 ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	//if your View and Stance make a change
 	CurrentViewMode(EViewType::EVT_FirstPerson), CurrentStanceMode(EStance::ES_Default),
-	bCombatState(false),
+	bCombatState(false), bIsSprinting(false),
 	//if you HandAction Default Setting
 	CurrentWeapon(EWeaponType::EWT_Fist), CurrentHandWeapon(EWeaponHand::EWH_Fist),
 	BareHandDamage(10), bLeftHandAction(false), bRightHandAction(false), bDoAttacking(false),
@@ -48,7 +47,7 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 		Shinbi_Mesh(TEXT("SkeletalMesh'/Game/Retarget/Meshes/Shinbi_NoWeapon.Shinbi_NoWeapon'"));
 	if (Shinbi_Mesh.Succeeded())
 		GetMesh()->SetSkeletalMesh(Shinbi_Mesh.Object);
-	isSprinting = false;
+	
 
 	if (PlayerAnim == nullptr)
 		PlayerAnim = Cast<UMKKS_PlayerAnimInstance>(GetMesh()->GetAnimInstance());
@@ -122,7 +121,7 @@ void ATeam_ProjectCharacter::Tick(float DeltaTime)
 		SprintEnd();
 	}
 
-	if (isSprinting)
+	if (bIsSprinting)
 	{
 		currentStamina = FMath::FInterpConstantTo(currentStamina, 0.0f, DeltaTime, staminaSprintUsageRate);
 	}
@@ -534,16 +533,16 @@ void ATeam_ProjectCharacter::OpenInventory()
 void ATeam_ProjectCharacter::SprintStart()
 {
 	UE_LOG(LogTemp, Warning, TEXT("We are now sprinting."));
-	isSprinting = true;
+	bIsSprinting = true;
 	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
 }
 
 void ATeam_ProjectCharacter::SprintEnd()
 {
-	if(isSprinting == true)
+	if(bIsSprinting == true)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("We have stopped sprinting."));
-		isSprinting = false;
+		bIsSprinting = false;
 		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
 	}
 }
