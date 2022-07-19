@@ -1,4 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Team_ProjectCharacter.h"
 #include "Camera/CameraComponent.h"
@@ -21,6 +20,8 @@
 #include "Team_ProjectGameMode.h"
 #include "InventoryPanel.h"
 #include "Item.h"
+
+#include "TimerManager.h"
 
 ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	//if your View and Stance make a change
@@ -47,6 +48,7 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 		Shinbi_Mesh(TEXT("SkeletalMesh'/Game/Retarget/Meshes/Shinbi_NoWeapon.Shinbi_NoWeapon'"));
 	if (Shinbi_Mesh.Succeeded())
 		GetMesh()->SetSkeletalMesh(Shinbi_Mesh.Object);
+	isSprinting = false;
 
 	if (PlayerAnim == nullptr)
 		PlayerAnim = Cast<UMKKS_PlayerAnimInstance>(GetMesh()->GetAnimInstance());
@@ -80,11 +82,24 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
 	Health = 100.f;
+	currentStamina = 1.0f;
+	maxStamina = 1.0f;
+	staminaSprintUsageRate = 0.05f;
+	staminaRechargeRate = 0.01f;
+
+	Food = 100.f;
+	Water = 100.f;
+
+	MaxFood = 100.f;
+	MaxWater = 100.f;
+
+	FoodWaterDrainRate = 20.f;
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ATeam_ProjectCharacter::DecreaseFoodWater, FoodWaterDrainRate, true, 6.f);
 
 	if (IsLocallyControlled() && PlayerWidgetClass)
 	{
@@ -101,6 +116,24 @@ void ATeam_ProjectCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	InputTimeCheck();
+
+	if (currentStamina <= 0)
+	{
+		SprintEnd();
+	}
+
+	if (isSprinting)
+	{
+		currentStamina = FMath::FInterpConstantTo(currentStamina, 0.0f, DeltaTime, staminaSprintUsageRate);
+	}
+
+	else
+	{
+		if (currentStamina < maxStamina)
+		{
+			currentStamina = FMath::FInterpConstantTo(currentStamina, maxStamina, DeltaTime, staminaRechargeRate);
+		}
+	}
 }
 
 void ATeam_ProjectCharacter::LeftHand()
@@ -315,16 +348,12 @@ void ATeam_ProjectCharacter::SetStanding(EStanding StandingType)
 		ThirdPersonCameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 		break;
 
-	case EStanding::ESD_Crouching:
-		bCrouching = true;
-		bLayingDown = false;
-		if (CurrentStanceMode == EStance::ES_Combat || CurrentStanceMode == EStance::ES_Default)
-		{
-			CameraOption();
-			GetCharacterMovement()->MaxWalkSpeed = 200.0f;
-		}	
-		ThirdPersonCameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-		break;
+
+
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Input
 
 	case EStanding::ESD_LayingDown:
 		bCrouching = false;
@@ -403,6 +432,10 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAction("AddToInventory", IE_Pressed, this, &ATeam_ProjectCharacter::AddToInventory);
 	// OpenInventory binding
 	PlayerInputComponent->BindAction("OpenInventory", IE_Pressed, this, &ATeam_ProjectCharacter::OpenInventory);
+
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ATeam_ProjectCharacter::SprintStart);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ATeam_ProjectCharacter::SprintEnd);
+
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ATeam_ProjectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &ATeam_ProjectCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &APawn::AddControllerYawInput);
@@ -503,6 +536,26 @@ void ATeam_ProjectCharacter::OpenInventory()
 		PlayerInventoryPanel->RemoveFromViewport();
 		bIsInventoryOpen = false;
 	}
+void ATeam_ProjectCharacter::SprintStart()
+{
+	UE_LOG(LogTemp, Warning, TEXT("We are now sprinting."));
+	isSprinting = true;
+	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+}
+
+void ATeam_ProjectCharacter::SprintEnd()
+{
+	if(isSprinting == true)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("We have stopped sprinting."));
+		isSprinting = false;
+		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+	}
+}
+
+void ATeam_ProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
+{
+	Jump();
 }
 
 void ATeam_ProjectCharacter::UseItem(AItem* Item)
@@ -579,4 +632,22 @@ void ATeam_ProjectCharacter::MoveRight(float Value)
 		}
 	}
 	
+}
+
+/*FString ATeam_ProjectCharacter::ReturnPlayerStats()
+{
+	FString RetString = "Hunger: " + FString::SanitizeFloat(PlayerStatComp->GetHunger())
+		+ "Thirst: " + FString::SanitizeFloat(PlayerStatComp->GetThirst());
+	return RetString;
+}*/
+
+void ATeam_ProjectCharacter::DecreaseFoodWater()
+{
+	Food = Food - 15.f;
+	Water = Water - 35.f;
+
+	if (Food <= 0 || Water <= 0)
+	{
+		Destroy();
+	}
 }

@@ -159,6 +159,52 @@ private:
 		meta = (AllowPrivateAccess = "true"))
 	bool bRightHandAction;
 
+protected:
+	// APawn interface
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+
+protected:
+	//Sprinting, Stamina
+	void SprintStart();
+	void SprintEnd();
+
+	float RunSpeed = 600.f;
+	float SprintSpeed = 1200.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+		bool isSprinting;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+		float currentStamina;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+		float maxStamina;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+		float staminaSprintUsageRate;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+		float staminaRechargeRate;
+
+	//Food, Water
+	UFUNCTION(BlueprintCallable)
+		void DecreaseFoodWater();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+		float MaxFood;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+		float Food;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+		float MaxWater;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+		float Water;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+		float FoodWaterDrainRate;
 
 public:
 	FORCEINLINE class USpringArmComponent* GetFirstPersonCameraBoom() const { return FirstPersonCameraBoom; }
