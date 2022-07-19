@@ -185,21 +185,21 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
 		float staminaRechargeRate;
 
-	//Food, Water
+	//CurrentHungry, Water
 	UFUNCTION(BlueprintCallable)
 		void DecreaseFoodWater();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
-		float MaxFood;
+		float MaxHungry;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
-		float Food;
+		float CurrentHungry;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
-		float MaxWater;
+		float MaxThirsty;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
-		float Water;
+		float CurrentCurrent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 		float FoodWaterDrainRate;

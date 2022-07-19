@@ -37,7 +37,9 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	inputTime(2.0f),
 	bIsInventoryOpen(false),
 	//PlayerStat
-	Health(100.f),MaxStamina(1.0f), MaxFood(100.0f),MaxWater(100.0f),
+	Health(100.f),MaxStamina(1.0f), MaxHungry(100.0f),MaxThirsty(100.0f),
+	currentStamina(1.0f),staminaSprintUsageRate(0.05f),staminaRechargeRate(0.01f),
+	CurrentHungry(100.0f), CurrentCurrent(100.f),
 	FoodWaterDrainRate(1.0f)//배고픔목마름줄어드는시간
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -85,12 +87,6 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	ThirdPersonCameraBoom->bUsePawnControlRotation = true;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
-	currentStamina = 1.0f;
-	staminaSprintUsageRate = 0.05f;
-	staminaRechargeRate = 0.01f;
-
-	Food = 100.f;
-	Water = 100.f;
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
@@ -561,9 +557,9 @@ void ATeam_ProjectCharacter::Stamina(float DeltaTime)
 
 	else
 	{
-		if (currentStamina < maxStamina)
+		if (currentStamina < MaxStamina)
 		{
-			currentStamina = FMath::FInterpConstantTo(currentStamina, maxStamina, DeltaTime, staminaRechargeRate);
+			currentStamina = FMath::FInterpConstantTo(currentStamina, MaxStamina, DeltaTime, staminaRechargeRate);
 		}
 	}
 }
@@ -646,10 +642,10 @@ void ATeam_ProjectCharacter::MoveRight(float Value)
 
 void ATeam_ProjectCharacter::DecreaseFoodWater()
 {
-	Food = Food - 15.f;
-	Water = Water - 35.f;
+	CurrentHungry = CurrentHungry - 15.f;
+	CurrentCurrent = CurrentCurrent - 35.f;
 
-	if (Food <= 0 || Water <= 0)
+	if (CurrentHungry <= 0 || CurrentCurrent <= 0)
 	{
 		Destroy();
 	}
