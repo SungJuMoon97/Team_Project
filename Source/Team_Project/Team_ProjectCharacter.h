@@ -98,6 +98,7 @@ protected:
 	// Open Inventory
 	void OpenInventory();
 	bool bIsInventoryOpen;
+	bool bIsHoldingItem;
 
 	UFUNCTION(BlueprintCallable, Category = "Items")
 	void UseItem(class AItem* Item);
@@ -123,6 +124,9 @@ private:
 		class AMKKS_PlayerController* MKKS_Controller;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
+		class UInventoryComponent* InventoryComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
 		class UMKKS_PlayerAnimInstance* PlayerAnim;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
@@ -130,6 +134,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 		class UAnimMontage* RightPunchingMontage;
+
+	UPROPERTY(VisibleAnywhere)
+	class UBarWidget* HealthWidget;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,

@@ -29,6 +29,7 @@ void UInventoryComponent::BeginPlay()
 
 }
 
+
 /*
 void UInventoryComponent::AddItemToInventory(AActor* Item)
 {
@@ -38,7 +39,9 @@ void UInventoryComponent::AddItemToInventory(AActor* Item)
 		Items.Add(Item);
 	}
 }
+*/
 
+/*
 void UInventoryComponent::DropItem(AActor* Item)
 {
 	// test later if returned find is valid for if statement
