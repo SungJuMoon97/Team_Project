@@ -22,7 +22,7 @@
 #include "Item.h"
 #include "TimerManager.h"
 
-ATeam_ProjectCharacter::ATeam_ProjectCharacter():
+ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	//if your View and Stance make a change
 	CurrentViewMode(EViewType::EVT_FirstPerson), CurrentStanceMode(EStance::ES_Default),
 	bCombatState(false), bIsSprinting(false),
@@ -31,9 +31,10 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	BareHandDamage(10), bLeftHandAction(false), bRightHandAction(false), bDoAttacking(false),
 	//if Character Sitting or Lying or Standing
 	CurrentStanding(EStanding::ESD_Standing),
-	bSitting(false), bLayingDown(false),bCrouching(false),
+	bSitting(false), bLayingDown(false), bCrouching(false),
 	inputTime(2.0f),
-	bIsInventoryOpen(false)
+	bIsInventoryOpen(false),
+	bIsHoldingItem(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
@@ -93,6 +94,7 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	MaxWater = 100.f;
 
 	FoodWaterDrainRate = 20.f;
+
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
@@ -115,7 +117,7 @@ void ATeam_ProjectCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	InputTimeCheck();
-	Stamina();
+	Stamina(DeltaTime);
 }
 
 void ATeam_ProjectCharacter::LeftHand()
@@ -402,10 +404,11 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAction("ViewChange", IE_Pressed, this, &ATeam_ProjectCharacter::ViewChange);
 	PlayerInputComponent->BindAction("StanceChange", IE_Pressed, this, &ATeam_ProjectCharacter::StanceChange);
 	PlayerInputComponent->BindAction("StandingChange", IE_Released, this, &ATeam_ProjectCharacter::StandingChange);
+	// Item Interact binding (Press E)
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ATeam_ProjectCharacter::Interact);
-	// AddToInventory binding
+	// AddToInventory binding (Press F)
 	PlayerInputComponent->BindAction("AddToInventory", IE_Pressed, this, &ATeam_ProjectCharacter::AddToInventory);
-	// OpenInventory binding
+	// OpenInventory binding (Press I)
 	PlayerInputComponent->BindAction("OpenInventory", IE_Pressed, this, &ATeam_ProjectCharacter::OpenInventory);
 
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ATeam_ProjectCharacter::SprintStart);
@@ -433,9 +436,9 @@ void ATeam_ProjectCharacter::Interact()
 
 void ATeam_ProjectCharacter::GrabActor()
 {
-	FVector Start = GetMesh()->GetComponentLocation();
+	FVector Start = ThirdPersonFollowCamera->GetComponentLocation();
 	// Distance to Interact = 500.0f;
-	FVector End = Start + GetMesh()->GetComponentRotation().Vector() * 500.0f;
+	FVector End = Start + ThirdPersonFollowCamera->GetComponentRotation().Vector() * 500.0f;
 
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
@@ -467,14 +470,14 @@ void ATeam_ProjectCharacter::ReleaseActor()
 
 void ATeam_ProjectCharacter::AddToInventory()
 {
-		PutActor();
+	PutActor();
 }
 
 void ATeam_ProjectCharacter::PutActor()
 {
-	FVector Start = GetMesh()->GetComponentLocation();
+	FVector Start = ThirdPersonFollowCamera->GetComponentLocation();
 	// Distance to Interact = 500.0f;
-	FVector End = Start + GetMesh()->GetComponentRotation().Vector() * 500.0f;
+	FVector End = Start + ThirdPersonFollowCamera->GetComponentRotation().Vector() * 500.0f;
 
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
@@ -489,7 +492,6 @@ void ATeam_ProjectCharacter::PutActor()
 			if (IPickup_Interface* Interface = Cast<IPickup_Interface>(HitActor))
 			{
 				Interface->Puton();
-				// InventoryComponent->AddItemToInventory(HitActor);
 			}
 		}
 	}

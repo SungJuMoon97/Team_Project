@@ -31,11 +31,10 @@ protected:
 	*/
 
 public:
+	// void AddItemToInventory(AItem* Item);
+
 	/*
-	void AddItemToInventory(AActor* Item);
-
-	// UPROPERTY(BlueprintReadOnly, Category = "CharacterInventory")
-
+	UPROPERTY(BlueprintReadOnly, Category = "CharacterInventory")
 	void DropItem(AActor* Item);
 
 	UFUNCTION(BlueprintCallable, Category = "CharacterInventory")
