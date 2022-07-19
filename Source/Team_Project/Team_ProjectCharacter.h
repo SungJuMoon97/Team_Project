@@ -164,6 +164,7 @@ protected:
 	//Sprinting, Stamina
 	void SprintStart();
 	void SprintEnd();
+	void Stamina(float DeltaTime);
 
 	float RunSpeed = 600.f;
 	float SprintSpeed = 1200.f;

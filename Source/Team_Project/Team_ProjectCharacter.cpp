@@ -115,24 +115,7 @@ void ATeam_ProjectCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	InputTimeCheck();
-
-	if (currentStamina <= 0)
-	{
-		SprintEnd();
-	}
-
-	if (bIsSprinting)
-	{
-		currentStamina = FMath::FInterpConstantTo(currentStamina, 0.0f, DeltaTime, staminaSprintUsageRate);
-	}
-
-	else
-	{
-		if (currentStamina < maxStamina)
-		{
-			currentStamina = FMath::FInterpConstantTo(currentStamina, maxStamina, DeltaTime, staminaRechargeRate);
-		}
-	}
+	Stamina();
 }
 
 void ATeam_ProjectCharacter::LeftHand()
@@ -544,6 +527,27 @@ void ATeam_ProjectCharacter::SprintEnd()
 		UE_LOG(LogTemp, Warning, TEXT("We have stopped sprinting."));
 		bIsSprinting = false;
 		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+	}
+}
+
+void ATeam_ProjectCharacter::Stamina(float DeltaTime)
+{
+	if (currentStamina <= 0)
+	{
+		SprintEnd();
+	}
+
+	if (bIsSprinting)
+	{
+		currentStamina = FMath::FInterpConstantTo(currentStamina, 0.0f, DeltaTime, staminaSprintUsageRate);
+	}
+
+	else
+	{
+		if (currentStamina < maxStamina)
+		{
+			currentStamina = FMath::FInterpConstantTo(currentStamina, maxStamina, DeltaTime, staminaRechargeRate);
+		}
 	}
 }
 
