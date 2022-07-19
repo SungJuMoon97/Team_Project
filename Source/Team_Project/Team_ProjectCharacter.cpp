@@ -115,7 +115,7 @@ void ATeam_ProjectCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	InputTimeCheck();
-	Stamina();
+	Stamina(DeltaTime);
 }
 
 void ATeam_ProjectCharacter::LeftHand()
