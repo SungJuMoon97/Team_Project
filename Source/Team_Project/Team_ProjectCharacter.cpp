@@ -94,8 +94,6 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	MaxWater = 100.f;
 
 	FoodWaterDrainRate = 20.f;
-
-
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
