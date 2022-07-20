@@ -43,6 +43,9 @@ void UMKKS_PlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 		MovementOffsetPitch = UKismetMathLibrary::NormalizedDeltaRotator(
 			MovementRotation, AimRotation).Pitch;
 
+		AimOffsetYaw = UKismetMathLibrary::NormalizedDeltaRotator(Team_ProjectCharacter->GetBaseAimRotation(),Team_ProjectCharacter->GetActorRotation()).Yaw;
+		AimOffsetPitch = UKismetMathLibrary::NormalizedDeltaRotator(Team_ProjectCharacter->GetBaseAimRotation(), Team_ProjectCharacter->GetActorRotation()).Pitch;
+		
 		MoveForwardBack = //UKismetMathLibrary::NormalizeAxis(Team_ProjectCharacter->GetInputAxisValue(TEXT("Move Forward / Backward")));
 			Team_ProjectCharacter->GetInputAxisValue(TEXT("Move Forward / Backward"));
 		MoveRightLeft = //UKismetMathLibrary::NormalizeAxis(Team_ProjectCharacter->GetInputAxisValue(TEXT("Move Right / Left")));

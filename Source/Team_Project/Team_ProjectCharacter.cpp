@@ -88,7 +88,7 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	bUseControllerRotationYaw = true;
 	FirstPersonFollowCamera->bUsePawnControlRotation = true;
 	ThirdPersonCameraBoom->bUsePawnControlRotation = true;
-	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
 }
 
@@ -230,6 +230,14 @@ void ATeam_ProjectCharacter::CameraOption()
 	{
 		bUseControllerRotationYaw = false;
 		UE_LOG(LogTemp, Warning, TEXT("gojung_Anim"));
+	}
+}
+
+bool ATeam_ProjectCharacter::WeaponEquip()
+{
+	if (bWeaponEquip)
+	{
+
 	}
 }
 
@@ -533,6 +541,7 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &ATeam_ProjectCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("Turn Right / Left Gamepad", this, &ATeam_ProjectCharacter::TurnAtRate);
+	//PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &ATeam_ProjectCharacter::TurnRate);
 	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("Look Up / Down Gamepad", this, &ATeam_ProjectCharacter::LookUpAtRate);
 }
@@ -547,6 +556,36 @@ void ATeam_ProjectCharacter::Interact()
 	{
 		GrabActor();
 	}
+}
+
+void ATeam_ProjectCharacter::TurnRate(float Rate)
+{
+	if (Rate)
+	{
+		float Ftemp = FirstPersonFollowCamera->GetRelativeRotation().Pitch + Rate;
+		float Ttemp = ThirdPersonFollowCamera->GetRelativeRotation().Pitch + Rate;
+		
+		if (FirstPersonFollowCamera)
+		{
+			//AddActorLocalRotation(FRotator(0, Rate, 0));
+
+
+			if (Ftemp <90 && Ftemp>-90)
+			{
+				FirstPersonFollowCamera->AddLocalRotation(FRotator(0, Rate, 0));
+			}
+		}
+		if (ThirdPersonFollowCamera)
+		{
+			//AddActorLocalRotation(FRotator(0, Rate, 0));
+
+			if (Ttemp <65 && Ttemp>-65)
+			{
+				ThirdPersonCameraBoom->AddLocalRotation(FRotator(0, Rate, 0));
+			}
+		}
+	}
+	
 }
 
 void ATeam_ProjectCharacter::GrabActor()
@@ -633,7 +672,7 @@ void ATeam_ProjectCharacter::OpenInventory()
 
 void ATeam_ProjectCharacter::SprintStart()
 {
-	if (GetInputAxisValue(TEXT("Move Right / Left")) == 0)
+	if ((GetInputAxisValue(TEXT("Move Right / Left")) == 0)&&(GetInputAxisValue(TEXT("Move Forward / Backward")) > 0))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("We are now sprinting."));
 		CurrentStanding = EStanding::ESD_Sprinting;

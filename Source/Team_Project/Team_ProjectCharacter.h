@@ -22,10 +22,12 @@ public:
 
 	void InputTimeCheck();
 	void CameraOption();
+
+	bool WeaponEquip();
 	void BlockModeAim();
 	void BowAiming(float DeltaTIme);
 	void WeaponChangeCheck();
-
+	
 	UFUNCTION()
 		void SetViewType(EViewType ViewType);
 	
@@ -93,6 +95,7 @@ protected:
 	void MoveRight(float Value);
 	void TurnAtRate(float Rate);
 	void LookUpAtRate(float Rate);
+	void TurnRate(float Rate);
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -167,6 +170,10 @@ private:
 		meta = (AllowPrivateAccess = "true"))
 	bool bWeaponEquip;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+	bool bWhereWeapon;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
 	bool bAiming;
@@ -182,6 +189,22 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
 	bool bRightHandAction;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+	bool bBowEquip;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+	bool bTwoHandedEquip;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+	bool bOneHandedEquip;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+	bool bKnuckleEquip;
 
 private:
 	/*Default camera field of view value*/
