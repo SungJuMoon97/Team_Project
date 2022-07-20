@@ -558,36 +558,6 @@ void ATeam_ProjectCharacter::Interact()
 	}
 }
 
-void ATeam_ProjectCharacter::TurnRate(float Rate)
-{
-	if (Rate)
-	{
-		float Ftemp = FirstPersonFollowCamera->GetRelativeRotation().Pitch + Rate;
-		float Ttemp = ThirdPersonFollowCamera->GetRelativeRotation().Pitch + Rate;
-		
-		if (FirstPersonFollowCamera)
-		{
-			//AddActorLocalRotation(FRotator(0, Rate, 0));
-
-
-			if (Ftemp <90 && Ftemp>-90)
-			{
-				FirstPersonFollowCamera->AddLocalRotation(FRotator(0, Rate, 0));
-			}
-		}
-		if (ThirdPersonFollowCamera)
-		{
-			//AddActorLocalRotation(FRotator(0, Rate, 0));
-
-			if (Ttemp <65 && Ttemp>-65)
-			{
-				ThirdPersonCameraBoom->AddLocalRotation(FRotator(0, Rate, 0));
-			}
-		}
-	}
-	
-}
-
 void ATeam_ProjectCharacter::GrabActor()
 {
 	FVector Start = GetMesh()->GetComponentLocation();
