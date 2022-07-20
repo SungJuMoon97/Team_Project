@@ -37,6 +37,7 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	bSitting(false), bLayingDown(false), bCrouching(false),
 	inputTime(2.0f),
 	bIsInventoryOpen(false),
+<<<<<<< HEAD
 	//PlayerStat
 	Health(100.f),MaxStamina(1.0f), MaxHungry(100.0f),MaxThirsty(100.0f),
 	currentStamina(1.0f),staminaSprintUsageRate(0.05f),staminaRechargeRate(0.01f),
@@ -44,6 +45,9 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	FoodWaterDrainRate(10.0f),//배고픔목마름줄어드는시간
 	//BowAiming Setting
 	CameraCurrentFOV(90.0f), CameraDefaultFOV(90.0f),CameraZoomedFOV(50.0f),ZoomInterpSpeed(20.0f)
+=======
+	bIsHoldingItem(false)
+>>>>>>> origin/KPrevious-Work
 {
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
@@ -90,6 +94,23 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	ThirdPersonCameraBoom->bUsePawnControlRotation = true;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
+<<<<<<< HEAD
+=======
+	Health = 100.f;
+	currentStamina = 1.0f;
+	maxStamina = 1.0f;
+	staminaSprintUsageRate = 0.05f;
+	staminaRechargeRate = 0.01f;
+
+	Food = 100.f;
+	Water = 100.f;
+
+	MaxFood = 100.f;
+	MaxWater = 100.f;
+
+	FoodWaterDrainRate = 20.f;
+
+>>>>>>> origin/KPrevious-Work
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
@@ -113,8 +134,11 @@ void ATeam_ProjectCharacter::Tick(float DeltaTime)
 
 	InputTimeCheck();
 	Stamina(DeltaTime);
+<<<<<<< HEAD
 	BowAiming(DeltaTime);
 	WeaponChangeCheck();
+=======
+>>>>>>> origin/KPrevious-Work
 }
 
 void ATeam_ProjectCharacter::LeftHand()
@@ -531,8 +555,15 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAction("ViewChange", IE_Pressed, this, &ATeam_ProjectCharacter::ViewChange);
 	PlayerInputComponent->BindAction("StanceChange", IE_Pressed, this, &ATeam_ProjectCharacter::StanceChange);
 	PlayerInputComponent->BindAction("StandingChange", IE_Released, this, &ATeam_ProjectCharacter::StandingChange);
+	// Item Interact binding (Press E)
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ATeam_ProjectCharacter::Interact);
+<<<<<<< HEAD
 	PlayerInputComponent->BindAction("AddToInventory", IE_Pressed, this, &ATeam_ProjectCharacter::AddToInventory);
+=======
+	// AddToInventory binding (Press F)
+	PlayerInputComponent->BindAction("AddToInventory", IE_Pressed, this, &ATeam_ProjectCharacter::AddToInventory);
+	// OpenInventory binding (Press I)
+>>>>>>> origin/KPrevious-Work
 	PlayerInputComponent->BindAction("OpenInventory", IE_Pressed, this, &ATeam_ProjectCharacter::OpenInventory);
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ATeam_ProjectCharacter::SprintStart);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ATeam_ProjectCharacter::SprintEnd);
@@ -560,9 +591,9 @@ void ATeam_ProjectCharacter::Interact()
 
 void ATeam_ProjectCharacter::GrabActor()
 {
-	FVector Start = GetMesh()->GetComponentLocation();
+	FVector Start = ThirdPersonFollowCamera->GetComponentLocation();
 	// Distance to Interact = 500.0f;
-	FVector End = Start + GetMesh()->GetComponentRotation().Vector() * 500.0f;
+	FVector End = Start + ThirdPersonFollowCamera->GetComponentRotation().Vector() * 500.0f;
 
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
@@ -594,14 +625,14 @@ void ATeam_ProjectCharacter::ReleaseActor()
 
 void ATeam_ProjectCharacter::AddToInventory()
 {
-		PutActor();
+	PutActor();
 }
 
 void ATeam_ProjectCharacter::PutActor()
 {
-	FVector Start = GetMesh()->GetComponentLocation();
+	FVector Start = ThirdPersonFollowCamera->GetComponentLocation();
 	// Distance to Interact = 500.0f;
-	FVector End = Start + GetMesh()->GetComponentRotation().Vector() * 500.0f;
+	FVector End = Start + ThirdPersonFollowCamera->GetComponentRotation().Vector() * 500.0f;
 
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
@@ -616,7 +647,6 @@ void ATeam_ProjectCharacter::PutActor()
 			if (IPickup_Interface* Interface = Cast<IPickup_Interface>(HitActor))
 			{
 				Interface->Puton();
-				// InventoryComponent->AddItemToInventory(HitActor);
 			}
 		}
 	}
