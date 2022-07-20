@@ -178,14 +178,14 @@ protected:
 	float SprintSpeed = 1200.f;
 
 	// HP
-	float MaxHealth = 600.f;
-	float CurrentHealth = MaxHeadHealth;
-	float MaxHeadHealth = 100.f;
-	float MaxBodyHealth = 100.f;
-	float MaxRightArmHealth = 100.f;
-	float MaxLeftArmHealth = 100.f;
-	float MaxRightLegHealth = 100.f;
-	float MaxLeftLegHealth = 100.f;
+	float MaxHealth;
+	float CurrentHealth;
+	float MaxHeadHealth;
+	float MaxBodyHealth;
+	float MaxRightArmHealth;
+	float MaxLeftArmHealth;
+	float MaxRightLegHealth;
+	float MaxLeftLegHealth;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
