@@ -23,7 +23,7 @@ public:
 	void InputTimeCheck();
 	void CameraOption();
 
-	bool WeaponEquip();
+	//bool WeaponEquip();
 	void BlockModeAim();
 	void BowAiming(float DeltaTIme);
 	void WeaponChangeCheck();

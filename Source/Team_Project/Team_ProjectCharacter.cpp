@@ -233,13 +233,13 @@ void ATeam_ProjectCharacter::CameraOption()
 	}
 }
 
-bool ATeam_ProjectCharacter::WeaponEquip()
-{
-	if (bWeaponEquip)
-	{
-
-	}
-}
+//bool ATeam_ProjectCharacter::WeaponEquip()
+//{
+//	if (bWeaponEquip)
+//	{
+//
+//	}
+//}
 
 void ATeam_ProjectCharacter::BlockModeAim()
 {
