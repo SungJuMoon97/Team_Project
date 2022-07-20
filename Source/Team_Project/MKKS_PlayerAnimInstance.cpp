@@ -40,8 +40,14 @@ void UMKKS_PlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 		MovementOffsetYaw = UKismetMathLibrary::NormalizedDeltaRotator(
 			MovementRotation, AimRotation).Yaw;
 
-		MoveForwardBack = Team_ProjectCharacter->GetInputAxisValue(TEXT("Move Forward / Backward"));
-		MoveRightLeft = Team_ProjectCharacter->GetInputAxisValue(TEXT("Move Right / Left"));
+		MovementOffsetPitch = UKismetMathLibrary::NormalizedDeltaRotator(
+			MovementRotation, AimRotation).Pitch;
+
+		MoveForwardBack = //UKismetMathLibrary::NormalizeAxis(Team_ProjectCharacter->GetInputAxisValue(TEXT("Move Forward / Backward")));
+			Team_ProjectCharacter->GetInputAxisValue(TEXT("Move Forward / Backward"));
+		MoveRightLeft = //UKismetMathLibrary::NormalizeAxis(Team_ProjectCharacter->GetInputAxisValue(TEXT("Move Right / Left")));
+			Team_ProjectCharacter->GetInputAxisValue(TEXT("Move Right / Left"));
+		
 
 		if (Team_ProjectCharacter->GetVelocity().Size() > 0.0f)
 		{
@@ -91,7 +97,6 @@ void UMKKS_PlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 			Team_ProjectCharacter->SetStanding(Team_ProjectCharacter->CurrentStanding);
 			UE_LOG(LogTemp, Warning, TEXT("Laying to Crouch"));
 		}
-
 	}
 
 }

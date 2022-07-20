@@ -68,6 +68,10 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
 		meta = (AllowPrivateAccess = "true"))
+		float MovementOffsetPitch;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,
+		meta = (AllowPrivateAccess = "true"))
 		float LastMovementOffsetYaw;//스탑무빙 바로 전의 프레임의 OffsetYaw 값
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement,

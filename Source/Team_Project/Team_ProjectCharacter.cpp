@@ -25,12 +25,13 @@
 ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	//if your View and Stance make a change
 	CurrentViewMode(EViewType::EVT_FirstPerson), CurrentStanceMode(EStance::ES_Default),
-	bCombatState(false), bSprint(false),
+	bCombatState(false), bSprint(false),bWeaponEquip(false),bAiming(false),
 	//CurrentSpeed
 	DefaultSpeed(500.0f), CrouchSpeed(200.0f), CombatSpeed(200.0f), SprintSpeed(800.0f),
 	//if you HandAction Default Setting
 	CurrentWeapon(EWeaponType::EWT_Fist), CurrentHandWeapon(EWeaponHand::EWH_Fist),
-	BareHandDamage(10), bLeftHandAction(false), bRightHandAction(false), bDoAttacking(false),
+	PreviouslyEquippedWeapon(EWeaponHand::EWH_Fist), CompareWeapon(EWeaponHand::EWH_Fist),
+	BareHandDamage(10), bLeftHandAction(false), bRightHandAction(false), bDoAttacking(false), bBlocking(false),
 	//if Character Sitting or Lying or Standing
 	CurrentStanding(EStanding::ESD_Standing),
 	bSitting(false), bLayingDown(false), bCrouching(false),
@@ -39,8 +40,10 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	//PlayerStat
 	Health(100.f),MaxStamina(1.0f), MaxHungry(100.0f),MaxThirsty(100.0f),
 	currentStamina(1.0f),staminaSprintUsageRate(0.05f),staminaRechargeRate(0.01f),
-	CurrentHungry(100.0f), CurrentThirsty(100.f),HungryRate(1.0f),ThirstyRate(1.0f),
-	FoodWaterDrainRate(10.0f)//배고픔목마름줄어드는시간
+	CurrentHungry(100.0f), CurrentThirsty(100.f),HungryRate(0.5f),ThirstyRate(0.8f),
+	FoodWaterDrainRate(10.0f),//배고픔목마름줄어드는시간
+	//BowAiming Setting
+	CameraCurrentFOV(90.0f), CameraDefaultFOV(90.0f),CameraZoomedFOV(50.0f),ZoomInterpSpeed(20.0f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
@@ -110,6 +113,8 @@ void ATeam_ProjectCharacter::Tick(float DeltaTime)
 
 	InputTimeCheck();
 	Stamina(DeltaTime);
+	BowAiming(DeltaTime);
+	WeaponChangeCheck();
 }
 
 void ATeam_ProjectCharacter::LeftHand()
@@ -179,16 +184,33 @@ void ATeam_ProjectCharacter::RightHand()
 			{
 				//PlayAnimMontage(LeftPunchingMontage, 1, NAME_None);
 
+				if (CurrentHandWeapon == EWeaponHand::EWH_Fist)
+				{
+					AnimInstance->Montage_Play(RightPunchingMontage);
+					bDoAttacking = true;
+					UE_LOG(LogTemp, Warning, TEXT("Punch"));
+				}
+				
+			}
+			else if (CurrentHandWeapon == EWeaponHand::EWH_Bow)
+			{
+				bAiming = true;
 
-				AnimInstance->Montage_Play(RightPunchingMontage);
-				bDoAttacking = true;
-				UE_LOG(LogTemp, Warning, TEXT("Punch"));
 			}
 		}
 	}
 	UE_LOG(LogTemp, Warning, TEXT("EndARightHand"));
 	bDoAttacking = false;
 	bRightHandAction = false;
+}
+
+void ATeam_ProjectCharacter::LeftHandEnd()
+{
+}
+
+void ATeam_ProjectCharacter::RightHandEnd()
+{
+	bAiming = false;
 }
 
 void ATeam_ProjectCharacter::InputTimeCheck()
@@ -208,6 +230,86 @@ void ATeam_ProjectCharacter::CameraOption()
 	{
 		bUseControllerRotationYaw = false;
 		UE_LOG(LogTemp, Warning, TEXT("gojung_Anim"));
+	}
+}
+
+void ATeam_ProjectCharacter::BlockModeAim()
+{
+	//if (bWeaponEquip == true)
+	//{
+	//	if (CurrentHandWeapon == EWeaponHand::EWH_Bow)
+	//	{
+			if (CurrentViewMode == EViewType::EVT_FirstPerson)
+			{
+				
+			}
+			if (CurrentViewMode == EViewType::EVT_ThirdPerson)
+			{
+				ThirdPersonFollowCamera->Deactivate();
+				FirstPersonFollowCamera->Activate();
+			}
+	//	}
+
+	//	if (CurrentViewMode == EViewType::EVT_FirstPerson)
+	//	{
+	//		if (CurrentHandWeapon == EWeaponHand::EWH_OneHanded)
+	//		{
+
+	//		}
+	//		else if (CurrentHandWeapon == EWeaponHand::EWH_TwoHanded)
+	//		{
+
+	//		}
+	//		else if (CurrentHandWeapon == EWeaponHand::EWH_Fist)
+	//		{
+
+	//		}
+	//	}
+	//}
+}
+
+void ATeam_ProjectCharacter::BowAiming(float DeltaTime)
+{
+	//if (CurrentHandWeapon == EWeaponHand::EWH_Bow)
+	//{
+		/*float Value = GetInputAxisValue(TEXT("BlockMode/Aim"));
+		if (Value > 1)
+			Value = 1;
+		if (Value < -1)
+			Value = -1;*/
+
+		if (bAiming)
+		{
+			//bAiming = true;
+			CameraCurrentFOV = FMath::FInterpTo(
+				CameraCurrentFOV,
+				CameraZoomedFOV,
+				DeltaTime,
+				ZoomInterpSpeed);
+		}
+		else
+		{
+			//bAiming = false;
+			CameraCurrentFOV = FMath::FInterpTo(
+				CameraCurrentFOV,
+				CameraDefaultFOV,
+				DeltaTime,
+				ZoomInterpSpeed);
+		}
+	//}
+		if (CurrentViewMode == EViewType::EVT_FirstPerson)
+		{
+			GetFirstPersonFollowCamera()->SetFieldOfView(CameraCurrentFOV);
+		}
+}
+
+
+void ATeam_ProjectCharacter::WeaponChangeCheck()
+{
+	if (CompareWeapon != CurrentHandWeapon)
+	{
+		PreviouslyEquippedWeapon = CompareWeapon;
+		CompareWeapon = CurrentHandWeapon;
 	}
 }
 
@@ -416,6 +518,8 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	PlayerInputComponent->BindAction("LeftHand", IE_Pressed, this, &ATeam_ProjectCharacter::LeftHand);
 	PlayerInputComponent->BindAction("RightHand", IE_Pressed, this, &ATeam_ProjectCharacter::RightHand);;
+	PlayerInputComponent->BindAction("LeftHand",IE_Released, this, &ATeam_ProjectCharacter::LeftHandEnd);
+	PlayerInputComponent->BindAction("RightHand", IE_Released, this, &ATeam_ProjectCharacter::RightHandEnd);;
 	PlayerInputComponent->BindAction("ViewChange", IE_Pressed, this, &ATeam_ProjectCharacter::ViewChange);
 	PlayerInputComponent->BindAction("StanceChange", IE_Pressed, this, &ATeam_ProjectCharacter::StanceChange);
 	PlayerInputComponent->BindAction("StandingChange", IE_Released, this, &ATeam_ProjectCharacter::StandingChange);
@@ -424,6 +528,7 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAction("OpenInventory", IE_Pressed, this, &ATeam_ProjectCharacter::OpenInventory);
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ATeam_ProjectCharacter::SprintStart);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ATeam_ProjectCharacter::SprintEnd);
+	PlayerInputComponent->BindAction("BlockMode/Aim", IE_Axis, this, &ATeam_ProjectCharacter::BlockModeAim);
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ATeam_ProjectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &ATeam_ProjectCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &APawn::AddControllerYawInput);

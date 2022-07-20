@@ -17,9 +17,14 @@ public:
 
 	void LeftHand();
 	void RightHand();
+	void LeftHandEnd();
+	void RightHandEnd();
 
 	void InputTimeCheck();
 	void CameraOption();
+	void BlockModeAim();
+	void BowAiming(float DeltaTIme);
+	void WeaponChangeCheck();
 
 	UFUNCTION()
 		void SetViewType(EViewType ViewType);
@@ -58,6 +63,8 @@ public:
 	EStanding CurrentStanding;
 	EWeaponType CurrentWeapon;
 	EWeaponHand CurrentHandWeapon;
+	EWeaponHand PreviouslyEquippedWeapon;
+	EWeaponHand CompareWeapon;
 	bool bThirdPersonView;
 	float BareHandDamage;//맨손공격력
 	float inputTime;
@@ -158,11 +165,35 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
+	bool bWeaponEquip;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
+		meta = (AllowPrivateAccess = "true"))
+	bool bAiming;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
+		meta = (AllowPrivateAccess = "true"))
+	bool bBlocking;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
+		meta = (AllowPrivateAccess = "true"))
 	bool bLeftHandAction;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
 	bool bRightHandAction;
+
+private:
+	/*Default camera field of view value*/
+	float CameraDefaultFOV;
+
+	/*Field of view value for when zoomed in*/
+	float CameraZoomedFOV;
+
+	/*Current field of view this frame*/
+	float CameraCurrentFOV;
+
+	float ZoomInterpSpeed;
 
 protected:
 	//Sprinting, Stamina

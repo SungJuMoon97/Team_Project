@@ -48,6 +48,7 @@ enum class EWeaponHand : uint8
 	EWH_OneHanded UMETA(DisplayName = "OneHandedWeapon"),
 	EWH_TwoHanded UMETA(DisplayName = "TwoHandedWeapon"),
 	EWH_Fist UMETA(DisplayName = "FistWeapon"),
+	EWH_Bow UMETA(DisplayName = "BowWeapon"),
 
 	EWH_MAX UMETA(DisplayName = "EWH_MAX")
 };
