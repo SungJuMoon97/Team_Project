@@ -20,6 +20,7 @@ public:
 
 	void InputTimeCheck();
 	void CameraOption();
+	void BarWidget();
 
 	UFUNCTION()
 		void SetViewType(EViewType ViewType);

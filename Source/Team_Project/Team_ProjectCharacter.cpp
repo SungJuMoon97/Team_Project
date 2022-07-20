@@ -94,8 +94,6 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	MaxWater = 100.f;
 
 	FoodWaterDrainRate = 20.f;
-
-
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
@@ -103,16 +101,7 @@ void ATeam_ProjectCharacter::BeginPlay()
 	Super::BeginPlay();
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ATeam_ProjectCharacter::DecreaseFoodWater, FoodWaterDrainRate, true, 6.f);
 
-	if (IsLocallyControlled() && PlayerWidgetClass)
-	{
-		AMKKS_PlayerController* FPC = GetController<AMKKS_PlayerController>();
-		check(FPC);
-		PlayerWidget = CreateWidget<UBarWidget>(FPC, PlayerWidgetClass);
-		check(PlayerWidget);
-		PlayerWidget->AddToViewport();
-		PlayerWidget->SetHealth(CurrentHealth, MaxHealth);
-	}
-
+	BarWidget();
 }
 
 void ATeam_ProjectCharacter::Tick(float DeltaTime)
@@ -217,6 +206,19 @@ void ATeam_ProjectCharacter::CameraOption()
 	{
 		bUseControllerRotationYaw = false;
 		UE_LOG(LogTemp, Warning, TEXT("gojung_Anim"));
+	}
+}
+
+void ATeam_ProjectCharacter::BarWidget()
+{
+	if (IsLocallyControlled() && PlayerWidgetClass)
+	{
+		AMKKS_PlayerController* FPC = GetController<AMKKS_PlayerController>();
+		check(FPC);
+		PlayerWidget = CreateWidget<UBarWidget>(FPC, PlayerWidgetClass);
+		check(PlayerWidget);
+		PlayerWidget->AddToViewport();
+		PlayerWidget->SetHealth(CurrentHealth, MaxHealth);
 	}
 }
 
