@@ -133,7 +133,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* ThirdPersonFollowCamera;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = Character)
 		class AMKKS_PlayerController* MKKS_Controller;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
@@ -151,11 +151,11 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UBarWidget* HealthWidget;
 
-	UPROPERTY(VisibleAnywhere, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+	/*UPROPERTY(VisibleAnywhere, Category = Weapon)
 		class AWeapon* MyWeapon;
 
-	UPROPERTY(VisibleAnywhere, Category = Weapon, meta = (AllowPrivateAccess = "true"))
-		class AItem* MyItem;
+	UPROPERTY(VisibleAnywhere, Category = Item)
+		class AItem* MyItem;*/
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
@@ -217,14 +217,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
 		meta = (AllowPrivateAccess = "true"))
 		bool bKnuckleEquip;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
-		meta = (AllowPrivateAccess = "true"))
-		bool bIsWeapon;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Item,
-		meta = (AllowPrivateAccess = "true"))
-		bool bIsItem;
 
 private:
 	/*Default camera field of view value*/

@@ -5,7 +5,7 @@
 #include "Enum_Collection.h"
 
 AWeapon::AWeapon():
-	CurrentWeaponHand(EWeaponHand::EWH_OneHanded),CurrentWeaponType(EWeaponType::EWT_Sword),bIsWeapon(true)
+	CurrentWeaponHand(EWeaponHand::EWH_OneHanded),CurrentWeaponType(EWeaponType::EWT_Sword)
 {
 	PrimaryActorTick.bCanEverTick = true;
 

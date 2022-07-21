@@ -108,15 +108,10 @@ private:
 		meta = (AllowPrivateAccess = "true"))
 		FText ItemDisplayName;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Item,
-		meta = (AllowPrivateAccess = "true"))
-		bool bIsItem;
-
 public:
 	FORCEINLINE USkeletalMeshComponent* GetItemMesh() { return ItemMesh; }
 	FORCEINLINE UStaticMeshComponent* GetMesh() { return Mesh; }
 	FORCEINLINE UBoxComponent* GetCollisionBox() const { return CollisionBox; }
 	FORCEINLINE USoundCue* GetPickupSound() const { return PickupSound; }
 	FORCEINLINE USoundCue* GetEquipSound() const { return EquipSound; }
-	FORCEINLINE bool GetIsItem() const { return bIsItem; }
 };

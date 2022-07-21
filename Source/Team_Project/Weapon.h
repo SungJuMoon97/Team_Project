@@ -95,10 +95,6 @@ private:
 		meta = (AllowPrivateAccess = "true"))
 		bool bWhereWeapon;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
-		meta = (AllowPrivateAccess = "true"))
-		bool bIsWeapon;
-
 public:
 	FORCEINLINE bool GetWeaponEquip() const { return bWeaponEquip; }
 	FORCEINLINE bool GetWeaponWhere() const { return bWhereWeapon; }
@@ -110,6 +106,5 @@ public:
 	FORCEINLINE bool GetSwordWeapon() const { return bSwordWeapon; }
 	FORCEINLINE bool GetHammerWeapon() const { return bHammerWeapon; }
 	FORCEINLINE bool GetBowWeapon() const { return bBowWeapon; }
-	FORCEINLINE bool GetIsWeapon() const { return bIsWeapon; }
 
 };

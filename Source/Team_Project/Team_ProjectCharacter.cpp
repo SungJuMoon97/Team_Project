@@ -90,7 +90,6 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	ThirdPersonCameraBoom->bUsePawnControlRotation = true;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
-
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
@@ -117,8 +116,6 @@ void ATeam_ProjectCharacter::Tick(float DeltaTime)
 	BowAiming(DeltaTime);
 	WeaponChangeCheck();
 	BoolChecking();
-	bIsItem = MyItem->GetIsItem();
-	bIsWeapon = MyWeapon->GetIsWeapon();
 }
 
 void ATeam_ProjectCharacter::LeftHand()
@@ -240,31 +237,14 @@ void ATeam_ProjectCharacter::CameraOption()
 
 void ATeam_ProjectCharacter::BoolChecking()
 {
-	bIsItem = MyItem->GetIsItem();
-	bIsWeapon = MyWeapon->GetIsWeapon();
 }
 
 void ATeam_ProjectCharacter::WeaponEquip()
 {
-	if(MyWeapon ==nullptr)
-		return;
-
-	bWeaponEquip = true;
-	FName ItemSocket(TEXT("hand_r_Socket"));
-	if (nullptr != MyWeapon)
-	{
-		MyWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ItemSocket);
-		MyWeapon->SetOwner(this);
-	}
-	
 }
 
 void ATeam_ProjectCharacter::WeaponSeparate()
 {
-	if (MyWeapon == nullptr)
-		return;
-
-	bWeaponEquip = false;
 }
 
 void ATeam_ProjectCharacter::BlockModeAim()
@@ -580,12 +560,9 @@ void ATeam_ProjectCharacter::Interact()
 {
 	if (HeldActor)
 	{
-		if (bIsItem)
+		if (inputTime <= PCInputTime_Interact)
 		{
-			if (bIsWeapon)
-			{
 
-			}
 		}
 
 		ReleaseActor();
@@ -595,13 +572,6 @@ void ATeam_ProjectCharacter::Interact()
 		if (inputTime <= PCInputTime_Interact)
 		{
 
-			if (bIsItem)
-			{
-				if (bIsWeapon)
-				{
-					WeaponEquip();
-				}
-			}
 		}
 		GrabActor();
 	}
