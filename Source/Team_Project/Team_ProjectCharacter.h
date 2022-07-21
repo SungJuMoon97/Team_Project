@@ -20,6 +20,7 @@ public:
 
 	void InputTimeCheck();
 	void CameraOption();
+	void BarWidget();
 
 	UFUNCTION()
 		void SetViewType(EViewType ViewType);
@@ -175,6 +176,17 @@ protected:
 
 	float RunSpeed = 600.f;
 	float SprintSpeed = 1200.f;
+
+	// HP
+	float MaxHealth;
+	float CurrentHealth;
+	float MaxHeadHealth;
+	float MaxBodyHealth;
+	float MaxRightArmHealth;
+	float MaxLeftArmHealth;
+	float MaxRightLegHealth;
+	float MaxLeftLegHealth;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 		bool bIsSprinting;
