@@ -244,15 +244,27 @@ void ATeam_ProjectCharacter::BoolChecking()
 	bIsWeapon = MyWeapon->GetIsWeapon();
 }
 
-bool ATeam_ProjectCharacter::WeaponEquip()
+void ATeam_ProjectCharacter::WeaponEquip()
 {
+	if(MyWeapon ==nullptr)
+		return;
+
 	bWeaponEquip = true;
-	return false;
+	FName ItemSocket(TEXT("hand_r_Socket"));
+	if (nullptr != MyWeapon)
+	{
+		MyWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ItemSocket);
+		MyWeapon->SetOwner(this);
+	}
+	
 }
 
-bool ATeam_ProjectCharacter::WeaponSeparate()
+void ATeam_ProjectCharacter::WeaponSeparate()
 {
-	return false;
+	if (MyWeapon == nullptr)
+		return;
+
+	bWeaponEquip = false;
 }
 
 void ATeam_ProjectCharacter::BlockModeAim()
@@ -568,26 +580,29 @@ void ATeam_ProjectCharacter::Interact()
 {
 	if (HeldActor)
 	{
-		/*if (bIsItem)
+		if (bIsItem)
 		{
 			if (bIsWeapon)
 			{
 
 			}
-		}*/
+		}
 
 		ReleaseActor();
 	}
 	else
 	{
-		/*if (bIsItem)
+		if (inputTime <= PCInputTime_Interact)
 		{
-			if (bIsWeapon)
+
+			if (bIsItem)
 			{
-
+				if (bIsWeapon)
+				{
+					WeaponEquip();
+				}
 			}
-		}*/
-
+		}
 		GrabActor();
 	}
 }

@@ -24,8 +24,8 @@ public:
 	void CameraOption();
 	void BoolChecking();
 
-	bool WeaponEquip();
-	bool WeaponSeparate();//분리하다
+	void WeaponEquip();
+	void WeaponSeparate();//분리하다
 	void BlockModeAim();
 	void BowAiming(float DeltaTIme);
 	void WeaponChangeCheck();
