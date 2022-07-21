@@ -22,6 +22,7 @@ public:
 
 	void InputTimeCheck();
 	void CameraOption();
+	void BoolChecking();
 
 	bool WeaponEquip();
 	bool WeaponSeparate();//분리하다

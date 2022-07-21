@@ -69,7 +69,6 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	FirstPersonFollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonFollowCamera"));
 	ThirdPersonCameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("ThirdPersonCameraBoom"));
 	ThirdPersonFollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdPersonFollowCamera"));
-
 	ThirdPersonCameraBoom->TargetArmLength = 150.f;
 	ThirdPersonCameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 70.0f));
 	ThirdPersonCameraBoom->SetupAttachment(RootComponent);
@@ -92,8 +91,6 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
 
-	bIsItem = MyItem->GetIsItem();
-	bIsWeapon = MyWeapon->GetIsWeapon();
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
@@ -119,6 +116,9 @@ void ATeam_ProjectCharacter::Tick(float DeltaTime)
 	Stamina(DeltaTime);
 	BowAiming(DeltaTime);
 	WeaponChangeCheck();
+	BoolChecking();
+	bIsItem = MyItem->GetIsItem();
+	bIsWeapon = MyWeapon->GetIsWeapon();
 }
 
 void ATeam_ProjectCharacter::LeftHand()
@@ -236,6 +236,12 @@ void ATeam_ProjectCharacter::CameraOption()
 		bUseControllerRotationYaw = false;
 		UE_LOG(LogTemp, Warning, TEXT("gojung_Anim"));
 	}
+}
+
+void ATeam_ProjectCharacter::BoolChecking()
+{
+	bIsItem = MyItem->GetIsItem();
+	bIsWeapon = MyWeapon->GetIsWeapon();
 }
 
 bool ATeam_ProjectCharacter::WeaponEquip()
@@ -562,25 +568,25 @@ void ATeam_ProjectCharacter::Interact()
 {
 	if (HeldActor)
 	{
-		if (bIsItem)
+		/*if (bIsItem)
 		{
 			if (bIsWeapon)
 			{
 
 			}
-		}
+		}*/
 
 		ReleaseActor();
 	}
 	else
 	{
-		if (bIsItem)
+		/*if (bIsItem)
 		{
 			if (bIsWeapon)
 			{
 
 			}
-		}
+		}*/
 
 		GrabActor();
 	}
