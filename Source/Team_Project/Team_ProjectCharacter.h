@@ -23,7 +23,8 @@ public:
 	void InputTimeCheck();
 	void CameraOption();
 
-	//bool WeaponEquip();
+	bool WeaponEquip();
+	bool WeaponSeparate();//분리하다
 	void BlockModeAim();
 	void BowAiming(float DeltaTIme);
 	void WeaponChangeCheck();
@@ -49,15 +50,15 @@ public:
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Input)
-	float TurnRateGamepad;
+		float TurnRateGamepad;
 
 	// Widgetclass to spawn for the heads up display.
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class UBarWidget> PlayerWidgetClass;
+		TSubclassOf<class UBarWidget> PlayerWidgetClass;
 
 	// The Widget instance that we are using as our HUD.
 	UPROPERTY()
-	class UBarWidget* PlayerWidget;
+		class UBarWidget* PlayerWidget;
 
 	FTimerHandle TimerHandle;
 	EViewType CurrentViewMode;
@@ -70,7 +71,8 @@ public:
 	bool bThirdPersonView;
 	float BareHandDamage;//맨손공격력
 	float inputTime;
-	float PCInputTime;
+	float PCInputTime_Stand;
+	float PCInputTime_Interact;
 	float DefaultSpeed;
 	float CrouchSpeed;
 	float CombatSpeed;
@@ -81,10 +83,10 @@ public:
 
 	// The Widget instance that we are using as our HUD.
 	UPROPERTY()
-	class UInventoryPanel* PlayerInventoryPanel;
+		class UInventoryPanel* PlayerInventoryPanel;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
-	float Health;
+		float Health;
 
 protected:
 
@@ -114,12 +116,9 @@ protected:
 	bool bIsHoldingItem;
 
 	UFUNCTION(BlueprintCallable, Category = "Items")
-	void UseItem(class AItem* Item);
+		void UseItem(class AItem* Item);
 private:
 	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-		class USpringArmComponent* FirstPersonCameraBoom;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "CharacterInventory", meta = (AllowPrivateAccess = "true"))
 	class UInventoryComponent* Inventory;
 	/** Follow camera */
@@ -149,68 +148,82 @@ private:
 		class UAnimMontage* RightPunchingMontage;
 
 	UPROPERTY(VisibleAnywhere)
-	class UBarWidget* HealthWidget;
+		class UBarWidget* HealthWidget;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+		class AWeapon* MyWeapon;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+		class AItem* MyItem;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
-	bool bDoAttacking;
+		bool bDoAttacking;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
-	bool bCrouching;//웅크리고있느냐
+		bool bCrouching;//웅크리고있느냐
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
-	bool bSitting;//앉아있느냐
+		bool bSitting;//앉아있느냐
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
-	bool bLayingDown;//누워있느냐?
+		bool bLayingDown;//누워있느냐?
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
-	bool bCombatState;
+		bool bCombatState;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
-	bool bWeaponEquip;
+		bool bWeaponEquip;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
 		meta = (AllowPrivateAccess = "true"))
-	bool bWhereWeapon;
+		bool bWhereWeapon;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
-	bool bAiming;
+		bool bAiming;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
-	bool bBlocking;
+		bool bBlocking;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
-	bool bLeftHandAction;
+		bool bLeftHandAction;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
-	bool bRightHandAction;
+		bool bRightHandAction;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
 		meta = (AllowPrivateAccess = "true"))
-	bool bBowEquip;
+		bool bBowEquip;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
 		meta = (AllowPrivateAccess = "true"))
-	bool bTwoHandedEquip;
+		bool bTwoHandedEquip;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
 		meta = (AllowPrivateAccess = "true"))
-	bool bOneHandedEquip;
+		bool bOneHandedEquip;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
 		meta = (AllowPrivateAccess = "true"))
-	bool bKnuckleEquip;
+		bool bKnuckleEquip;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bIsWeapon;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Item,
+		meta = (AllowPrivateAccess = "true"))
+		bool bIsItem;
 
 private:
 	/*Default camera field of view value*/
@@ -270,7 +283,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 		float ThirstyRate;
 public:
-	FORCEINLINE class USpringArmComponent* GetFirstPersonCameraBoom() const { return FirstPersonCameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFirstPersonFollowCamera() const { return FirstPersonFollowCamera; }
 	FORCEINLINE class USpringArmComponent* GetThirdPersonCameraBoom() const { return ThirdPersonCameraBoom; }
 	FORCEINLINE class UCameraComponent* GetThirdPersonFollowCamera() const { return ThirdPersonFollowCamera; }

@@ -20,6 +20,7 @@
 #include "Team_ProjectGameMode.h"
 #include "InventoryPanel.h"
 #include "Item.h"
+#include "Weapon.h"
 #include "TimerManager.h"
 
 ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
@@ -65,7 +66,6 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 
 	FName FirstPersonCameraSocket(TEXT("FirstPersonCameraSocket"));
 	FName ThirdPersonCameraSocket(TEXT("ThirdPersonCameraSocket"));
-	FirstPersonCameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("FirstPersonCameraBoom"));
 	FirstPersonFollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonFollowCamera"));
 	ThirdPersonCameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("ThirdPersonCameraBoom"));
 	ThirdPersonFollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdPersonFollowCamera"));
@@ -92,6 +92,8 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
 
+	bIsItem = MyItem->GetIsItem();
+	bIsWeapon = MyWeapon->GetIsWeapon();
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
@@ -217,8 +219,9 @@ void ATeam_ProjectCharacter::RightHandEnd()
 
 void ATeam_ProjectCharacter::InputTimeCheck()
 {
-	PCInputTime = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetInputKeyTimeDown(FKey("X")) * 10.0f;
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("How long was the key pressed: %f"), PCInputTime));
+	PCInputTime_Stand = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetInputKeyTimeDown(FKey("X")) * 10.0f;
+	PCInputTime_Interact = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetInputKeyTimeDown(FKey("E")) * 10.0f;
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("How long was the key pressed: %f"), PCInputTime_Stand));
 }
 
 void ATeam_ProjectCharacter::CameraOption()
@@ -235,13 +238,16 @@ void ATeam_ProjectCharacter::CameraOption()
 	}
 }
 
-//bool ATeam_ProjectCharacter::WeaponEquip()
-//{
-//	if (bWeaponEquip)
-//	{
-//
-//	}
-//}
+bool ATeam_ProjectCharacter::WeaponEquip()
+{
+	bWeaponEquip = true;
+	return false;
+}
+
+bool ATeam_ProjectCharacter::WeaponSeparate()
+{
+	return false;
+}
 
 void ATeam_ProjectCharacter::BlockModeAim()
 {
@@ -476,7 +482,7 @@ void ATeam_ProjectCharacter::StandingChange()
 {
 	if (CurrentStanding == EStanding::ESD_Standing)
 	{
-		if (inputTime <= PCInputTime)
+		if (inputTime <= PCInputTime_Stand)
 		{
 			CurrentStanding = EStanding::ESD_LayingDown;
 			SetStanding(CurrentStanding);
@@ -490,7 +496,7 @@ void ATeam_ProjectCharacter::StandingChange()
 	}
 	else if (CurrentStanding == EStanding::ESD_Crouching)
 	{
-		if (inputTime <= PCInputTime)
+		if (inputTime <= PCInputTime_Stand)
 		{
 			CurrentStanding = EStanding::ESD_LayingDown;
 			SetStanding(CurrentStanding);
@@ -504,7 +510,7 @@ void ATeam_ProjectCharacter::StandingChange()
 	}
 	else
 	{
-		if (inputTime <= PCInputTime)
+		if (inputTime <= PCInputTime_Stand)
 		{
 			
 			CurrentStanding = EStanding::ESD_Standing;
@@ -556,10 +562,26 @@ void ATeam_ProjectCharacter::Interact()
 {
 	if (HeldActor)
 	{
+		if (bIsItem)
+		{
+			if (bIsWeapon)
+			{
+
+			}
+		}
+
 		ReleaseActor();
 	}
 	else
 	{
+		if (bIsItem)
+		{
+			if (bIsWeapon)
+			{
+
+			}
+		}
+
 		GrabActor();
 	}
 }

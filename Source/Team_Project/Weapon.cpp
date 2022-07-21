@@ -4,17 +4,27 @@
 #include "Weapon.h"
 #include "Enum_Collection.h"
 
-AWeapon::AWeapon():CurrentWeaponHand(EWeaponHand::EWH_OneHanded),CurrentWeaponType(EWeaponType::EWT_Sword)
+AWeapon::AWeapon():
+	CurrentWeaponHand(EWeaponHand::EWH_OneHanded),CurrentWeaponType(EWeaponType::EWT_Sword),bIsWeapon(true)
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
-	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WEAPON"));
-	RootComponent = Weapon;
+	//RootComponent = GetItemMesh();
 	
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>
 		WP_Sword(TEXT("SkeletalMesh'/Game/Weapon_Pack/Skeletal_Mesh/SK_Dagger_2.SK_Dagger_2'"));
 	if (WP_Sword.Succeeded())
-		Weapon->SetSkeletalMesh(WP_Sword.Object);
+		GetItemMesh()->SetSkeletalMesh(WP_Sword.Object);
+
+	SetWeaponHand(CurrentWeaponHand);
+	SetWeaponType(CurrentWeaponType);
+	
+}
+
+void AWeapon::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
 }
 
 void AWeapon::SetWeaponType(EWeaponType Type)
@@ -49,7 +59,7 @@ void AWeapon::SetWeaponHand(EWeaponHand Kind)
 			static ConstructorHelpers::FObjectFinder<USkeletalMesh>
 				WP_Sword(TEXT("SkeletalMesh'/Game/Weapon_Pack/Skeletal_Mesh/SK_Dagger_2.SK_Dagger_2'"));
 			if (WP_Sword.Succeeded())
-				Weapon->SetSkeletalMesh(WP_Sword.Object);
+				GetItemMesh()->SetSkeletalMesh(WP_Sword.Object);
 		}
 		break;
 		
@@ -59,14 +69,14 @@ void AWeapon::SetWeaponHand(EWeaponHand Kind)
 			static ConstructorHelpers::FObjectFinder<USkeletalMesh>
 				WP_Hammer(TEXT("SkeletalMesh'/Game/Weapon_Pack/Skeletal_Mesh/SK_GreatHammer.SK_GreatHammer'"));
 			if (WP_Hammer.Succeeded())
-				Weapon->SetSkeletalMesh(WP_Hammer.Object);
+				GetItemMesh()->SetSkeletalMesh(WP_Hammer.Object);
 		}
 		if (bSwordWeapon)
 		{
 			static ConstructorHelpers::FObjectFinder<USkeletalMesh>
 				WP_Sword(TEXT("SkeletalMesh'/Game/Weapon_Pack/Skeletal_Mesh/SK_Sword.SK_Sword'"));
 			if (WP_Sword.Succeeded())
-				Weapon->SetSkeletalMesh(WP_Sword.Object);
+				GetItemMesh()->SetSkeletalMesh(WP_Sword.Object);
 		}
 		break;
 
@@ -76,7 +86,7 @@ void AWeapon::SetWeaponHand(EWeaponHand Kind)
 			static ConstructorHelpers::FObjectFinder<USkeletalMesh>
 				WP_Knuckle(TEXT("SkeletalMesh'/Game/Weapon_Pack/Skeletal_Mesh/SK_H2H.SK_H2H'"));
 			if (WP_Knuckle.Succeeded())
-				Weapon->SetSkeletalMesh(WP_Knuckle.Object);
+				GetItemMesh()->SetSkeletalMesh(WP_Knuckle.Object);
 		}
 		break;
 
@@ -86,8 +96,13 @@ void AWeapon::SetWeaponHand(EWeaponHand Kind)
 			static ConstructorHelpers::FObjectFinder<USkeletalMesh>
 				WP_Bow(TEXT("SkeletalMesh'/Game/ParagonSparrow/Characters/Heroes/Sparrow/Meshes/Bow.Bow'"));
 			if (WP_Bow.Succeeded())
-				Weapon->SetSkeletalMesh(WP_Bow.Object);
+				GetItemMesh()->SetSkeletalMesh(WP_Bow.Object);
 		}
 		break;
 	}
+}
+
+void AWeapon::WeaponCheck()
+{
+
 }

@@ -36,6 +36,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -106,12 +108,15 @@ private:
 		meta = (AllowPrivateAccess = "true"))
 		FText ItemDisplayName;
 
-
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Item,
+		meta = (AllowPrivateAccess = "true"))
+		bool bIsItem;
 
 public:
 	FORCEINLINE USkeletalMeshComponent* GetItemMesh() { return ItemMesh; }
+	FORCEINLINE UStaticMeshComponent* GetMesh() { return Mesh; }
 	FORCEINLINE UBoxComponent* GetCollisionBox() const { return CollisionBox; }
 	FORCEINLINE USoundCue* GetPickupSound() const { return PickupSound; }
 	FORCEINLINE USoundCue* GetEquipSound() const { return EquipSound; }
+	FORCEINLINE bool GetIsItem() const { return bIsItem; }
 };

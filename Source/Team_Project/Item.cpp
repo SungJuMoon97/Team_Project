@@ -8,7 +8,8 @@
 #include "Components/BoxComponent.h"
 
 // Sets default values
-AItem::AItem()
+AItem::AItem():
+	bIsItem(true)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -18,7 +19,7 @@ AItem::AItem()
 	UseActionText = FText::FromString("Use");
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("InsItemMesh"));
-	
+	ItemMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ItemMesh"));
 
 }
 
@@ -45,6 +46,8 @@ void AItem::Puton()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Hide!"));
 	// hide actor and disable collision
+	ItemMesh->SetHiddenInGame(true);
+	ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Mesh->SetHiddenInGame(true);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
@@ -52,6 +55,8 @@ void AItem::Puton()
 void AItem::Drop()
 {
 	// drop actor and enable collision
+	ItemMesh->SetHiddenInGame(false);
+	ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	Mesh->SetHiddenInGame(false);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }

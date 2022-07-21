@@ -21,15 +21,19 @@ public:
 	void SetWeaponType(EWeaponType Type);
 	void SetWeaponHand(EWeaponHand Kind);
 
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
-		USkeletalMeshComponent* Weapon;
-
-	EWeaponHand CurrentWeaponHand;
-	EWeaponType CurrentWeaponType;
+	void WeaponCheck();
 
 protected:
-
+	virtual void Tick(float DeltaTIme) override;
 private:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		EWeaponHand CurrentWeaponHand;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		EWeaponType CurrentWeaponType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attack,
 			meta = (AllowPrivateAccess = "true"))
@@ -63,7 +67,7 @@ private:
 		meta = (AllowPrivateAccess = "true"))
 		bool bOneHandedEquip;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Weapon,
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon,
 		meta = (AllowPrivateAccess = "true"))
 		bool bKnuckleEquip;
 
@@ -91,6 +95,10 @@ private:
 		meta = (AllowPrivateAccess = "true"))
 		bool bWhereWeapon;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bIsWeapon;
+
 public:
 	FORCEINLINE bool GetWeaponEquip() const { return bWeaponEquip; }
 	FORCEINLINE bool GetWeaponWhere() const { return bWhereWeapon; }
@@ -102,5 +110,6 @@ public:
 	FORCEINLINE bool GetSwordWeapon() const { return bSwordWeapon; }
 	FORCEINLINE bool GetHammerWeapon() const { return bHammerWeapon; }
 	FORCEINLINE bool GetBowWeapon() const { return bBowWeapon; }
+	FORCEINLINE bool GetIsWeapon() const { return bIsWeapon; }
 
 };
