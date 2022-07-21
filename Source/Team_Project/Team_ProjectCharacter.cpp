@@ -22,7 +22,7 @@
 #include "Item.h"
 #include "TimerManager.h"
 
-ATeam_ProjectCharacter::ATeam_ProjectCharacter():
+ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	//if your View and Stance make a change
 	CurrentViewMode(EViewType::EVT_FirstPerson), CurrentStanceMode(EStance::ES_Default),
 	bCombatState(false), bIsSprinting(false),
@@ -31,9 +31,11 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter():
 	BareHandDamage(10), bLeftHandAction(false), bRightHandAction(false), bDoAttacking(false),
 	//if Character Sitting or Lying or Standing
 	CurrentStanding(EStanding::ESD_Standing),
-	bSitting(false), bLayingDown(false),bCrouching(false),
+	bSitting(false), bLayingDown(false), bCrouching(false),
 	inputTime(2.0f),
-	bIsInventoryOpen(false)
+	bIsInventoryOpen(false),
+	bIsHoldingItem(false),
+	MaxHealth(600.f), MaxHeadHealth(100.f), MaxBodyHealth(100.f), MaxRightArmHealth(100.f), MaxLeftArmHealth(100.f), MaxRightLegHealth(100.f), MaxLeftLegHealth(100.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
@@ -100,14 +102,7 @@ void ATeam_ProjectCharacter::BeginPlay()
 	Super::BeginPlay();
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ATeam_ProjectCharacter::DecreaseFoodWater, FoodWaterDrainRate, true, 6.f);
 
-	if (IsLocallyControlled() && PlayerWidgetClass)
-	{
-		AMKKS_PlayerController* FPC = GetController<AMKKS_PlayerController>();
-		check(FPC);
-		PlayerWidget = CreateWidget<UBarWidget>(FPC, PlayerWidgetClass);
-		check(PlayerWidget);
-		PlayerWidget->AddToViewport();
-	}
+	BarWidget();
 }
 
 void ATeam_ProjectCharacter::Tick(float DeltaTime)
@@ -212,6 +207,20 @@ void ATeam_ProjectCharacter::CameraOption()
 	{
 		bUseControllerRotationYaw = false;
 		UE_LOG(LogTemp, Warning, TEXT("gojung_Anim"));
+	}
+}
+
+void ATeam_ProjectCharacter::BarWidget()
+{
+	if (IsLocallyControlled() && PlayerWidgetClass)
+	{
+		AMKKS_PlayerController* FPC = GetController<AMKKS_PlayerController>();
+		check(FPC);
+		PlayerWidget = CreateWidget<UBarWidget>(FPC, PlayerWidgetClass);
+		check(PlayerWidget);
+		PlayerWidget->AddToViewport();
+		CurrentHealth = (MaxHeadHealth + MaxBodyHealth + MaxRightArmHealth + MaxLeftArmHealth + MaxRightLegHealth + MaxLeftLegHealth);
+		PlayerWidget->SetHealth(CurrentHealth, MaxHealth);
 	}
 }
 
@@ -402,10 +411,11 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAction("ViewChange", IE_Pressed, this, &ATeam_ProjectCharacter::ViewChange);
 	PlayerInputComponent->BindAction("StanceChange", IE_Pressed, this, &ATeam_ProjectCharacter::StanceChange);
 	PlayerInputComponent->BindAction("StandingChange", IE_Released, this, &ATeam_ProjectCharacter::StandingChange);
+	// Item Interact binding (Press E)
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ATeam_ProjectCharacter::Interact);
-	// AddToInventory binding
+	// AddToInventory binding (Press F)
 	PlayerInputComponent->BindAction("AddToInventory", IE_Pressed, this, &ATeam_ProjectCharacter::AddToInventory);
-	// OpenInventory binding
+	// OpenInventory binding (Press I)
 	PlayerInputComponent->BindAction("OpenInventory", IE_Pressed, this, &ATeam_ProjectCharacter::OpenInventory);
 
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ATeam_ProjectCharacter::SprintStart);
@@ -433,9 +443,9 @@ void ATeam_ProjectCharacter::Interact()
 
 void ATeam_ProjectCharacter::GrabActor()
 {
-	FVector Start = GetMesh()->GetComponentLocation();
+	FVector Start = ThirdPersonFollowCamera->GetComponentLocation();
 	// Distance to Interact = 500.0f;
-	FVector End = Start + GetMesh()->GetComponentRotation().Vector() * 500.0f;
+	FVector End = Start + ThirdPersonFollowCamera->GetComponentRotation().Vector() * 500.0f;
 
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
@@ -444,7 +454,6 @@ void ATeam_ProjectCharacter::GrabActor()
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_WorldStatic, Params))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("HIT ACTOR"));
-
 		if (AActor* HitActor = HitResult.GetActor())
 		{
 			if (IPickup_Interface* Interface = Cast<IPickup_Interface>(HitActor))
@@ -467,14 +476,14 @@ void ATeam_ProjectCharacter::ReleaseActor()
 
 void ATeam_ProjectCharacter::AddToInventory()
 {
-		PutActor();
+	PutActor();
 }
 
 void ATeam_ProjectCharacter::PutActor()
 {
-	FVector Start = GetMesh()->GetComponentLocation();
+	FVector Start = ThirdPersonFollowCamera->GetComponentLocation();
 	// Distance to Interact = 500.0f;
-	FVector End = Start + GetMesh()->GetComponentRotation().Vector() * 500.0f;
+	FVector End = Start + ThirdPersonFollowCamera->GetComponentRotation().Vector() * 500.0f;
 
 	FHitResult HitResult;
 	FCollisionQueryParams Params;
@@ -489,7 +498,6 @@ void ATeam_ProjectCharacter::PutActor()
 			if (IPickup_Interface* Interface = Cast<IPickup_Interface>(HitActor))
 			{
 				Interface->Puton();
-				// InventoryComponent->AddItemToInventory(HitActor);
 			}
 		}
 	}

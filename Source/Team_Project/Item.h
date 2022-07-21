@@ -11,7 +11,7 @@ class UStaticMeshComponent;
 class ATeam_ProjectCharacter;
 
 UCLASS(Abstract, BlueprintType, Blueprintable, DefaultToInstanced)
-class TEAM_PROJECT_API AItem : public AActor
+class TEAM_PROJECT_API AItem : public AActor, public IPickup_Interface
 {
 	GENERATED_BODY()
 	
@@ -25,12 +25,12 @@ public:
 	class UWorld* World;
 
 	// Pickup Actor and attach to socket
-	virtual AActor* Pickup(ATeam_ProjectCharacter* PickingUpActor); // override;
+	virtual AActor* Pickup(ATeam_ProjectCharacter* PickingUpActor) override;
 
 	// hide actor and disable collision
-	virtual void Puton(); // override;
+	virtual void Puton() override;
 
-	virtual void Drop(); // override;
+	virtual void Drop() override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -58,8 +58,6 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnUse(class ATeam_ProjectCharacter* Character);
-
-
 
 
 private:
