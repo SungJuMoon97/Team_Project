@@ -139,6 +139,44 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UBarWidget* HealthWidget;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* HeadDamageBox;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* BodyDamageBox;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* RightArmDamageBox1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* RightArmDamageBox2;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* LeftArmDamageBox1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* LeftArmDamageBox2;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* RightLegDamageBox1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* RightLegDamageBox2;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* RightLegDamageBox3;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* LeftLegDamageBox1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* LeftLegDamageBox2;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* LeftLegDamageBox3;
+
+
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))

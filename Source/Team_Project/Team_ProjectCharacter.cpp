@@ -3,6 +3,8 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -95,6 +97,46 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	MaxWater = 100.f;
 
 	FoodWaterDrainRate = 20.f;
+
+	HeadDamageBox = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HeadDamageBox"));
+	BodyDamageBox = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BodyDamageBox"));
+	RightArmDamageBox1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightArmDamageBox1"));
+	RightArmDamageBox2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightArmDamageBox2"));
+	LeftArmDamageBox1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftArmDamageBox1"));
+	LeftArmDamageBox2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftArmDamageBox2"));
+	RightLegDamageBox1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightLegDamageBox1"));
+	RightLegDamageBox2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightLegDamageBox2"));
+	RightLegDamageBox3 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightLegDamageBox3"));
+	LeftLegDamageBox1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftLegDamageBox1"));
+	LeftLegDamageBox2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftLegDamageBox2"));
+	LeftLegDamageBox3 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftLegDamageBox3"));
+
+	FName HeadDamageSocket(TEXT("HeadDamageSocket"));
+	FName BodyDamageSocket(TEXT("BodyDamageSocket"));
+	FName RightArmDamageSocket1(TEXT("RightArmDamageSocket1"));
+	FName RightArmDamageSocket2(TEXT("RightArmDamageSocket2"));
+	FName LeftArmDamageSocket1(TEXT("LeftArmDamageSocket1"));
+	FName LeftArmDamageSocket2(TEXT("LeftArmDamageSocket2"));
+	FName RightLegDamageSocket1(TEXT("RightLegDamageSocket1"));
+	FName RightLegDamageSocket2(TEXT("RightLegDamageSocket2"));
+	FName RightLegDamageSocket3(TEXT("RightLegDamageSocket3"));
+	FName LeftLegDamageSocket1(TEXT("LeftLegDamageSocket1"));
+	FName LeftLegDamageSocket2(TEXT("LeftLegDamageSocket2"));
+	FName LeftLegDamageSocket3(TEXT("LeftLegDamageSocket3"));
+
+
+	HeadDamageBox->SetupAttachment(GetMesh(), HeadDamageSocket);
+	BodyDamageBox->SetupAttachment(GetMesh(), BodyDamageSocket);
+	RightArmDamageBox1->SetupAttachment(GetMesh(), RightArmDamageSocket1);
+	RightArmDamageBox2->SetupAttachment(GetMesh(), RightArmDamageSocket2);
+	LeftArmDamageBox1->SetupAttachment(GetMesh(), LeftArmDamageSocket1);
+	LeftArmDamageBox2->SetupAttachment(GetMesh(), LeftArmDamageSocket2);
+	RightLegDamageBox1->SetupAttachment(GetMesh(), RightLegDamageSocket1);
+	RightLegDamageBox2->SetupAttachment(GetMesh(), RightLegDamageSocket2);
+	RightLegDamageBox3->SetupAttachment(GetMesh(), RightLegDamageSocket3);
+	LeftLegDamageBox1->SetupAttachment(GetMesh(), LeftLegDamageSocket1);
+	LeftLegDamageBox2->SetupAttachment(GetMesh(), LeftLegDamageSocket2);
+	LeftLegDamageBox3->SetupAttachment(GetMesh(), LeftLegDamageSocket3);
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
