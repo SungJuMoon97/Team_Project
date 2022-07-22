@@ -8,6 +8,6 @@ void AFoodItem::Use(class ATeam_ProjectCharacter* Character)
 {
 	if (Character)
 	{
-		Character->Health += HealthToHeal;
+		Character->CurrentHealth += HealthToHeal;
 	}
 }

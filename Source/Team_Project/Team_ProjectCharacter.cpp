@@ -37,7 +37,9 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	inputTime(2.0f),
 	bIsInventoryOpen(false),
 	bIsHoldingItem(false),
-	MaxHealth(600.f), MaxHeadHealth(100.f), MaxBodyHealth(100.f), MaxRightArmHealth(100.f), MaxLeftArmHealth(100.f), MaxRightLegHealth(100.f), MaxLeftLegHealth(100.f)
+	MaxHeadHealth(100.f), MaxBodyHealth(100.f), MaxRightArmHealth(100.f), MaxLeftArmHealth(100.f), MaxRightLegHealth(100.f), MaxLeftLegHealth(100.f),
+	CurrentHeadHealth(100.f), CurrentBodyHealth(100.f), CurrentRightArmHealth(100.f), CurrentLeftArmHealth(100.f), CurrentRightLegHealth(100.f), CurrentLeftLegHealth(100.f)
+
 {
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
@@ -144,7 +146,7 @@ void ATeam_ProjectCharacter::BeginPlay()
 	Super::BeginPlay();
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ATeam_ProjectCharacter::DecreaseFoodWater, FoodWaterDrainRate, true, 6.f);
 
-	BarWidget();
+	
 }
 
 void ATeam_ProjectCharacter::Tick(float DeltaTime)
@@ -153,6 +155,8 @@ void ATeam_ProjectCharacter::Tick(float DeltaTime)
 
 	InputTimeCheck();
 	Stamina(DeltaTime);
+
+	BarWidget();
 }
 
 void ATeam_ProjectCharacter::LeftHand()
@@ -261,7 +265,8 @@ void ATeam_ProjectCharacter::BarWidget()
 		PlayerWidget = CreateWidget<UBarWidget>(FPC, PlayerWidgetClass);
 		check(PlayerWidget);
 		PlayerWidget->AddToViewport();
-		CurrentHealth = (MaxHeadHealth + MaxBodyHealth + MaxRightArmHealth + MaxLeftArmHealth + MaxRightLegHealth + MaxLeftLegHealth);
+		MaxHealth = (MaxHeadHealth + MaxBodyHealth + MaxRightArmHealth + MaxLeftArmHealth + MaxRightLegHealth + MaxLeftLegHealth);
+		CurrentHealth = (CurrentHeadHealth + CurrentBodyHealth + CurrentRightArmHealth + CurrentLeftArmHealth + CurrentRightLegHealth + CurrentLeftLegHealth);
 		PlayerWidget->SetHealth(CurrentHealth, MaxHealth);
 	}
 }

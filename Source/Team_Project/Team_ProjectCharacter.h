@@ -71,8 +71,51 @@ public:
 	UPROPERTY()
 	class UInventoryPanel* PlayerInventoryPanel;
 
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
 	float Health;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float MaxHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float MaxHeadHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float MaxBodyHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float MaxRightArmHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float MaxLeftArmHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float MaxRightLegHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float MaxLeftLegHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float CurrentHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float CurrentHeadHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float CurrentBodyHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float CurrentRightArmHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float CurrentLeftArmHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float CurrentRightLegHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float CurrentLeftLegHealth;
 
 protected:
 
@@ -214,16 +257,6 @@ protected:
 
 	float RunSpeed = 600.f;
 	float SprintSpeed = 1200.f;
-
-	// HP
-	float MaxHealth;
-	float CurrentHealth;
-	float MaxHeadHealth;
-	float MaxBodyHealth;
-	float MaxRightArmHealth;
-	float MaxLeftArmHealth;
-	float MaxRightLegHealth;
-	float MaxLeftLegHealth;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
