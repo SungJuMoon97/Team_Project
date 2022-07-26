@@ -23,6 +23,7 @@ public:
 	void InputTimeCheck();
 	void CameraOption();
 	void BoolChecking();
+	void BarWidget();
 
 	void WeaponEquip();
 	void WeaponSeparate();//분리하다
@@ -239,6 +240,17 @@ protected:
 	//CurrentHungry, Thirsty
 	UFUNCTION(BlueprintCallable)
 		void DecreaseFoodWater();
+
+	// HP
+	float MaxHealth;
+	float CurrentHealth;
+	float MaxHeadHealth;
+	float MaxBodyHealth;
+	float MaxRightArmHealth;
+	float MaxLeftArmHealth;
+	float MaxRightLegHealth;
+	float MaxLeftLegHealth;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 		bool bSprint;
