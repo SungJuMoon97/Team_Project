@@ -64,3 +64,14 @@ enum class EStanding : uint8
 
 	ESD_MAX UMETA(DisplayName = "ESD_MAX")
 };
+
+UENUM(BlueprintType)
+enum class EItemState : uint8
+{
+	EIS_Ground UMETA(DisplayName = "Ground"),
+	EIS_Equip UMETA(DisplayName = "Equip"),
+	EIS_Puton UMETA(DisplayName = "Puton"),
+	EIS_Drop UMETA(DisplayName = "Drop"),
+
+	EIS_MAX UMETA(DisplayName = "EIS_MAX")
+};

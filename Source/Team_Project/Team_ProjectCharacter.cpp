@@ -601,7 +601,7 @@ void ATeam_ProjectCharacter::GrabActor()
 
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_WorldStatic, Params))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("HIT ACTOR"));
+		UE_LOG(LogTemp, Warning, TEXT("Hit StaticActor"));
 		if (AActor* HitActor = HitResult.GetActor())
 		{
 			if (IPickup_Interface* Interface = Cast<IPickup_Interface>(HitActor))
@@ -643,10 +643,10 @@ void ATeam_ProjectCharacter::PutActor()
 
 		if (AActor* HitActor = HitResult.GetActor())
 		{
-			if (IPickup_Interface* Interface = Cast<IPickup_Interface>(HitActor))
+			/*if (IPickup_Interface* Interface = Cast<IPickup_Interface>(HitActor))
 			{
 				Interface->Puton();
-			}
+			}*/
 		}
 	}
 }

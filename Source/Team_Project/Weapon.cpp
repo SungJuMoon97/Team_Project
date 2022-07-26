@@ -2,7 +2,10 @@
 
 
 #include "Weapon.h"
+#include "Team_ProjectCharacter.h"
 #include "Enum_Collection.h"
+#include "Components/BoxComponent.h"
+#include "Engine/SkeletalMeshSocket.h"
 
 AWeapon::AWeapon():
 	CurrentWeaponHand(EWeaponHand::EWH_OneHanded),CurrentWeaponType(EWeaponType::EWT_Sword)
@@ -10,7 +13,9 @@ AWeapon::AWeapon():
 	PrimaryActorTick.bCanEverTick = true;
 
 	//RootComponent = GetItemMesh();
-	
+	ItemMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ItemMesh"));
+	RootComponent = ItemMesh;
+
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>
 		WP_Sword(TEXT("SkeletalMesh'/Game/Weapon_Pack/Skeletal_Mesh/SK_Dagger_2.SK_Dagger_2'"));
 	if (WP_Sword.Succeeded())
@@ -106,3 +111,51 @@ void AWeapon::WeaponCheck()
 {
 
 }
+
+
+AActor* AWeapon::Pickup(ATeam_ProjectCharacter* PickingUpActor)
+{
+	const USkeletalMeshSocket* UnEquipSocket = MyCharacter->GetMesh()->GetSocketByName(FName("UnEquip_SWeaponSocket"));
+	//AttachToComponent(PickingUpActor->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r_Socket"));
+	UnEquipSocket->AttachActor(this, MyCharacter->GetMesh());
+	return this;
+}
+
+void AWeapon::SetItemState(EItemState State)
+{
+	switch (State)
+	{
+	case EItemState::EIS_Ground:
+
+		break;
+
+	case EItemState::EIS_Equip:
+		// Set mesh properties
+		ItemMesh->SetSimulatePhysics(false);
+		ItemMesh->SetEnableGravity(false);
+		ItemMesh->SetVisibility(true);
+		ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		// Set CollisionBox properties
+		GetCollisionBox()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		GetCollisionBox()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		break;
+
+	case EItemState::EIS_Puton:
+		// hide actor and disable collision
+		UE_LOG(LogTemp, Warning, TEXT("Hide!"));
+		ItemMesh->SetHiddenInGame(true);
+		ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		break;
+
+	case EItemState::EIS_Drop:
+		// drop actor and enable collision
+		ItemMesh->SetHiddenInGame(false);
+		ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		break;
+	}
+}
+
+/*
+
+*/

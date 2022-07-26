@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Pickup_Interface.h"
+#include "Enum_Collection.h"
 #include "Item.generated.h"
 
 class UStaticMeshComponent;
@@ -20,23 +21,15 @@ public:
 	AItem();
 
 	// virtual class UWorld* GetWorld() const { return World; };
-
 	UPROPERTY(Transient)
 	class UWorld* World;
 
 	// Pickup Actor and attach to socket
 	virtual AActor* Pickup(ATeam_ProjectCharacter* PickingUpActor) override;
 
-	// hide actor and disable collision
-	virtual void Puton() override;
-
-	virtual void Drop() override;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	
 
 public:	
 	// Called every frame
@@ -63,9 +56,6 @@ public:
 
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties",
-		meta = (AllowPrivateAccess = "true"))
-		USkeletalMeshComponent* ItemMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties",
 		meta = (AllowPrivateAccess = "true"))
@@ -108,10 +98,15 @@ private:
 		meta = (AllowPrivateAccess = "true"))
 		FText ItemDisplayName;
 
+	// State of the Item
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties",
+		meta = (AllowPrivateAccess = "true"))
+		EItemState ItemState;
+
 public:
-	FORCEINLINE USkeletalMeshComponent* GetItemMesh() { return ItemMesh; }
 	FORCEINLINE UStaticMeshComponent* GetMesh() { return Mesh; }
 	FORCEINLINE UBoxComponent* GetCollisionBox() const { return CollisionBox; }
 	FORCEINLINE USoundCue* GetPickupSound() const { return PickupSound; }
 	FORCEINLINE USoundCue* GetEquipSound() const { return EquipSound; }
+	virtual void SetItemState(EItemState State);
 };
