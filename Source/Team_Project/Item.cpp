@@ -8,6 +8,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AItem::AItem():
@@ -21,6 +22,7 @@ AItem::AItem():
 	UseActionText = FText::FromString("Use");
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("InsItemMesh"));
+	SetItemState(ItemState);
 }
 
 AActor* AItem::Pickup(ATeam_ProjectCharacter* PickingUpActor)
@@ -49,7 +51,11 @@ void AItem::SetItemState(EItemState State)
 	switch (State)
 	{
 	case EItemState::EIS_Ground:
-
+		Mesh->SetSimulatePhysics(true);
+		Mesh->SetEnableGravity(true);
+		Mesh->SetVisibility(true);
+		Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		break;
 
 	case EItemState::EIS_Equip:
@@ -57,11 +63,8 @@ void AItem::SetItemState(EItemState State)
 		Mesh->SetSimulatePhysics(false);
 		Mesh->SetEnableGravity(false);
 		Mesh->SetVisibility(true);
-		Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		//Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		// Set CollisionBox properties
-		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		break;
 
 	case EItemState::EIS_Puton:

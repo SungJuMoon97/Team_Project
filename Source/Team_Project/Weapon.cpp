@@ -5,6 +5,7 @@
 #include "Team_ProjectCharacter.h"
 #include "Enum_Collection.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 
 AWeapon::AWeapon():
@@ -14,8 +15,12 @@ AWeapon::AWeapon():
 
 	//RootComponent = GetItemMesh();
 	ItemMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ItemMesh"));
+	//WPCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Collision"));
 	RootComponent = ItemMesh;
+	//WPCollision->SetupAttachment(ItemMesh);
 
+	ItemMesh->GetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody);
+		//GetPhysicsAsset()->PhysicPreset
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>
 		WP_Sword(TEXT("SkeletalMesh'/Game/Weapon_Pack/Skeletal_Mesh/SK_Dagger_2.SK_Dagger_2'"));
 	if (WP_Sword.Succeeded())
@@ -29,7 +34,7 @@ AWeapon::AWeapon():
 void AWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	SetWeaponHand(CurrentWeaponHand);
 }
 
 void AWeapon::SetWeaponType(EWeaponType Type)
@@ -126,7 +131,11 @@ void AWeapon::SetItemState(EItemState State)
 	switch (State)
 	{
 	case EItemState::EIS_Ground:
-
+		ItemMesh->SetSimulatePhysics(true);
+		ItemMesh->SetEnableGravity(true);
+		ItemMesh->SetVisibility(true);
+		ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+		ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		break;
 
 	case EItemState::EIS_Equip:
@@ -134,11 +143,8 @@ void AWeapon::SetItemState(EItemState State)
 		ItemMesh->SetSimulatePhysics(false);
 		ItemMesh->SetEnableGravity(false);
 		ItemMesh->SetVisibility(true);
-		ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		//ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		// Set CollisionBox properties
-		GetCollisionBox()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		GetCollisionBox()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		break;
 
 	case EItemState::EIS_Puton:

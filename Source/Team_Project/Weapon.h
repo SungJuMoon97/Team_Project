@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Item.h"
 #include "Enum_Collection.h"
+#include "Components/CapsuleComponent.h"
 #include "Weapon.generated.h"
 
 /**
@@ -20,15 +21,17 @@ public:
 
 	void SetWeaponType(EWeaponType Type);
 	void SetWeaponHand(EWeaponHand Kind);
-
 	void WeaponCheck();
 
 protected:
 	virtual void Tick(float DeltaTIme) override;
 
 	virtual AActor* Pickup(ATeam_ProjectCharacter* PickingUpActor) override;
-	virtual void SetItemState(EItemState State) override;
+	
 private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties",
+		meta = (AllowPrivateAccess = "true"))
+		class UCapsuleComponent* WPCollision;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon,
 		meta = (AllowPrivateAccess = "true"))
@@ -117,5 +120,5 @@ public:
 	FORCEINLINE bool GetSwordWeapon() const { return bSwordWeapon; }
 	FORCEINLINE bool GetHammerWeapon() const { return bHammerWeapon; }
 	FORCEINLINE bool GetBowWeapon() const { return bBowWeapon; }
-	
+	virtual void SetItemState(EItemState State) override;
 };

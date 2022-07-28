@@ -29,7 +29,7 @@ public:
 	void WeaponSeparate();//분리하다
 	void BlockModeAim();
 	void BowAiming(float DeltaTIme);
-	void WeaponChangeCheck();
+	void ItemEquipCheck();
 	
 	UFUNCTION()
 		void SetViewType(EViewType ViewType);
@@ -70,6 +70,7 @@ public:
 	EWeaponHand CurrentHandWeapon;
 	EWeaponHand PreviouslyEquippedWeapon;
 	EWeaponHand CompareWeapon;
+
 	bool bThirdPersonView;
 	float BareHandDamage;//맨손공격력
 	float inputTime;
@@ -152,11 +153,26 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UBarWidget* HealthWidget;
 
-	/*UPROPERTY(VisibleAnywhere, Category = Weapon)
-		class AWeapon* MyWeapon;
+	UPROPERTY(VisibleAnyWhere,BlueprintReadOnly,Category = Item, meta = (AllowPrivateAccess = "true"))
+		class AItem* TraceItem;
 
-	UPROPERTY(VisibleAnywhere, Category = Item)
-		class AItem* MyItem;*/
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
+		class AWeapon* TraceWeapon;
+
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
+		class AItem* EquippedItem;
+
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
+		class AWeapon* EquippedWeapon;
+
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
+		const USkeletalMeshSocket* LeftHandSocket;
+
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
+		const USkeletalMeshSocket* RightHandSocket;
+
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+		AItem* TraceHitItem;*/
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
@@ -178,6 +194,10 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
 		bool bCombatState;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
+		meta = (AllowPrivateAccess = "true"))
+		bool bItemEquip;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
