@@ -63,7 +63,7 @@ void AItem::SetItemState(EItemState State)
 		Mesh->SetSimulatePhysics(false);
 		Mesh->SetEnableGravity(false);
 		Mesh->SetVisibility(true);
-		//Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		break;
 

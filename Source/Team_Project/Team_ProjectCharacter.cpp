@@ -347,14 +347,14 @@ void ATeam_ProjectCharacter::ItemEquipCheck()
 		PreviouslyEquippedWeapon = CompareWeapon;
 		CompareWeapon = CurrentHandWeapon;
 	}
-	if (bWeaponEquip)
+	/*if (bWeaponEquip)
 	{
 
 	}
 	else if (bItemEquip)
 	{
 
-	}
+	}*/
 
 }
 
@@ -631,20 +631,19 @@ void ATeam_ProjectCharacter::GrabActor()
 	if (bResult)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Hit Actor"));
+		TraceItem = Cast<AItem>(HitResult.GetActor());
+		TraceWeapon = Cast<AWeapon>(HitResult.GetActor());
 
 		if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(EKeys::LeftMouseButton))
 		{
 			//LeftHand
 			//const USkeletalMeshSocket* LeftHandSocket = GetMesh()->GetSocketByName(FName("hand_l_Socket"));
-			TraceItem = Cast<AItem>(HitResult.GetActor());
-			TraceWeapon = Cast<AWeapon>(HitResult.GetActor());
 			
 			if (TraceWeapon)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("This is LeftWeapon"));
 				LeftHandSocket->AttachActor(TraceWeapon, GetMesh());
 				EquippedWeapon = TraceWeapon;
-				EquippedWeapon->SetOwner(this);
 				EquippedWeapon->SetItemState(EItemState::EIS_Equip);
 				//TraceWeapon->GetItemMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 				//이게 되야 캐릭터가 템이랑 메쉬가 블록처리되지 않음
@@ -654,8 +653,8 @@ void ATeam_ProjectCharacter::GrabActor()
 			{
 				UE_LOG(LogTemp, Warning, TEXT("This is LeftItem"));
 				LeftHandSocket->AttachActor(TraceItem, GetMesh());
+				//TraceItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_l_Socket"));
 				EquippedItem = TraceItem;
-				EquippedItem->SetOwner(this);
 				EquippedItem->SetItemState(EItemState::EIS_Equip);
 				bItemEquip = true;
 			}
@@ -666,14 +665,12 @@ void ATeam_ProjectCharacter::GrabActor()
 		{
 			//RightHand
 			//const USkeletalMeshSocket* RightHandSocket = GetMesh()->GetSocketByName(FName("hand_r_Socket"));
-			TraceItem = Cast<AItem>(HitResult.GetActor());
-			TraceWeapon = Cast<AWeapon>(HitResult.GetActor());
+			
 			if (TraceWeapon)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("This is RightWeapon"));
 				RightHandSocket->AttachActor(TraceWeapon, GetMesh());
 				EquippedWeapon = TraceWeapon;
-				EquippedWeapon->SetOwner(this);
 				EquippedWeapon->SetItemState(EItemState::EIS_Equip);
 				//TraceWeapon->GetItemMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 				bWeaponEquip = true;
@@ -682,8 +679,8 @@ void ATeam_ProjectCharacter::GrabActor()
 			{
 				UE_LOG(LogTemp, Warning, TEXT("This is RightItem"));
 				RightHandSocket->AttachActor(TraceItem, GetMesh());
+				//TraceItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r_Socket"));
 				EquippedItem = TraceItem;
-				EquippedItem->SetOwner(this);
 				EquippedItem->SetItemState(EItemState::EIS_Equip);
 				bItemEquip = true;
 			}
