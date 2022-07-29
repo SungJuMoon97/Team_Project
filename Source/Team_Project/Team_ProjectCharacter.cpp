@@ -151,9 +151,6 @@ void ATeam_ProjectCharacter::LeftHand()
 		{
 			if (AnimInstance && LeftPunchingMontage && (CurrentWeapon == EWeaponType::EWT_Fist))
 			{
-				//PlayAnimMontage(LeftPunchingMontage, 1, NAME_None);
-
-
 				AnimInstance->Montage_Play(LeftPunchingMontage);
 				bDoAttacking = true;
 				UE_LOG(LogTemp, Warning, TEXT("Punch"));
@@ -204,8 +201,6 @@ void ATeam_ProjectCharacter::RightHand()
 		{
 			if (AnimInstance && RightPunchingMontage && (CurrentWeapon == EWeaponType::EWT_Fist))
 			{
-				//PlayAnimMontage(LeftPunchingMontage, 1, NAME_None);
-
 				if (CurrentHandWeapon == EWeaponHand::EWH_Fist)
 				{
 					AnimInstance->Montage_Play(RightPunchingMontage);

@@ -216,7 +216,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
 		meta = (AllowPrivateAccess = "true"))
-		bool bWhereWeapon;
+		bool bWhereWeapon;//0 이 손 ,1 이 등
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
