@@ -200,7 +200,11 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
-		bool bItemEquip;
+		bool bLeftItemEquip;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
+		meta = (AllowPrivateAccess = "true"))
+		bool bRightItemEquip;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
@@ -327,5 +331,7 @@ public:
 	FORCEINLINE bool GetRightHandAction() const { return bRightHandAction; }
 	FORCEINLINE bool GetInventoryOpen() const { return bIsInventoryOpen; }
 	FORCEINLINE bool GetIsSprint() const { return bSprint; }
+	FORCEINLINE bool GetLeftHandEquip() const { if (LeftEquippedWeapon) { return bLeftWeaponEquip; } if (LeftEquippedItem) { return bLeftItemEquip; } }
+	FORCEINLINE bool GetRightHandEquip() const { if (RightEquippedWeapon) { return bRightWeaponEquip; } if (RightEquippedItem) { return bRightItemEquip; } }
 };
 

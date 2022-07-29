@@ -27,7 +27,7 @@
 ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	//if your View and Stance make a change
 	CurrentViewMode(EViewType::EVT_FirstPerson), CurrentStanceMode(EStance::ES_Default),
-	bCombatState(false), bSprint(false), bItemEquip(false), bLeftWeaponEquip(false), bRightWeaponEquip(false), bAiming(false),
+	bCombatState(false), bSprint(false), bLeftItemEquip(false), bRightItemEquip(false), bLeftWeaponEquip(false), bRightWeaponEquip(false), bAiming(false),
 	//CurrentSpeed
 	DefaultSpeed(500.0f), CrouchSpeed(200.0f), CombatSpeed(200.0f), SprintSpeed(800.0f),
 	//if you HandAction Default Setting
@@ -665,7 +665,7 @@ void ATeam_ProjectCharacter::GrabActor()
 				TraceItem->SetItemState(EItemState::EIS_Equip);
 				LeftHandSocket->AttachActor(TraceItem, GetMesh());
 				LeftEquippedItem = TraceItem;
-				bItemEquip = true;
+				bLeftItemEquip = true;
 			}
 			
 			
@@ -708,7 +708,7 @@ void ATeam_ProjectCharacter::GrabActor()
 				TraceItem->SetItemState(EItemState::EIS_Equip);
 				RightHandSocket->AttachActor(TraceItem, GetMesh());
 				RightEquippedItem = TraceItem;
-				bItemEquip = true;
+				bRightItemEquip = true;
 			}
 			
 		}
@@ -735,7 +735,7 @@ void ATeam_ProjectCharacter::ReleaseActor()
 				LeftEquippedItem->DetachFromActor(DetachmentTransformRules);
 				LeftEquippedItem->SetItemState(EItemState::EIS_Ground);
 				LeftEquippedItem = nullptr;
-				bItemEquip = false;
+				bLeftItemEquip = false;
 			}
 		//}
 	}
@@ -756,7 +756,7 @@ void ATeam_ProjectCharacter::ReleaseActor()
 				RightEquippedItem->DetachFromActor(DetachmentTransformRules);
 				RightEquippedItem->SetItemState(EItemState::EIS_Ground);
 				RightEquippedItem = nullptr;
-				bItemEquip = false;
+				bRightItemEquip = false;
 			}
 		//}
 	}
