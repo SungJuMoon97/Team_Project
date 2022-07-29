@@ -27,7 +27,7 @@
 ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	//if your View and Stance make a change
 	CurrentViewMode(EViewType::EVT_FirstPerson), CurrentStanceMode(EStance::ES_Default),
-	bCombatState(false), bSprint(false), bItemEquip(false), bWeaponEquip(false), bAiming(false),
+	bCombatState(false), bSprint(false), bItemEquip(false), bLeftWeaponEquip(false), bRightWeaponEquip(false), bAiming(false),
 	//CurrentSpeed
 	DefaultSpeed(500.0f), CrouchSpeed(200.0f), CombatSpeed(200.0f), SprintSpeed(800.0f),
 	//if you HandAction Default Setting
@@ -112,7 +112,6 @@ void ATeam_ProjectCharacter::Tick(float DeltaTime)
 	Stamina(DeltaTime);
 	BowAiming(DeltaTime);
 	ItemEquipCheck();
-	BoolChecking();
 }
 
 void ATeam_ProjectCharacter::LeftHand()
@@ -255,18 +254,6 @@ void ATeam_ProjectCharacter::CameraOption()
 		bUseControllerRotationYaw = false;
 		UE_LOG(LogTemp, Warning, TEXT("gojung_Anim"));
 	}
-}
-
-void ATeam_ProjectCharacter::BoolChecking()
-{
-}
-
-void ATeam_ProjectCharacter::WeaponEquip()
-{
-}
-
-void ATeam_ProjectCharacter::WeaponSeparate()
-{
 }
 
 void ATeam_ProjectCharacter::BlockModeAim()
@@ -606,7 +593,10 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 
 void ATeam_ProjectCharacter::Interact()
 {
+	if (inputTime <= PCInputTime_Interact)
+	{
 
+	}
 }
 
 void ATeam_ProjectCharacter::GrabActor()
@@ -667,7 +657,7 @@ void ATeam_ProjectCharacter::GrabActor()
 					BowSocket->AttachActor(TraceWeapon, GetMesh());
 				}
 				LeftEquippedWeapon = TraceWeapon;
-				bWeaponEquip = true;
+				bLeftWeaponEquip = true;
 			}
 			else if (TraceItem)
 			{
@@ -710,7 +700,7 @@ void ATeam_ProjectCharacter::GrabActor()
 					BowSocket->AttachActor(TraceWeapon, GetMesh());
 				}
 				RightEquippedWeapon = TraceWeapon;
-				bWeaponEquip = true;
+				bRightWeaponEquip = true;
 			}
 			else if (TraceItem)
 			{
@@ -738,7 +728,7 @@ void ATeam_ProjectCharacter::ReleaseActor()
 				LeftEquippedWeapon->DetachFromActor(DetachmentTransformRules);
 				LeftEquippedWeapon->SetItemState(EItemState::EIS_Ground);
 				LeftEquippedWeapon = nullptr;
-				bWeaponEquip = false;
+				bLeftWeaponEquip = false;
 			}
 			else if (LeftEquippedItem)
 			{
@@ -759,7 +749,7 @@ void ATeam_ProjectCharacter::ReleaseActor()
 				RightEquippedWeapon->DetachFromActor(DetachmentTransformRules);
 				RightEquippedWeapon->SetItemState(EItemState::EIS_Ground);
 				RightEquippedWeapon = nullptr;
-				bWeaponEquip = false;
+				bRightWeaponEquip = false;
 			}
 			else if (RightEquippedItem)
 			{

@@ -22,11 +22,8 @@ public:
 
 	void InputTimeCheck();
 	void CameraOption();
-	void BoolChecking();
 	void BarWidget();
 
-	void WeaponEquip();
-	void WeaponSeparate();//분리하다
 	void BlockModeAim();
 	void BowAiming(float DeltaTIme);
 	void ItemEquipCheck();
@@ -207,7 +204,11 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
-		bool bWeaponEquip;
+		bool bLeftWeaponEquip;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
+		meta = (AllowPrivateAccess = "true"))
+		bool bRightWeaponEquip;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
 		meta = (AllowPrivateAccess = "true"))
