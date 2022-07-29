@@ -13,14 +13,9 @@ AWeapon::AWeapon():
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	//RootComponent = GetItemMesh();
 	ItemMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ItemMesh"));
-	//WPCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Collision"));
 	RootComponent = ItemMesh;
-	//WPCollision->SetupAttachment(ItemMesh);
-
 	ItemMesh->GetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody);
-		//GetPhysicsAsset()->PhysicPreset
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>
 		WP_Sword(TEXT("SkeletalMesh'/Game/Weapon_Pack/Skeletal_Mesh/SK_Dagger_2.SK_Dagger_2'"));
 	if (WP_Sword.Succeeded())
