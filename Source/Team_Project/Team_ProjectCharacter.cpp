@@ -121,7 +121,7 @@ void ATeam_ProjectCharacter::LeftHand()
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(FKey("E"))
-		&& ((EquippedWeapon != nullptr) || (EquippedItem!=nullptr)))
+		&& ((LeftEquippedWeapon != nullptr) || (LeftEquippedItem!=nullptr)))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Socket isnt null"));
 		ReleaseActor();
@@ -174,7 +174,7 @@ void ATeam_ProjectCharacter::RightHand()
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(FKey("E"))
-		&& ((EquippedWeapon != nullptr) || (EquippedItem != nullptr)))
+		&& ((RightEquippedWeapon != nullptr) || (RightEquippedItem != nullptr)))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Socket isnt null"));
 		ReleaseActor();
@@ -666,7 +666,7 @@ void ATeam_ProjectCharacter::GrabActor()
 					const USkeletalMeshSocket* BowSocket = GetMesh()->GetSocketByName(FName("hand_l_BSocket"));
 					BowSocket->AttachActor(TraceWeapon, GetMesh());
 				}
-				EquippedWeapon = TraceWeapon;
+				LeftEquippedWeapon = TraceWeapon;
 				bWeaponEquip = true;
 			}
 			else if (TraceItem)
@@ -674,7 +674,7 @@ void ATeam_ProjectCharacter::GrabActor()
 				UE_LOG(LogTemp, Warning, TEXT("This is LeftItem"));
 				TraceItem->SetItemState(EItemState::EIS_Equip);
 				LeftHandSocket->AttachActor(TraceItem, GetMesh());
-				EquippedItem = TraceItem;
+				LeftEquippedItem = TraceItem;
 				bItemEquip = true;
 			}
 			
@@ -709,7 +709,7 @@ void ATeam_ProjectCharacter::GrabActor()
 					const USkeletalMeshSocket* BowSocket = GetMesh()->GetSocketByName(FName("hand_r_BSocket"));
 					BowSocket->AttachActor(TraceWeapon, GetMesh());
 				}
-				EquippedWeapon = TraceWeapon;
+				RightEquippedWeapon = TraceWeapon;
 				bWeaponEquip = true;
 			}
 			else if (TraceItem)
@@ -717,7 +717,7 @@ void ATeam_ProjectCharacter::GrabActor()
 				UE_LOG(LogTemp, Warning, TEXT("This is RightItem"));
 				TraceItem->SetItemState(EItemState::EIS_Equip);
 				RightHandSocket->AttachActor(TraceItem, GetMesh());
-				EquippedItem = TraceItem;
+				RightEquippedItem = TraceItem;
 				bItemEquip = true;
 			}
 			
@@ -733,18 +733,18 @@ void ATeam_ProjectCharacter::ReleaseActor()
 		//LeftHand
 		//if (LeftHandSocket != nullptr)
 		//{
-			if (EquippedWeapon)
+			if (LeftEquippedWeapon)
 			{
-				EquippedWeapon->DetachFromActor(DetachmentTransformRules);
-				EquippedWeapon->SetItemState(EItemState::EIS_Ground);
-				EquippedWeapon = nullptr;
+				LeftEquippedWeapon->DetachFromActor(DetachmentTransformRules);
+				LeftEquippedWeapon->SetItemState(EItemState::EIS_Ground);
+				LeftEquippedWeapon = nullptr;
 				bWeaponEquip = false;
 			}
-			else if (EquippedItem)
+			else if (LeftEquippedItem)
 			{
-				EquippedItem->DetachFromActor(DetachmentTransformRules);
-				EquippedItem->SetItemState(EItemState::EIS_Ground);
-				EquippedItem = nullptr;
+				LeftEquippedItem->DetachFromActor(DetachmentTransformRules);
+				LeftEquippedItem->SetItemState(EItemState::EIS_Ground);
+				LeftEquippedItem = nullptr;
 				bItemEquip = false;
 			}
 		//}
@@ -754,18 +754,18 @@ void ATeam_ProjectCharacter::ReleaseActor()
 		//RightHand
 		//if (RightHandSocket != nullptr)
 		//{
-			if (EquippedWeapon)
+			if (RightEquippedWeapon)
 			{
-				EquippedWeapon->DetachFromActor(DetachmentTransformRules);
-				EquippedWeapon->SetItemState(EItemState::EIS_Ground);
-				EquippedWeapon = nullptr;
+				RightEquippedWeapon->DetachFromActor(DetachmentTransformRules);
+				RightEquippedWeapon->SetItemState(EItemState::EIS_Ground);
+				RightEquippedWeapon = nullptr;
 				bWeaponEquip = false;
 			}
-			else if (EquippedItem)
+			else if (RightEquippedItem)
 			{
-				EquippedItem->DetachFromActor(DetachmentTransformRules);
-				EquippedItem->SetItemState(EItemState::EIS_Ground);
-				EquippedItem = nullptr;
+				RightEquippedItem->DetachFromActor(DetachmentTransformRules);
+				RightEquippedItem->SetItemState(EItemState::EIS_Ground);
+				RightEquippedItem = nullptr;
 				bItemEquip = false;
 			}
 		//}

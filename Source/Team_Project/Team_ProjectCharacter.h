@@ -160,10 +160,16 @@ private:
 		class AWeapon* TraceWeapon;
 
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
-		class AItem* EquippedItem;
+		class AItem* LeftEquippedItem;
 
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
-		class AWeapon* EquippedWeapon;
+		class AItem* RightEquippedItem;
+
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
+		class AWeapon* LeftEquippedWeapon;
+
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
+		class AWeapon* RightEquippedWeapon;
 
 	//UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
 	//	const USkeletalMeshSocket* LeftHandSocket;
