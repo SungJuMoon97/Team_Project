@@ -29,7 +29,6 @@ AWeapon::AWeapon():
 void AWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	SetWeaponHand(CurrentWeaponHand);
 }
 
 void AWeapon::SetWeaponType(EWeaponType Type)
@@ -110,15 +109,6 @@ void AWeapon::SetWeaponHand(EWeaponHand Kind)
 void AWeapon::WeaponCheck()
 {
 
-}
-
-
-AActor* AWeapon::Pickup(ATeam_ProjectCharacter* PickingUpActor)
-{
-	const USkeletalMeshSocket* UnEquipSocket = MyCharacter->GetMesh()->GetSocketByName(FName("UnEquip_SWeaponSocket"));
-	//AttachToComponent(PickingUpActor->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r_Socket"));
-	UnEquipSocket->AttachActor(this, MyCharacter->GetMesh());
-	return this;
 }
 
 void AWeapon::SetItemState(EItemState State)

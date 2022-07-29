@@ -12,7 +12,7 @@ class UStaticMeshComponent;
 class ATeam_ProjectCharacter;
 
 UCLASS(Abstract, BlueprintType, Blueprintable, DefaultToInstanced)
-class TEAM_PROJECT_API AItem : public AActor, public IPickup_Interface
+class TEAM_PROJECT_API AItem : public AActor
 {
 	GENERATED_BODY()
 	
@@ -23,9 +23,6 @@ public:
 	// virtual class UWorld* GetWorld() const { return World; };
 	UPROPERTY(Transient)
 	class UWorld* World;
-
-	// Pickup Actor and attach to socket
-	virtual AActor* Pickup(ATeam_ProjectCharacter* PickingUpActor) override;
 
 protected:
 	// Called when the game starts or when spawned

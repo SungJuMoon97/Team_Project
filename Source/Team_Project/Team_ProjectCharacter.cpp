@@ -644,10 +644,10 @@ void ATeam_ProjectCharacter::GrabActor()
 			{
 				UE_LOG(LogTemp, Warning, TEXT("This is LeftWeapon"));
 				TraceWeapon->SetItemState(EItemState::EIS_Equip);
+				//TraceWeapon->GetItemMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				//이게 되야 캐릭터가 템이랑 메쉬가 블록처리되지 않음(SetItemState 에 들어있음)
 				LeftHandSocket->AttachActor(TraceWeapon, GetMesh());
 				EquippedWeapon = TraceWeapon;
-				//TraceWeapon->GetItemMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-				//이게 되야 캐릭터가 템이랑 메쉬가 블록처리되지 않음
 				bWeaponEquip = true;
 			}
 			else if (TraceItem)

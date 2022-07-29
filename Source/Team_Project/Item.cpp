@@ -28,27 +28,6 @@ AItem::AItem():
 	RootComponent = Mesh;
 }
 
-AActor* AItem::Pickup(ATeam_ProjectCharacter* PickingUpActor)
-{
-	if (GetRootComponent()->IsSimulatingPhysics())
-	{
-		if (UPrimitiveComponent* PrimComponent = Cast<UPrimitiveComponent>(GetComponentByClass(UPrimitiveComponent::StaticClass())))
-		{
-			PrimComponent->SetSimulatePhysics(false);
-			//SetItemState(EItemState::EIS_Equip);
-			AttachToComponent(PickingUpActor->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachSocket"));
-			return this;
-		}
-	}
-	else
-	{
-		//SetItemState(EItemState::EIS_Equip);
-		AttachToComponent(PickingUpActor->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachSocket"));
-		return this;
-	}
-	return nullptr;
-}
-
 void AItem::SetItemState(EItemState State)
 {
 	switch (State)

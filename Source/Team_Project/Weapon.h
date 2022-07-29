@@ -25,8 +25,6 @@ public:
 
 protected:
 	virtual void Tick(float DeltaTIme) override;
-
-	virtual AActor* Pickup(ATeam_ProjectCharacter* PickingUpActor) override;
 	
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties",
