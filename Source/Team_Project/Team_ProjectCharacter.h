@@ -165,11 +165,11 @@ private:
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
 		class AWeapon* EquippedWeapon;
 
-	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
-		const USkeletalMeshSocket* LeftHandSocket;
+	//UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
+	//	const USkeletalMeshSocket* LeftHandSocket;
 
-	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
-		const USkeletalMeshSocket* RightHandSocket;
+	//UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
+	//	const USkeletalMeshSocket* RightHandSocket;
 
 	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 		AItem* TraceHitItem;*/

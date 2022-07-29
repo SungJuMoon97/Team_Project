@@ -69,8 +69,8 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 
 	FName FirstPersonCameraSocket(TEXT("FirstPersonCameraSocket"));
 	FName ThirdPersonCameraSocket(TEXT("ThirdPersonCameraSocket"));
-	LeftHandSocket = GetMesh()->GetSocketByName(FName("hand_l_Socket"));
-	RightHandSocket = GetMesh()->GetSocketByName(FName("hand_r_Socket"));
+	//LeftHandSocket = GetMesh()->GetSocketByName(FName("hand_l_Socket"));
+	//RightHandSocket = GetMesh()->GetSocketByName(FName("hand_r_Socket"));
 	FirstPersonFollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonFollowCamera"));
 	ThirdPersonCameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("ThirdPersonCameraBoom"));
 	ThirdPersonFollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdPersonFollowCamera"));
@@ -633,18 +633,19 @@ void ATeam_ProjectCharacter::GrabActor()
 		UE_LOG(LogTemp, Warning, TEXT("Hit Actor"));
 		TraceItem = Cast<AItem>(HitResult.GetActor());
 		TraceWeapon = Cast<AWeapon>(HitResult.GetActor());
+		FName HandSocket(TEXT("hand_r_Socket"));
 
 		if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(EKeys::LeftMouseButton))
 		{
 			//LeftHand
-			//const USkeletalMeshSocket* LeftHandSocket = GetMesh()->GetSocketByName(FName("hand_l_Socket"));
+			const USkeletalMeshSocket* LeftHandSocket = GetMesh()->GetSocketByName(FName("hand_l_Socket"));
 			
 			if (TraceWeapon)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("This is LeftWeapon"));
+				TraceWeapon->SetItemState(EItemState::EIS_Equip);
 				LeftHandSocket->AttachActor(TraceWeapon, GetMesh());
 				EquippedWeapon = TraceWeapon;
-				EquippedWeapon->SetItemState(EItemState::EIS_Equip);
 				//TraceWeapon->GetItemMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 				//이게 되야 캐릭터가 템이랑 메쉬가 블록처리되지 않음
 				bWeaponEquip = true;
@@ -652,10 +653,9 @@ void ATeam_ProjectCharacter::GrabActor()
 			else if (TraceItem)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("This is LeftItem"));
+				TraceItem->SetItemState(EItemState::EIS_Equip);
 				LeftHandSocket->AttachActor(TraceItem, GetMesh());
-				//TraceItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_l_Socket"));
 				EquippedItem = TraceItem;
-				EquippedItem->SetItemState(EItemState::EIS_Equip);
 				bItemEquip = true;
 			}
 			
@@ -664,24 +664,22 @@ void ATeam_ProjectCharacter::GrabActor()
 		else if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(EKeys::RightMouseButton))
 		{
 			//RightHand
-			//const USkeletalMeshSocket* RightHandSocket = GetMesh()->GetSocketByName(FName("hand_r_Socket"));
+			const USkeletalMeshSocket* RightHandSocket = GetMesh()->GetSocketByName(FName("hand_r_Socket"));
 			
 			if (TraceWeapon)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("This is RightWeapon"));
+				TraceWeapon->SetItemState(EItemState::EIS_Equip);
 				RightHandSocket->AttachActor(TraceWeapon, GetMesh());
 				EquippedWeapon = TraceWeapon;
-				EquippedWeapon->SetItemState(EItemState::EIS_Equip);
-				//TraceWeapon->GetItemMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 				bWeaponEquip = true;
 			}
 			else if (TraceItem)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("This is RightItem"));
+				TraceItem->SetItemState(EItemState::EIS_Equip);
 				RightHandSocket->AttachActor(TraceItem, GetMesh());
-				//TraceItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("hand_r_Socket"));
 				EquippedItem = TraceItem;
-				EquippedItem->SetItemState(EItemState::EIS_Equip);
 				bItemEquip = true;
 			}
 			
@@ -691,48 +689,48 @@ void ATeam_ProjectCharacter::GrabActor()
 
 void ATeam_ProjectCharacter::ReleaseActor()
 {
-	//FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld, true);
+	FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld, true);
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(EKeys::LeftMouseButton))
 	{
 		//LeftHand
-		if (LeftHandSocket != nullptr)
-		{
+		//if (LeftHandSocket != nullptr)
+		//{
 			if (EquippedWeapon)
 			{
-				EquippedWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+				EquippedWeapon->DetachFromActor(DetachmentTransformRules);
 				EquippedWeapon->SetItemState(EItemState::EIS_Ground);
 				EquippedWeapon = nullptr;
 				bWeaponEquip = false;
 			}
 			else if (EquippedItem)
 			{
-				EquippedItem->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+				EquippedItem->DetachFromActor(DetachmentTransformRules);
 				EquippedItem->SetItemState(EItemState::EIS_Ground);
 				EquippedItem = nullptr;
 				bItemEquip = false;
 			}
-		}
+		//}
 	}
 	else if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(EKeys::RightMouseButton))
 	{
 		//RightHand
-		if (RightHandSocket != nullptr)
-		{
+		//if (RightHandSocket != nullptr)
+		//{
 			if (EquippedWeapon)
 			{
-				EquippedWeapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+				EquippedWeapon->DetachFromActor(DetachmentTransformRules);
 				EquippedWeapon->SetItemState(EItemState::EIS_Ground);
 				EquippedWeapon = nullptr;
 				bWeaponEquip = false;
 			}
 			else if (EquippedItem)
 			{
-				EquippedItem->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+				EquippedItem->DetachFromActor(DetachmentTransformRules);
 				EquippedItem->SetItemState(EItemState::EIS_Ground);
 				EquippedItem = nullptr;
 				bItemEquip = false;
 			}
-		}
+		//}
 	}
 }
 

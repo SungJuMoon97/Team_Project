@@ -22,7 +22,10 @@ AItem::AItem():
 	UseActionText = FText::FromString("Use");
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("InsItemMesh"));
+	//CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	SetItemState(ItemState);
+
+	RootComponent = Mesh;
 }
 
 AActor* AItem::Pickup(ATeam_ProjectCharacter* PickingUpActor)
