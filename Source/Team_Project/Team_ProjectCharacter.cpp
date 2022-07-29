@@ -646,7 +646,26 @@ void ATeam_ProjectCharacter::GrabActor()
 				TraceWeapon->SetItemState(EItemState::EIS_Equip);
 				//TraceWeapon->GetItemMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 				//이게 되야 캐릭터가 템이랑 메쉬가 블록처리되지 않음(SetItemState 에 들어있음)
-				LeftHandSocket->AttachActor(TraceWeapon, GetMesh());
+				if (TraceWeapon->GetOneHandedEquip() && TraceWeapon->GetFistWeapon())
+				{
+					const USkeletalMeshSocket* FistSocket = GetMesh()->GetSocketByName(FName("hand_l_FSocket"));
+					FistSocket->AttachActor(TraceWeapon, GetMesh());
+				}
+				else if((TraceWeapon->GetOneHandedEquip() && TraceWeapon->GetSwordWeapon()) || 
+					(TraceWeapon->GetTwoHandedEquip()&&TraceWeapon->GetHammerWeapon()))
+				{
+					LeftHandSocket->AttachActor(TraceWeapon, GetMesh());
+				}
+				else if (TraceWeapon->GetTwoHandedEquip() && TraceWeapon->GetSwordWeapon())
+				{
+					const USkeletalMeshSocket* TSSocket = GetMesh()->GetSocketByName(FName("hand_l_TSSocket"));
+					TSSocket->AttachActor(TraceWeapon, GetMesh());
+				}
+				else if (TraceWeapon->GetBowEquip() && TraceWeapon->GetBowWeapon())
+				{
+					const USkeletalMeshSocket* BowSocket = GetMesh()->GetSocketByName(FName("hand_l_BSocket"));
+					BowSocket->AttachActor(TraceWeapon, GetMesh());
+				}
 				EquippedWeapon = TraceWeapon;
 				bWeaponEquip = true;
 			}
@@ -670,7 +689,26 @@ void ATeam_ProjectCharacter::GrabActor()
 			{
 				UE_LOG(LogTemp, Warning, TEXT("This is RightWeapon"));
 				TraceWeapon->SetItemState(EItemState::EIS_Equip);
-				RightHandSocket->AttachActor(TraceWeapon, GetMesh());
+				if (TraceWeapon->GetOneHandedEquip() && TraceWeapon->GetFistWeapon())
+				{
+					const USkeletalMeshSocket* FistSocket = GetMesh()->GetSocketByName(FName("hand_r_FSocket"));
+					FistSocket->AttachActor(TraceWeapon, GetMesh());
+				}
+				else if ((TraceWeapon->GetOneHandedEquip() && TraceWeapon->GetSwordWeapon()) ||
+					(TraceWeapon->GetTwoHandedEquip() && TraceWeapon->GetHammerWeapon()))
+				{
+					RightHandSocket->AttachActor(TraceWeapon, GetMesh());
+				}
+				else if (TraceWeapon->GetTwoHandedEquip() && TraceWeapon->GetSwordWeapon())
+				{
+					const USkeletalMeshSocket* TSSocket = GetMesh()->GetSocketByName(FName("hand_r_TSSocket"));
+					TSSocket->AttachActor(TraceWeapon, GetMesh());
+				}
+				else if (TraceWeapon->GetBowEquip() && TraceWeapon->GetBowWeapon())
+				{
+					const USkeletalMeshSocket* BowSocket = GetMesh()->GetSocketByName(FName("hand_r_BSocket"));
+					BowSocket->AttachActor(TraceWeapon, GetMesh());
+				}
 				EquippedWeapon = TraceWeapon;
 				bWeaponEquip = true;
 			}
