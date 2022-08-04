@@ -26,7 +26,6 @@ public:
 
 	void BlockModeAim();
 	void BowAiming(float DeltaTIme);
-	void ItemEquipCheck();
 	
 	UFUNCTION()
 		void SetViewType(EViewType ViewType);
@@ -63,10 +62,6 @@ public:
 	EViewType CurrentViewMode;
 	EStance CurrentStanceMode;
 	EStanding CurrentStanding;
-	EWeaponType CurrentWeapon;
-	EWeaponHand CurrentHandWeapon;
-	EWeaponHand PreviouslyEquippedWeapon;
-	EWeaponHand CompareWeapon;
 
 	bool bThirdPersonView;
 	float BareHandDamage;//맨손공격력
@@ -104,6 +99,13 @@ protected:
 	void Interact();
 	void GrabActor();
 	void ReleaseActor();
+	void GrabbedRightActorLTCheck();
+	void GrabbedLeftActorRTCheck();
+	void GrabbedTLCheck();
+	void GrabbedTRCheck();
+	bool TwoHandedCombatCheck();
+	bool TwoHandedCombatGrab();
+
 	AActor* HeldActor;
 
 	// Add Item To Inventory Key
@@ -146,6 +148,27 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 		class UAnimMontage* RightPunchingMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+		class UAnimMontage* LeftSwordAttackMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+		class UAnimMontage* RightSwordAttackMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+		class UAnimMontage* LeftTwoHandedSwordAttackMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+		class UAnimMontage* RightTwoHandedSwordAttackMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+		class UAnimMontage* LeftHammerAttackMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+		class UAnimMontage* RightHammerAttackMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+		class UAnimMontage* BowAttackMontage;
 
 	UPROPERTY(VisibleAnywhere)
 		class UBarWidget* HealthWidget;
@@ -216,7 +239,11 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
 		meta = (AllowPrivateAccess = "true"))
-		bool bWhereWeapon;//0 이 손 ,1 이 등
+		bool bWeaponIsLeftHand;//1 손 ,0 등
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bWeaponIsRightHand;//1 손 ,0 등
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
@@ -248,7 +275,27 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
 		meta = (AllowPrivateAccess = "true"))
-		bool bKnuckleEquip;
+		bool bLeftKnuckleEquip;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bRightKnuckleEquip;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bLeftSwordEquip;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bRightSwordEquip;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bHammerEquip;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bTwoHandedSwordEquip;
 
 private:
 	/*Default camera field of view value*/
@@ -331,7 +378,18 @@ public:
 	FORCEINLINE bool GetRightHandAction() const { return bRightHandAction; }
 	FORCEINLINE bool GetInventoryOpen() const { return bIsInventoryOpen; }
 	FORCEINLINE bool GetIsSprint() const { return bSprint; }
-	FORCEINLINE bool GetLeftHandEquip() const { if (LeftEquippedWeapon) { return bLeftWeaponEquip; } if (LeftEquippedItem) { return bLeftItemEquip; } }
-	FORCEINLINE bool GetRightHandEquip() const { if (RightEquippedWeapon) { return bRightWeaponEquip; } if (RightEquippedItem) { return bRightItemEquip; } }
+	FORCEINLINE bool GetLeftWeaponEquip() const { return bLeftWeaponEquip; }
+	FORCEINLINE bool GetLeftItemEquip() const { return bLeftItemEquip; }
+	FORCEINLINE bool GetRightWeaponEquip() const { return bRightWeaponEquip; }
+	FORCEINLINE bool GetRightItemEquip() const { return bRightItemEquip; }
+	FORCEINLINE bool GetLeftSwordEquip() const { return bLeftSwordEquip; }
+	FORCEINLINE bool GetLeftKnuckleEquip() const { return bLeftKnuckleEquip; }
+	FORCEINLINE bool GetRightSwordEquip() const { return bRightSwordEquip; }
+	FORCEINLINE bool GetRightKnuckleEquip() const { return bRightKnuckleEquip; }
+	FORCEINLINE bool GetTwoHandedSwordEquip() const { return bTwoHandedSwordEquip; }
+	FORCEINLINE bool GetHammerEquip() const { return bHammerEquip; }
+	FORCEINLINE bool GetBowEquip() const { return bBowEquip; }
+	FORCEINLINE bool GetDoAttacking() const { return bDoAttacking; }
+	FORCEINLINE bool GetTwoHandedEquip() const { return bTwoHandedEquip; }
 };
 

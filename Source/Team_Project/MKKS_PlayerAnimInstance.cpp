@@ -56,6 +56,8 @@ void UMKKS_PlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 		{
 			LastMovementOffsetYaw = MovementOffsetYaw;
 		}
+		bDoAttacking = Team_ProjectCharacter->GetDoAttacking();
+
 		bSprint = Team_ProjectCharacter->GetIsSprint();
 
 		bCombatState = Team_ProjectCharacter->GetCombatState();
@@ -65,6 +67,30 @@ void UMKKS_PlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 		bCrouching = Team_ProjectCharacter->GetCrouching();
 
 		bLayingDown = Team_ProjectCharacter->GetLyingDown();
+
+		bLeftSwordEquip = Team_ProjectCharacter->GetLeftSwordEquip();
+
+		bLeftKnuckleEquip = Team_ProjectCharacter->GetLeftKnuckleEquip();
+
+		bRightSwordEquip = Team_ProjectCharacter->GetRightSwordEquip();
+
+		bRightKnuckleEquip = Team_ProjectCharacter->GetRightKnuckleEquip();
+
+		bTwoHandedSwordEquip = Team_ProjectCharacter->GetTwoHandedSwordEquip();
+
+		bHammerEquip = Team_ProjectCharacter->GetHammerEquip();
+
+		bBowEquip = Team_ProjectCharacter->GetBowEquip();
+
+		bLeftWeaponEquip = Team_ProjectCharacter->GetLeftWeaponEquip();
+
+		bLeftItemEquip = Team_ProjectCharacter->GetLeftItemEquip();
+
+		bRightWeaponEquip = Team_ProjectCharacter->GetRightWeaponEquip();
+
+		bRightItemEquip = Team_ProjectCharacter->GetRightItemEquip();
+
+		bTwoHandedEquip = Team_ProjectCharacter->GetTwoHandedEquip();
 
 		if (bSprint && MoveRightLeft != 0)
 		{

@@ -90,6 +90,70 @@ private:
 		meta = (AllowPrivateAccess = "true"))
 		float MoveRightLeft;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bBowEquip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bTwoHandedEquip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bOneHandedEquip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bLeftKnuckleEquip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bRightKnuckleEquip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bLeftSwordEquip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bRightSwordEquip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bHammerEquip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bTwoHandedSwordEquip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bLeftWeaponEquip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bRightWeaponEquip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bWeaponIsLeftHand;//1 손 ,0 등
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bWeaponIsRightHand;//1 손 ,0 등
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item,
+		meta = (AllowPrivateAccess = "true"))
+		bool bLeftItemEquip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item,
+		meta = (AllowPrivateAccess = "true"))
+		bool bRightItemEquip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Motion,
+		meta = (AllowPrivateAccess = "true"))
+		bool bDoAttacking;
+
 public:
 	FORCEINLINE float GetMoveForwardBack() const { return MoveForwardBack; }
 	FORCEINLINE float GetMoveRightLeft() const { return MoveRightLeft; }

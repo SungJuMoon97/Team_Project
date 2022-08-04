@@ -98,18 +98,10 @@ private:
 		meta = (AllowPrivateAccess = "true"))
 		bool bBowWeapon;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Motion,
-		meta = (AllowPrivateAccess = "true"))
-		bool bWeaponEquip;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Motion,
-		meta = (AllowPrivateAccess = "true"))
-		bool bWhereWeapon;
 
 public:
 	FORCEINLINE USkeletalMeshComponent* GetItemMesh() { return ItemMesh; }
-	FORCEINLINE bool GetWeaponEquip() const { return bWeaponEquip; }
-	FORCEINLINE bool GetWeaponWhere() const { return bWhereWeapon; }
 	FORCEINLINE bool GetBowEquip() const { return bBowEquip; }
 	FORCEINLINE bool GetTwoHandedEquip() const { return bTwoHandedEquip; }
 	FORCEINLINE bool GetOneHandedEquip() const { return bOneHandedEquip; }
