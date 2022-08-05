@@ -105,6 +105,8 @@ protected:
 	void GrabbedTRCheck();
 	bool TwoHandedCombatCheck();
 	bool TwoHandedCombatGrab();
+	void AttachWeaponBack();
+	void DetachWeaponBack();
 
 	AActor* HeldActor;
 
@@ -173,10 +175,10 @@ private:
 	UPROPERTY(VisibleAnywhere)
 		class UBarWidget* HealthWidget;
 
-	UPROPERTY(VisibleAnyWhere,BlueprintReadOnly,Category = Item, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnyWhere,BlueprintReadOnly,Category = Weapon, meta = (AllowPrivateAccess = "true"))
 		class AItem* TraceItem;
 
-	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 		class AWeapon* TraceWeapon;
 
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
@@ -185,11 +187,14 @@ private:
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
 		class AItem* RightEquippedItem;
 
-	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 		class AWeapon* LeftEquippedWeapon;
 
-	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 		class AWeapon* RightEquippedWeapon;
+
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+		class AWeapon* AttachedWeapon;
 
 	//UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
 	//	const USkeletalMeshSocket* LeftHandSocket;

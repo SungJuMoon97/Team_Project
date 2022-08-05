@@ -117,6 +117,28 @@ void ATeam_ProjectCharacter::LeftHand()
 {
 	UE_LOG(LogTemp, Warning, TEXT("BeginLeftHand"));
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(FKey("Q")))
+	{
+		if ((LeftEquippedWeapon != nullptr))
+		{
+			if (LeftEquippedWeapon->GetTwoHandedEquip() || LeftEquippedWeapon->GetBowEquip())
+			{
+				if ((AttachedWeapon == nullptr))
+					AttachWeaponBack();
+			}
+			else if (LeftEquippedWeapon->GetOneHandedEquip())
+			{
+
+			}
+		}
+		else if (LeftEquippedWeapon == nullptr)
+		{
+			if(AttachedWeapon != nullptr)
+				DetachWeaponBack();
+		}
+
+		return;
+	}
 
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(FKey("E"))
 		&& ((LeftEquippedWeapon != nullptr) || (LeftEquippedItem!=nullptr)))
@@ -203,6 +225,29 @@ void ATeam_ProjectCharacter::RightHand()
 {
 	UE_LOG(LogTemp, Warning, TEXT("BeginRightHand"));
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(FKey("Q")))
+	{
+		if ((RightEquippedWeapon != nullptr))
+		{
+			if (RightEquippedWeapon->GetTwoHandedEquip() || RightEquippedWeapon->GetBowEquip())
+			{
+				if ((AttachedWeapon == nullptr))
+					AttachWeaponBack();
+			}
+			else if (LeftEquippedWeapon->GetOneHandedEquip())
+			{
+
+			}
+		}
+		else if(RightEquippedWeapon == nullptr)
+		{
+			if(AttachedWeapon != nullptr)
+				DetachWeaponBack();
+		}
+
+		return;
+	}
 
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(FKey("E"))
 		&& ((RightEquippedWeapon != nullptr) || (RightEquippedItem != nullptr)))
@@ -956,6 +1001,258 @@ bool ATeam_ProjectCharacter::TwoHandedCombatGrab()
 		}
 	}
 	return false;
+}
+
+void ATeam_ProjectCharacter::AttachWeaponBack()
+{
+	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(EKeys::LeftMouseButton))
+	{
+		if (LeftEquippedWeapon != nullptr)
+		{
+			if (LeftEquippedWeapon->GetTwoHandedEquip() || LeftEquippedWeapon->GetBowEquip())
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Twohanded or Bow"));
+				FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld, true);
+
+				if (LeftEquippedWeapon->GetTwoHandedEquip() && LeftEquippedWeapon->GetSwordWeapon())
+				{
+					UE_LOG(LogTemp, Warning, TEXT("It's Twohanded"));
+					const USkeletalMeshSocket* TSBackSocket = GetMesh()->GetSocketByName(FName("UnEquip_SWeaponSocket"));
+
+					LeftEquippedWeapon->DetachFromActor(DetachmentTransformRules);
+					LeftEquippedWeapon->SetItemState(EItemState::EIS_Ground);
+
+					bHammerEquip = false;
+					bTwoHandedSwordEquip = false;
+					LeftEquippedWeapon->SetItemState(EItemState::EIS_Equip);
+					TSBackSocket->AttachActor(LeftEquippedWeapon, GetMesh());
+
+				}
+				else if (LeftEquippedWeapon->GetTwoHandedEquip() && LeftEquippedWeapon->GetHammerWeapon())
+				{
+					const USkeletalMeshSocket* THBackSocket = GetMesh()->GetSocketByName(FName("UnEquip_HWeaponSocket"));
+				
+					LeftEquippedWeapon->DetachFromActor(DetachmentTransformRules);
+					LeftEquippedWeapon->SetItemState(EItemState::EIS_Ground);
+
+					bHammerEquip = false;
+					bTwoHandedSwordEquip = false;
+					LeftEquippedWeapon->SetItemState(EItemState::EIS_Equip);
+					THBackSocket->AttachActor(LeftEquippedWeapon, GetMesh());
+
+				}
+				else if (LeftEquippedWeapon->GetBowEquip())
+				{
+					const USkeletalMeshSocket* BBackSocket = GetMesh()->GetSocketByName(FName("UnEquip_BWeaponSocket"));
+
+					LeftEquippedWeapon->DetachFromActor(DetachmentTransformRules);
+					LeftEquippedWeapon->SetItemState(EItemState::EIS_Ground);
+
+					bBowEquip = false;
+					LeftEquippedWeapon->SetItemState(EItemState::EIS_Equip);
+					BBackSocket->AttachActor(LeftEquippedWeapon, GetMesh());
+
+				}
+				AttachedWeapon = LeftEquippedWeapon;
+				LeftEquippedWeapon = nullptr;
+				bLeftWeaponEquip = false;
+			}
+			else if (LeftEquippedWeapon->GetOneHandedEquip())
+			{
+
+			}
+		}
+		else
+		{
+			return;
+		}
+	}
+	else if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(EKeys::RightMouseButton))
+	{
+		if (RightEquippedWeapon != nullptr)
+		{
+
+			if (RightEquippedWeapon->GetTwoHandedEquip() || RightEquippedWeapon->GetBowEquip())
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Twohanded or Bow"));
+				FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld, true);
+
+				if (RightEquippedWeapon->GetTwoHandedEquip() && RightEquippedWeapon->GetSwordWeapon())
+				{
+					UE_LOG(LogTemp, Warning, TEXT("It's Twohanded"));
+					const USkeletalMeshSocket* TSBackSocket = GetMesh()->GetSocketByName(FName("UnEquip_SWeaponSocket"));
+
+					RightEquippedWeapon->DetachFromActor(DetachmentTransformRules);
+					RightEquippedWeapon->SetItemState(EItemState::EIS_Ground);
+
+					bHammerEquip = false;
+					bTwoHandedSwordEquip = false;
+					RightEquippedWeapon->SetItemState(EItemState::EIS_Equip);
+					TSBackSocket->AttachActor(RightEquippedWeapon, GetMesh());
+
+				}
+				else if (RightEquippedWeapon->GetTwoHandedEquip() && RightEquippedWeapon->GetHammerWeapon())
+				{
+					const USkeletalMeshSocket* THBackSocket = GetMesh()->GetSocketByName(FName("UnEquip_HWeaponSocket"));
+
+					RightEquippedWeapon->DetachFromActor(DetachmentTransformRules);
+					RightEquippedWeapon->SetItemState(EItemState::EIS_Ground);
+
+					bHammerEquip = false;
+					bTwoHandedSwordEquip = false;
+					RightEquippedWeapon->SetItemState(EItemState::EIS_Equip);
+					THBackSocket->AttachActor(RightEquippedWeapon, GetMesh());
+
+				}
+				else if (RightEquippedWeapon->GetBowEquip())
+				{
+					const USkeletalMeshSocket* BBackSocket = GetMesh()->GetSocketByName(FName("UnEquip_BWeaponSocket"));
+
+					RightEquippedWeapon->DetachFromActor(DetachmentTransformRules);
+					RightEquippedWeapon->SetItemState(EItemState::EIS_Ground);
+
+					bBowEquip = false;
+					RightEquippedWeapon->SetItemState(EItemState::EIS_Equip);
+					BBackSocket->AttachActor(RightEquippedWeapon, GetMesh());
+
+				}
+				AttachedWeapon = RightEquippedWeapon;
+				RightEquippedWeapon = nullptr;
+				bRightWeaponEquip = false;
+			}
+			else if (RightEquippedWeapon->GetOneHandedEquip())
+			{
+
+			}
+
+		}
+		else
+		{
+			return;
+		}
+	}
+}
+
+void ATeam_ProjectCharacter::DetachWeaponBack()
+{
+	FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld, true);
+
+	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(EKeys::LeftMouseButton))
+	{
+		if (LeftEquippedWeapon == nullptr)
+		{
+			const USkeletalMeshSocket* LeftHandSocket = GetMesh()->GetSocketByName(FName("hand_l_Socket"));
+			
+
+			if (AttachedWeapon != nullptr)
+			{
+				if (AttachedWeapon->GetTwoHandedEquip() || AttachedWeapon->GetBowEquip())
+				{
+					if (AttachedWeapon->GetTwoHandedEquip() && AttachedWeapon->GetSwordWeapon())
+					{
+						const USkeletalMeshSocket* TSSocket = GetMesh()->GetSocketByName(FName("hand_l_TSSocket"));
+
+						AttachedWeapon->DetachFromActor(DetachmentTransformRules);
+						AttachedWeapon->SetItemState(EItemState::EIS_Ground);
+
+						bTwoHandedSwordEquip = true;
+						AttachedWeapon->SetItemState(EItemState::EIS_Equip);
+						TSSocket->AttachActor(AttachedWeapon, GetMesh());
+					}
+					else if (AttachedWeapon->GetTwoHandedEquip() && AttachedWeapon->GetHammerWeapon())
+					{
+						const USkeletalMeshSocket* THSocket = GetMesh()->GetSocketByName(FName("hand_l_Socket"));
+						AttachedWeapon->DetachFromActor(DetachmentTransformRules);
+						AttachedWeapon->SetItemState(EItemState::EIS_Ground);
+
+						bHammerEquip = true;
+						AttachedWeapon->SetItemState(EItemState::EIS_Equip);
+						THSocket->AttachActor(AttachedWeapon, GetMesh());
+					}
+					else if (AttachedWeapon->GetBowEquip())
+					{
+						const USkeletalMeshSocket* BowSocket = GetMesh()->GetSocketByName(FName("hand_l_BSocket"));
+						AttachedWeapon->DetachFromActor(DetachmentTransformRules);
+						AttachedWeapon->SetItemState(EItemState::EIS_Ground);
+
+						bBowEquip = true;
+						AttachedWeapon->SetItemState(EItemState::EIS_Equip);
+						BowSocket->AttachActor(AttachedWeapon, GetMesh());
+					}
+
+					LeftEquippedWeapon = AttachedWeapon;
+					AttachedWeapon = nullptr;
+					bLeftWeaponEquip = true;
+					bWeaponIsLeftHand = true;
+				}
+				else if (AttachedWeapon->GetOneHandedEquip())
+				{
+
+				}
+			}
+		}
+		else if (LeftEquippedWeapon != nullptr)
+		{
+			return;
+		}
+
+	}
+	else if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(EKeys::RightMouseButton))
+	{
+		if (RightEquippedWeapon == nullptr)
+		{
+			if (AttachedWeapon != nullptr)
+			{
+				if (AttachedWeapon->GetTwoHandedEquip() || AttachedWeapon->GetBowEquip())
+				{
+					if (AttachedWeapon->GetTwoHandedEquip() && AttachedWeapon->GetSwordWeapon())
+					{
+						const USkeletalMeshSocket* TSSocket = GetMesh()->GetSocketByName(FName("hand_r_TSSocket"));
+
+						AttachedWeapon->DetachFromActor(DetachmentTransformRules);
+						AttachedWeapon->SetItemState(EItemState::EIS_Ground);
+
+						bTwoHandedSwordEquip = true;
+						AttachedWeapon->SetItemState(EItemState::EIS_Equip);
+						TSSocket->AttachActor(AttachedWeapon, GetMesh());
+					}
+					else if (AttachedWeapon->GetTwoHandedEquip() && AttachedWeapon->GetHammerWeapon())
+					{
+						const USkeletalMeshSocket* THSocket = GetMesh()->GetSocketByName(FName("hand_r_Socket"));
+						AttachedWeapon->DetachFromActor(DetachmentTransformRules);
+						AttachedWeapon->SetItemState(EItemState::EIS_Ground);
+
+						bHammerEquip = true;
+						AttachedWeapon->SetItemState(EItemState::EIS_Equip);
+						THSocket->AttachActor(AttachedWeapon, GetMesh());
+					}
+					else if (AttachedWeapon->GetBowEquip())
+					{
+						const USkeletalMeshSocket* BowSocket = GetMesh()->GetSocketByName(FName("hand_r_BSocket"));
+						AttachedWeapon->DetachFromActor(DetachmentTransformRules);
+						AttachedWeapon->SetItemState(EItemState::EIS_Ground);
+
+						bBowEquip = true;
+						AttachedWeapon->SetItemState(EItemState::EIS_Equip);
+						BowSocket->AttachActor(AttachedWeapon, GetMesh());
+					}
+
+					RightEquippedWeapon = AttachedWeapon;
+					AttachedWeapon = nullptr;
+					bRightWeaponEquip = true;
+					bWeaponIsRightHand = true;
+				}
+				else if (AttachedWeapon->GetOneHandedEquip())
+				{
+
+				}
+			}
+		}
+		else if (RightEquippedWeapon != nullptr)
+		{
+			return;
+		}
+	}
 }
 
 void ATeam_ProjectCharacter::AddToInventory()
