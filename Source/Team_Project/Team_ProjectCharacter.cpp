@@ -37,6 +37,7 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	inputTime(2.0f),
 	bIsInventoryOpen(false),
 	bIsHoldingItem(false),
+	CurrentHealth(600.f),
 	MaxHeadHealth(100.f), MaxBodyHealth(100.f), MaxRightArmHealth(100.f), MaxLeftArmHealth(100.f), MaxRightLegHealth(100.f), MaxLeftLegHealth(100.f),
 	CurrentHeadHealth(100.f), CurrentBodyHealth(100.f), CurrentRightArmHealth(100.f), CurrentLeftArmHealth(100.f), CurrentRightLegHealth(100.f), CurrentLeftLegHealth(100.f)
 
@@ -266,7 +267,7 @@ void ATeam_ProjectCharacter::BarWidget()
 		check(PlayerWidget);
 		PlayerWidget->AddToViewport();
 		MaxHealth = (MaxHeadHealth + MaxBodyHealth + MaxRightArmHealth + MaxLeftArmHealth + MaxRightLegHealth + MaxLeftLegHealth);
-		CurrentHealth = (CurrentHeadHealth + CurrentBodyHealth + CurrentRightArmHealth + CurrentLeftArmHealth + CurrentRightLegHealth + CurrentLeftLegHealth);
+		// CurrentHealth = (CurrentHeadHealth + CurrentBodyHealth + CurrentRightArmHealth + CurrentLeftArmHealth + CurrentRightLegHealth + CurrentLeftLegHealth);
 		PlayerWidget->SetHealth(CurrentHealth, MaxHealth);
 	}
 }
