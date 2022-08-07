@@ -92,6 +92,10 @@ void UMKKS_PlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 
 		bTwoHandedEquip = Team_ProjectCharacter->GetTwoHandedEquip();
 
+		bIsDead = Team_ProjectCharacter->GetIsDead();
+
+		bTwohandedKick = Team_ProjectCharacter->GetTwoHandedKick();
+
 		if (bSprint && MoveRightLeft != 0)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("We have stopped sprinting."));
@@ -99,11 +103,11 @@ void UMKKS_PlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 			Team_ProjectCharacter->SetStanding(Team_ProjectCharacter->CurrentStanding);
 		}
 
-		if (bSitting || bCrouching || bLayingDown)
+		if (bSitting || bCrouching || bLayingDown || bIsDead)
 		{
 			bSprint = false;
 		
-			if (bSitting || bCrouching && bLayingDown)
+			if (bSitting || bCrouching && (bLayingDown || bIsDead))
 			{
 				bSitting = false;
 				bCrouching = false;

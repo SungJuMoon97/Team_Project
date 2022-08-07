@@ -92,6 +92,8 @@ protected:
 	void MoveRight(float Value);
 	void TurnAtRate(float Rate);
 	void LookUpAtRate(float Rate);
+	void Jump() override;
+	void StopJumping() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -164,6 +166,12 @@ private:
 		class UAnimMontage* RightTwoHandedSwordAttackMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+		class UAnimMontage* LTwoHandedKickMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+		class UAnimMontage* RTwoHandedKickMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 		class UAnimMontage* LeftHammerAttackMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
@@ -171,6 +179,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 		class UAnimMontage* BowAttackMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+		class UAnimMontage* DeadMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+		class UAnimMontage* TwoHandedDeadMontage;
 
 	UPROPERTY(VisibleAnywhere)
 		class UBarWidget* HealthWidget;
@@ -195,15 +209,6 @@ private:
 
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 		class AWeapon* AttachedWeapon;
-
-	//UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
-	//	const USkeletalMeshSocket* LeftHandSocket;
-
-	//UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Item, meta = (AllowPrivateAccess = "true"))
-	//	const USkeletalMeshSocket* RightHandSocket;
-
-	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
-		AItem* TraceHitItem;*/
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
@@ -302,6 +307,16 @@ private:
 		meta = (AllowPrivateAccess = "true"))
 		bool bTwoHandedSwordEquip;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bTwohandedKick;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
+		meta = (AllowPrivateAccess = "true"))
+		bool bIsDead;
+
+
+
 private:
 	/*Default camera field of view value*/
 	float CameraDefaultFOV;
@@ -396,5 +411,7 @@ public:
 	FORCEINLINE bool GetBowEquip() const { return bBowEquip; }
 	FORCEINLINE bool GetDoAttacking() const { return bDoAttacking; }
 	FORCEINLINE bool GetTwoHandedEquip() const { return bTwoHandedEquip; }
+	FORCEINLINE bool GetIsDead() const { return bIsDead; }
+	FORCEINLINE bool GetTwoHandedKick() const { return bTwohandedKick; }
 };
 

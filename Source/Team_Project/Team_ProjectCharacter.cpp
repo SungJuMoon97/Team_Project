@@ -26,7 +26,7 @@
 
 ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	//if your View and Stance make a change
-	CurrentViewMode(EViewType::EVT_FirstPerson), CurrentStanceMode(EStance::ES_Default),
+	CurrentViewMode(EViewType::EVT_FirstPerson), CurrentStanceMode(EStance::ES_Default),bIsDead(false),
 	bCombatState(false), bSprint(false), bLeftItemEquip(false), bRightItemEquip(false), bLeftWeaponEquip(false), bRightWeaponEquip(false), bAiming(false),
 	//CurrentSpeed
 	DefaultSpeed(500.0f), CrouchSpeed(200.0f), CombatSpeed(200.0f), SprintSpeed(800.0f),
@@ -40,8 +40,8 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	//PlayerStat
 	Health(100.f),MaxStamina(1.0f), MaxHungry(100.0f),MaxThirsty(100.0f),
 	currentStamina(1.0f),staminaSprintUsageRate(0.05f),staminaRechargeRate(0.01f),
-	CurrentHungry(100.0f), CurrentThirsty(100.f),HungryRate(0.5f),ThirstyRate(0.8f),
-	FoodWaterDrainRate(10.0f),//배고픔목마름줄어드는시간
+	CurrentHungry(100.0f), CurrentThirsty(100.f),HungryRate(0.5f),ThirstyRate(10.8f),
+	FoodWaterDrainRate(1.0f),//배고픔목마름줄어드는시간
 	//BowAiming Setting
 	CameraCurrentFOV(90.0f), CameraDefaultFOV(90.0f),CameraZoomedFOV(50.0f),ZoomInterpSpeed(20.0f),
 	bIsHoldingItem(false),
@@ -117,6 +117,10 @@ void ATeam_ProjectCharacter::LeftHand()
 {
 	UE_LOG(LogTemp, Warning, TEXT("BeginLeftHand"));
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (bIsDead)
+		return;
+
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(FKey("Q")))
 	{
 		if ((LeftEquippedWeapon != nullptr))
@@ -208,8 +212,17 @@ void ATeam_ProjectCharacter::LeftHand()
 				}
 				else if ((bLeftKnuckleEquip || (bLeftWeaponEquip == false)))
 				{
-					AnimInstance->Montage_Play(LeftPunchingMontage);
-					UE_LOG(LogTemp, Warning, TEXT("Punch"));
+					if (bRightWeaponEquip && (bHammerEquip || bTwoHandedSwordEquip))
+					{
+						bTwohandedKick = true;
+						AnimInstance->Montage_Play(RTwoHandedKickMontage);
+						//bTwohandedKick = false;
+					}
+					else
+					{
+						AnimInstance->Montage_Play(LeftPunchingMontage);
+						UE_LOG(LogTemp, Warning, TEXT("Punch"));
+					}
 				}
 
 			}
@@ -225,6 +238,9 @@ void ATeam_ProjectCharacter::RightHand()
 {
 	UE_LOG(LogTemp, Warning, TEXT("BeginRightHand"));
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (bIsDead)
+		return;
 
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(FKey("Q")))
 	{
@@ -318,8 +334,17 @@ void ATeam_ProjectCharacter::RightHand()
 				}
 				else if ((bRightKnuckleEquip || (bRightWeaponEquip == false)))
 				{
-					AnimInstance->Montage_Play(RightPunchingMontage);
-					UE_LOG(LogTemp, Warning, TEXT("Punch"));
+					if (bLeftWeaponEquip && (bHammerEquip||bTwoHandedSwordEquip))
+					{
+						bTwohandedKick = true;
+						AnimInstance->Montage_Play(LTwoHandedKickMontage);
+						//bTwohandedKick = false;
+					}
+					else
+					{
+						AnimInstance->Montage_Play(RightPunchingMontage);
+						UE_LOG(LogTemp, Warning, TEXT("Punch"));
+					}
 				}
 			}
 		}
@@ -331,11 +356,13 @@ void ATeam_ProjectCharacter::RightHand()
 void ATeam_ProjectCharacter::LeftHandEnd()
 {
 	bDoAttacking = false;
+	bTwohandedKick = false;
 }
 
 void ATeam_ProjectCharacter::RightHandEnd()
 {
 	bDoAttacking = false;
+	bTwohandedKick = false;
 }
 
 void ATeam_ProjectCharacter::InputTimeCheck()
@@ -346,15 +373,20 @@ void ATeam_ProjectCharacter::InputTimeCheck()
 
 void ATeam_ProjectCharacter::CameraOption()
 {
-	if (!bLayingDown)
+	if (bIsDead)
+	{
+		bUseControllerRotationYaw = false;
+		UE_LOG(LogTemp, Warning, TEXT("gojung_A_nim"));
+	}
+	else if (!bLayingDown)
 	{
 		bUseControllerRotationYaw = true;
 		UE_LOG(LogTemp, Warning, TEXT("gojung"));
 	}
-	else// if (bLayingDown)
+	else if (bLayingDown)
 	{
 		bUseControllerRotationYaw = false;
-		UE_LOG(LogTemp, Warning, TEXT("gojung_Anim"));
+		UE_LOG(LogTemp, Warning, TEXT("gojung_A_nim"));
 	}
 }
 
@@ -427,35 +459,40 @@ void ATeam_ProjectCharacter::SetViewType(EViewType ViewType)
 
 void ATeam_ProjectCharacter::ViewChange()
 {
-
-	if (CurrentViewMode == EViewType::EVT_ThirdPerson)
+	if (!bIsDead)
 	{
-		CurrentViewMode = EViewType::EVT_FirstPerson;
-		SetViewType(CurrentViewMode);
-		UE_LOG(LogTemp, Warning, TEXT("ViewChange"));
-	}
-	else
-	{
-		CurrentViewMode = EViewType::EVT_ThirdPerson;
-		SetViewType(CurrentViewMode);
+		if (CurrentViewMode == EViewType::EVT_ThirdPerson)
+		{
+			CurrentViewMode = EViewType::EVT_FirstPerson;
+			SetViewType(CurrentViewMode);
+			UE_LOG(LogTemp, Warning, TEXT("ViewChange"));
+		}
+		else
+		{
+			CurrentViewMode = EViewType::EVT_ThirdPerson;
+			SetViewType(CurrentViewMode);
+		}
 	}
 }
 
 void ATeam_ProjectCharacter::StanceChange()
 {
-	if (CurrentStanceMode == EStance::ES_Default)
+	if (!bIsDead)
 	{
-		CurrentStanceMode = EStance::ES_Combat;
-		SetStanceType(CurrentStanceMode);
-		
-			
-		UE_LOG(LogTemp, Warning, TEXT("StanceChanged"));
-	}
-	else
-	{
-		CurrentStanceMode = EStance::ES_Default;
-		
-		SetStanceType(CurrentStanceMode);
+		if (CurrentStanceMode == EStance::ES_Default)
+		{
+			CurrentStanceMode = EStance::ES_Combat;
+			SetStanceType(CurrentStanceMode);
+
+
+			UE_LOG(LogTemp, Warning, TEXT("StanceChanged"));
+		}
+		else
+		{
+			CurrentStanceMode = EStance::ES_Default;
+
+			SetStanceType(CurrentStanceMode);
+		}
 	}
 }
 
@@ -507,6 +544,7 @@ void ATeam_ProjectCharacter::SetStanding(EStanding StandingType)
 		bLayingDown = false;
 		bCrouching = false;
 		bSprint = false;
+		bIsDead = false;
 		if (CurrentStanceMode == EStance::ES_Default)
 		{
 			CameraOption();
@@ -524,6 +562,7 @@ void ATeam_ProjectCharacter::SetStanding(EStanding StandingType)
 		bCrouching = true;
 		bLayingDown = false;
 		bSprint = false;
+		bIsDead = false;
 		if (CurrentStanceMode == EStance::ES_Combat || CurrentStanceMode == EStance::ES_Default)
 		{
 			CameraOption();
@@ -536,6 +575,7 @@ void ATeam_ProjectCharacter::SetStanding(EStanding StandingType)
 		bCrouching = false;
 		bLayingDown = false;
 		bSprint = true;
+		bIsDead = false;
 		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
 		break;
 
@@ -543,6 +583,7 @@ void ATeam_ProjectCharacter::SetStanding(EStanding StandingType)
 		bCrouching = false;
 		bLayingDown = true;
 		bSprint = false;
+		bIsDead = false;
 		if (CurrentStanceMode == EStance::ES_Combat || CurrentStanceMode == EStance::ES_Default)
 		{
 			CameraOption();
@@ -550,63 +591,74 @@ void ATeam_ProjectCharacter::SetStanding(EStanding StandingType)
 		}
 		ThirdPersonCameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, -10.0f));
 		break;
+
+	case EStanding::ESD_Dead:
+		bCrouching = false;
+		bLayingDown = false;
+		bSprint = false;
+		bIsDead = true;
+		CameraOption();
+		ThirdPersonCameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, -10.0f));
+		break;
 	}
 }
 
 void ATeam_ProjectCharacter::StandingChange()
 {
-	if (CurrentStanding == EStanding::ESD_Standing)
+	if (!bIsDead)
 	{
-		if (inputTime <= PCInputTime_Stand)
+		if (CurrentStanding == EStanding::ESD_Standing)
 		{
-			CurrentStanding = EStanding::ESD_LayingDown;
-			SetStanding(CurrentStanding);
-			UE_LOG(LogTemp, Warning, TEXT("LyingDown"));
-			return;
-		}
+			if (inputTime <= PCInputTime_Stand)
+			{
+				CurrentStanding = EStanding::ESD_LayingDown;
+				SetStanding(CurrentStanding);
+				UE_LOG(LogTemp, Warning, TEXT("LyingDown"));
+				return;
+			}
 
-		CurrentStanding = EStanding::ESD_Crouching;
-		SetStanding(CurrentStanding);
-		UE_LOG(LogTemp, Warning, TEXT("Sitting"));
-	}
-	else if (CurrentStanding == EStanding::ESD_Crouching)
-	{
-		if (inputTime <= PCInputTime_Stand)
-		{
-			CurrentStanding = EStanding::ESD_LayingDown;
+			CurrentStanding = EStanding::ESD_Crouching;
 			SetStanding(CurrentStanding);
-			UE_LOG(LogTemp, Warning, TEXT("LyingDown"));
-			return;
+			UE_LOG(LogTemp, Warning, TEXT("Sitting"));
 		}
-
-		CurrentStanding = EStanding::ESD_Standing;
-		SetStanding(CurrentStanding);
-		UE_LOG(LogTemp, Warning, TEXT("Standing"));
-	}
-	else
-	{
-		if (inputTime <= PCInputTime_Stand)
+		else if (CurrentStanding == EStanding::ESD_Crouching)
 		{
-			
+			if (inputTime <= PCInputTime_Stand)
+			{
+				CurrentStanding = EStanding::ESD_LayingDown;
+				SetStanding(CurrentStanding);
+				UE_LOG(LogTemp, Warning, TEXT("LyingDown"));
+				return;
+			}
+
 			CurrentStanding = EStanding::ESD_Standing;
 			SetStanding(CurrentStanding);
 			UE_LOG(LogTemp, Warning, TEXT("Standing"));
-			return;
 		}
+		else
+		{
+			if (inputTime <= PCInputTime_Stand)
+			{
 
-		CurrentStanding = EStanding::ESD_Crouching;
-		SetStanding(CurrentStanding);
-		UE_LOG(LogTemp, Warning, TEXT("Sitting"));
+				CurrentStanding = EStanding::ESD_Standing;
+				SetStanding(CurrentStanding);
+				UE_LOG(LogTemp, Warning, TEXT("Standing"));
+				return;
+			}
+
+			CurrentStanding = EStanding::ESD_Crouching;
+			SetStanding(CurrentStanding);
+			UE_LOG(LogTemp, Warning, TEXT("Sitting"));
+		}
 	}
-	
 }
 
 
 void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	check(PlayerInputComponent);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ATeam_ProjectCharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ATeam_ProjectCharacter::StopJumping);
 	PlayerInputComponent->BindAction("LeftHand", IE_Pressed, this, &ATeam_ProjectCharacter::LeftHand);
 	PlayerInputComponent->BindAction("RightHand", IE_Pressed, this, &ATeam_ProjectCharacter::RightHand);;
 	PlayerInputComponent->BindAction("LeftHand",IE_Released, this, &ATeam_ProjectCharacter::LeftHandEnd);
@@ -637,6 +689,9 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 
 void ATeam_ProjectCharacter::Interact()
 {
+	if (bIsDead)
+		return;
+
 	if (inputTime <= PCInputTime_Interact)
 	{
 
@@ -1286,6 +1341,9 @@ void ATeam_ProjectCharacter::PutActor()
 
 void ATeam_ProjectCharacter::OpenInventory()
 {
+	if (bIsDead)
+		return;
+
 	if (!bIsInventoryOpen)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Inventory Open"));
@@ -1366,58 +1424,87 @@ void ATeam_ProjectCharacter::LookUpAtRate(float Rate)
 
 }
 
+void ATeam_ProjectCharacter::Jump()
+{
+	if (!bIsDead && !bLayingDown)
+	{
+		bPressedJump = true;
+		JumpKeyHoldTime = 0.0f;
+	}
+}
+
+void ATeam_ProjectCharacter::StopJumping()
+{
+	bPressedJump = false;
+
+	if(!bIsDead || !bLayingDown)
+		ResetJumpState();
+}
+
 
 void ATeam_ProjectCharacter::MoveForward(float Value)
 {
-	if (CurrentViewMode == EViewType::EVT_FirstPerson)
+	if (!bIsDead)
 	{
-		if (Value != 0.0f)
-		{
-			// add movement in that direction
-			AddMovementInput(GetActorForwardVector(), Value);
-		}
-	}
-	else
-	{
-		if ((Controller != nullptr) && (Value != 0.0f))
-		{
-			// find out which way is forward
-			const FRotator Rotation = Controller->GetControlRotation();
-			const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-			// get forward vector
-			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-			AddMovementInput(Direction, Value);
+		if (bTwohandedKick)
+			return;
+
+		if (CurrentViewMode == EViewType::EVT_FirstPerson)
+		{
+			if (Value != 0.0f)
+			{
+				// add movement in that direction
+				AddMovementInput(GetActorForwardVector(), Value);
+			}
+		}
+		else
+		{
+			if ((Controller != nullptr) && (Value != 0.0f))
+			{
+				// find out which way is forward
+				const FRotator Rotation = Controller->GetControlRotation();
+				const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+				// get forward vector
+				const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+				AddMovementInput(Direction, Value);
+			}
 		}
 	}
 }
 
 void ATeam_ProjectCharacter::MoveRight(float Value)
 {
-
-	if (CurrentViewMode == EViewType::EVT_FirstPerson)
+	if (!bIsDead)
 	{
-		if (Value != 0.0f)
+
+		if (bTwohandedKick)
+			return;
+
+		if (CurrentViewMode == EViewType::EVT_FirstPerson)
 		{
-			// add movement in that direction
-			AddMovementInput(GetActorRightVector(), Value);
+			if (Value != 0.0f)
+			{
+				// add movement in that direction
+				AddMovementInput(GetActorRightVector(), Value);
+			}
+		}
+		else
+		{
+			if ((Controller != nullptr) && (Value != 0.0f))
+			{
+				// find out which way is right
+				const FRotator Rotation = Controller->GetControlRotation();
+				const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+				// get right vector 
+				const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+				// add movement in that direction
+				AddMovementInput(Direction, Value);
+			}
 		}
 	}
-	else
-	{
-		if ((Controller != nullptr) && (Value != 0.0f))
-		{
-			// find out which way is right
-			const FRotator Rotation = Controller->GetControlRotation();
-			const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-			// get right vector 
-			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-			// add movement in that direction
-			AddMovementInput(Direction, Value);
-		}
-	}
-	
 }
 
 void ATeam_ProjectCharacter::DecreaseFoodWater()
@@ -1427,6 +1514,9 @@ void ATeam_ProjectCharacter::DecreaseFoodWater()
 
 	if (CurrentHungry <= 0 || CurrentThirsty <= 0)
 	{
-		//Destroy();
+		CurrentStanding = EStanding::ESD_Dead;
+		SetStanding(CurrentStanding);
 	}
 }
+
+

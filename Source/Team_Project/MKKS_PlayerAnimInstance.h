@@ -154,6 +154,14 @@ private:
 		meta = (AllowPrivateAccess = "true"))
 		bool bDoAttacking;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bTwohandedKick;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
+		meta = (AllowPrivateAccess = "true"))
+		bool bIsDead;
+
 public:
 	FORCEINLINE float GetMoveForwardBack() const { return MoveForwardBack; }
 	FORCEINLINE float GetMoveRightLeft() const { return MoveRightLeft; }
