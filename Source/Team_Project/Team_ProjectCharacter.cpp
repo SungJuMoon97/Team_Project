@@ -477,20 +477,6 @@ void ATeam_ProjectCharacter::BarWidget()
 	}
 }
 
-void ATeam_ProjectCharacter::BarWidget()
-{
-	if (IsLocallyControlled() && PlayerWidgetClass)
-	{
-		AMKKS_PlayerController* FPC = GetController<AMKKS_PlayerController>();
-		check(FPC);
-		PlayerWidget = CreateWidget<UBarWidget>(FPC, PlayerWidgetClass);
-		check(PlayerWidget);
-		PlayerWidget->AddToViewport();
-		MaxHealth = (MaxHeadHealth + MaxBodyHealth + MaxRightArmHealth + MaxLeftArmHealth + MaxRightLegHealth + MaxLeftLegHealth);
-		PlayerWidget->SetHealth(CurrentHealth, MaxHealth);
-	}
-}
-
 void ATeam_ProjectCharacter::SetViewType(EViewType ViewType)
 {
 	

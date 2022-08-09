@@ -252,9 +252,6 @@ private:
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 		class AWeapon* AttachedWeapon;
 
-	UPROPERTY(VisibleAnywhere)
-	class UBarWidget* HealthWidget;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* HeadDamageBox;
 
