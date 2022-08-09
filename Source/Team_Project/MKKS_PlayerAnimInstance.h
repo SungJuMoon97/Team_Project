@@ -162,6 +162,10 @@ private:
 		meta = (AllowPrivateAccess = "true"))
 		bool bIsDead;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health",
+		meta = (AllowPrivateAccess = "true"))
+		float CurrentHealth;
+
 public:
 	FORCEINLINE float GetMoveForwardBack() const { return MoveForwardBack; }
 	FORCEINLINE float GetMoveRightLeft() const { return MoveRightLeft; }

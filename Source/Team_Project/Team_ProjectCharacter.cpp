@@ -43,7 +43,7 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	Health(100.f), MaxStamina(1.0f), MaxHungry(100.0f), MaxThirsty(100.0f),
 	currentStamina(1.0f), staminaSprintUsageRate(0.05f), staminaRechargeRate(0.01f),
 	CurrentHungry(100.0f), CurrentThirsty(100.f), HungryRate(0.5f), ThirstyRate(0.8f),
-	FoodWaterDrainRate(10.0f),//배고픔목마름줄어드는시간
+	FoodWaterDrainRate(1.0f),//배고픔목마름줄어드는시간
 	//BowAiming Setting
 	CameraCurrentFOV(90.0f), CameraDefaultFOV(90.0f), CameraZoomedFOV(50.0f), ZoomInterpSpeed(20.0f),
 	MaxHealth(600.f), MaxHeadHealth(100.f), MaxBodyHealth(100.f), MaxRightArmHealth(100.f), MaxLeftArmHealth(100.f), MaxRightLegHealth(100.f), MaxLeftLegHealth(100.f),

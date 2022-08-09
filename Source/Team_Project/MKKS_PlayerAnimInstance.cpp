@@ -96,6 +96,14 @@ void UMKKS_PlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 
 		bTwohandedKick = Team_ProjectCharacter->GetTwoHandedKick();
 
+		CurrentHealth = Team_ProjectCharacter->GetCurrentHealth();
+
+		if (CurrentHealth <= 0)
+		{
+			Team_ProjectCharacter->CurrentStanding = EStanding::ESD_Dead;
+			Team_ProjectCharacter->SetStanding(Team_ProjectCharacter->CurrentStanding);
+		}
+
 		if (bSprint && MoveRightLeft != 0)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("We have stopped sprinting."));

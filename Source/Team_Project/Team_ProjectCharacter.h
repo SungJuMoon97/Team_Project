@@ -481,5 +481,6 @@ public:
 	FORCEINLINE bool GetTwoHandedEquip() const { return bTwoHandedEquip; }
 	FORCEINLINE bool GetIsDead() const { return bIsDead; }
 	FORCEINLINE bool GetTwoHandedKick() const { return bTwohandedKick; }
+	FORCEINLINE float GetCurrentHealth() const { return CurrentHealth; }
 };
 
