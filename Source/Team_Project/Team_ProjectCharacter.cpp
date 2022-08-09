@@ -28,7 +28,7 @@
 
 ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	//if your View and Stance make a change
-	CurrentViewMode(EViewType::EVT_FirstPerson), CurrentStanceMode(EStance::ES_Default),bIsDead(false),
+	CurrentViewMode(EViewType::EVT_FirstPerson), CurrentStanceMode(EStance::ES_Default), bIsDead(false),
 	bCombatState(false), bSprint(false), bLeftItemEquip(false), bRightItemEquip(false), bLeftWeaponEquip(false), bRightWeaponEquip(false), bAiming(false),
 	//CurrentSpeed
 	DefaultSpeed(500.0f), CrouchSpeed(200.0f), CombatSpeed(200.0f), SprintSpeed(800.0f),
@@ -38,7 +38,20 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	CurrentStanding(EStanding::ESD_Standing),
 	bSitting(false), bLayingDown(false), bCrouching(false),
 	inputTime(2.0f),
-	bIsInventoryOpen(false)
+	bIsInventoryOpen(false),
+	//PlayerStat
+	Health(100.f), MaxStamina(1.0f), MaxHungry(100.0f), MaxThirsty(100.0f),
+	currentStamina(1.0f), staminaSprintUsageRate(0.05f), staminaRechargeRate(0.01f),
+	CurrentHungry(100.0f), CurrentThirsty(100.f), HungryRate(0.5f), ThirstyRate(0.8f),
+	FoodWaterDrainRate(10.0f),//배고픔목마름줄어드는시간
+	//BowAiming Setting
+	CameraCurrentFOV(90.0f), CameraDefaultFOV(90.0f), CameraZoomedFOV(50.0f), ZoomInterpSpeed(20.0f),
+	MaxHealth(600.f), MaxHeadHealth(100.f), MaxBodyHealth(100.f), MaxRightArmHealth(100.f), MaxLeftArmHealth(100.f), MaxRightLegHealth(100.f), MaxLeftLegHealth(100.f),
+	//WeaponEquip
+	bLeftKnuckleEquip(false), bRightKnuckleEquip(false), bHammerEquip(false), bLeftSwordEquip(false), bRightSwordEquip(false),
+	bTwoHandedSwordEquip(false), bBowEquip(false),
+	CurrentHeadHealth(100.f), CurrentBodyHealth(100.f), CurrentRightArmHealth(100.f), CurrentLeftArmHealth(100.f), CurrentRightLegHealth(100.f), CurrentLeftLegHealth(100.f),
+	CurrentHealth(600.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
@@ -47,12 +60,12 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	// set our turn rate for input
 	TurnRateGamepad = 45.f;
 
-	
+
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>
 		Shinbi_Mesh(TEXT("SkeletalMesh'/Game/Retarget/Meshes/Shinbi_NoWeapon.Shinbi_NoWeapon'"));
 	if (Shinbi_Mesh.Succeeded())
 		GetMesh()->SetSkeletalMesh(Shinbi_Mesh.Object);
-	
+
 
 	if (PlayerAnim == nullptr)
 		PlayerAnim = Cast<UMKKS_PlayerAnimInstance>(GetMesh()->GetAnimInstance());
@@ -130,15 +143,6 @@ void ATeam_ProjectCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ATeam_ProjectCharacter::DecreaseFoodWater, FoodWaterDrainRate, true, 6.f);
-
-	if (IsLocallyControlled() && PlayerWidgetClass)
-	{
-		AMKKS_PlayerController* FPC = GetController<AMKKS_PlayerController>();
-		check(FPC);
-		PlayerWidget = CreateWidget<UBarWidget>(FPC, PlayerWidgetClass);
-		check(PlayerWidget);
-		PlayerWidget->AddToViewport();
-	}
 }
 
 void ATeam_ProjectCharacter::Tick(float DeltaTime)
@@ -175,7 +179,7 @@ void ATeam_ProjectCharacter::LeftHand()
 		}
 		else if (LeftEquippedWeapon == nullptr)
 		{
-			if(AttachedWeapon != nullptr)
+			if (AttachedWeapon != nullptr)
 				DetachWeaponBack();
 		}
 
@@ -183,7 +187,7 @@ void ATeam_ProjectCharacter::LeftHand()
 	}
 
 	if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(FKey("E"))
-		&& ((LeftEquippedWeapon != nullptr) || (LeftEquippedItem!=nullptr)))
+		&& ((LeftEquippedWeapon != nullptr) || (LeftEquippedItem != nullptr)))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Socket isnt null"));
 		ReleaseActor();
@@ -266,7 +270,7 @@ void ATeam_ProjectCharacter::LeftHand()
 		}
 
 	}
-	
+
 	UE_LOG(LogTemp, Warning, TEXT("EndALeftHand"));
 	bLeftHandAction = false;
 }
@@ -293,9 +297,9 @@ void ATeam_ProjectCharacter::RightHand()
 
 			}
 		}
-		else if(RightEquippedWeapon == nullptr)
+		else if (RightEquippedWeapon == nullptr)
 		{
-			if(AttachedWeapon != nullptr)
+			if (AttachedWeapon != nullptr)
 				DetachWeaponBack();
 		}
 
@@ -371,7 +375,7 @@ void ATeam_ProjectCharacter::RightHand()
 				}
 				else if ((bRightKnuckleEquip || (bRightWeaponEquip == false)))
 				{
-					if (bLeftWeaponEquip && (bHammerEquip||bTwoHandedSwordEquip))
+					if (bLeftWeaponEquip && (bHammerEquip || bTwoHandedSwordEquip))
 					{
 						bTwohandedKick = true;
 						AnimInstance->Montage_Play(LTwoHandedKickMontage);
@@ -427,9 +431,53 @@ void ATeam_ProjectCharacter::CameraOption()
 	}
 }
 
+void ATeam_ProjectCharacter::BlockModeAim()
+{
+}
+
+void ATeam_ProjectCharacter::BowAiming(float DeltaTime)
+{
+
+	if (bAiming)
+	{
+		//bAiming = true;
+		CameraCurrentFOV = FMath::FInterpTo(
+			CameraCurrentFOV,
+			CameraZoomedFOV,
+			DeltaTime,
+			ZoomInterpSpeed);
+	}
+	else
+	{
+		//bAiming = false;
+		CameraCurrentFOV = FMath::FInterpTo(
+			CameraCurrentFOV,
+			CameraDefaultFOV,
+			DeltaTime,
+			ZoomInterpSpeed);
+	}
+	if (CurrentViewMode == EViewType::EVT_FirstPerson)
+	{
+		GetFirstPersonFollowCamera()->SetFieldOfView(CameraCurrentFOV);
+	}
+}
+
+void ATeam_ProjectCharacter::BarWidget()
+{
+	if (IsLocallyControlled() && PlayerWidgetClass)
+	{
+		AMKKS_PlayerController* FPC = GetController<AMKKS_PlayerController>();
+		check(FPC);
+		PlayerWidget = CreateWidget<UBarWidget>(FPC, PlayerWidgetClass);
+		check(PlayerWidget);
+		PlayerWidget->AddToViewport();
+		PlayerWidget->SetHealth(CurrentHealth, MaxHealth);
+	}
+}
+
 void ATeam_ProjectCharacter::SetViewType(EViewType ViewType)
 {
-	
+
 	switch (ViewType)
 	{
 	case EViewType::EVT_ThirdPerson:
@@ -503,7 +551,7 @@ void ATeam_ProjectCharacter::SetStanceType(EStance StanceType)
 		{
 			GetCharacterMovement()->MaxWalkSpeed = CrouchSpeed;
 			CameraOption();
-		}	
+		}
 		if (CurrentStanding == EStanding::ESD_Sitting || CurrentStanding == EStanding::ESD_LayingDown)
 		{
 			GetCharacterMovement()->MaxWalkSpeed = 0.0f;
@@ -517,7 +565,7 @@ void ATeam_ProjectCharacter::SetStanceType(EStance StanceType)
 		{
 			GetCharacterMovement()->MaxWalkSpeed = CombatSpeed;
 			CameraOption();
-		}	
+		}
 		if (CurrentStanding == EStanding::ESD_Sitting || CurrentStanding == EStanding::ESD_LayingDown)
 		{
 			GetCharacterMovement()->MaxWalkSpeed = 0.0f;
@@ -652,16 +700,13 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ATeam_ProjectCharacter::StopJumping);
 	PlayerInputComponent->BindAction("LeftHand", IE_Pressed, this, &ATeam_ProjectCharacter::LeftHand);
 	PlayerInputComponent->BindAction("RightHand", IE_Pressed, this, &ATeam_ProjectCharacter::RightHand);;
-	PlayerInputComponent->BindAction("LeftHand",IE_Released, this, &ATeam_ProjectCharacter::LeftHandEnd);
+	PlayerInputComponent->BindAction("LeftHand", IE_Released, this, &ATeam_ProjectCharacter::LeftHandEnd);
 	PlayerInputComponent->BindAction("RightHand", IE_Released, this, &ATeam_ProjectCharacter::RightHandEnd);;
 	PlayerInputComponent->BindAction("ViewChange", IE_Pressed, this, &ATeam_ProjectCharacter::ViewChange);
 	PlayerInputComponent->BindAction("StanceChange", IE_Pressed, this, &ATeam_ProjectCharacter::StanceChange);
 	PlayerInputComponent->BindAction("StandingChange", IE_Released, this, &ATeam_ProjectCharacter::StandingChange);
-	// Item Interact binding (Press E)
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ATeam_ProjectCharacter::Interact);
-	// AddToInventory binding
 	PlayerInputComponent->BindAction("AddToInventory", IE_Pressed, this, &ATeam_ProjectCharacter::AddToInventory);
-	// OpenInventory binding
 	PlayerInputComponent->BindAction("OpenInventory", IE_Pressed, this, &ATeam_ProjectCharacter::OpenInventory);
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ATeam_ProjectCharacter::SprintStart);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ATeam_ProjectCharacter::SprintEnd);
@@ -702,15 +747,128 @@ void ATeam_ProjectCharacter::GrabActor()
 		ECollisionChannel::ECC_Visibility,
 		Params
 	);
-	
+
 
 	if (bResult)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("HIT ACTOR"));
+		UE_LOG(LogTemp, Warning, TEXT("Hit Actor"));
+		TraceItem = Cast<AItem>(HitResult.GetActor());
+		TraceWeapon = Cast<AWeapon>(HitResult.GetActor());
+		FName HandSocket(TEXT("hand_r_Socket"));
 
-		if (AActor* HitActor = HitResult.GetActor())
+		if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(EKeys::LeftMouseButton))
 		{
-			if (IPickup_Interface* Interface = Cast<IPickup_Interface>(HitActor))
+			//LeftHand
+			const USkeletalMeshSocket* LeftHandSocket = GetMesh()->GetSocketByName(FName("hand_l_Socket"));
+
+			if (TraceWeapon)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("This is LeftWeapon"));
+				TraceWeapon->SetItemState(EItemState::EIS_Equip);
+				//TraceWeapon->GetItemMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				//이게 되야 캐릭터가 템이랑 메쉬가 블록처리되지 않음(SetItemState 에 들어있음)
+				if (TraceWeapon->GetOneHandedEquip() && TraceWeapon->GetFistWeapon())
+				{
+					const USkeletalMeshSocket* FistSocket = GetMesh()->GetSocketByName(FName("hand_l_FSocket"));
+					FistSocket->AttachActor(TraceWeapon, GetMesh());
+					bLeftKnuckleEquip = true;
+					//GrabbedTRCheck();
+				}
+				else if ((TraceWeapon->GetOneHandedEquip() && TraceWeapon->GetSwordWeapon()) ||
+					(TraceWeapon->GetTwoHandedEquip() && TraceWeapon->GetHammerWeapon()))
+				{
+					LeftHandSocket->AttachActor(TraceWeapon, GetMesh());
+					if (TraceWeapon->GetOneHandedEquip() && TraceWeapon->GetSwordWeapon())
+					{
+						bLeftSwordEquip = true;
+						//GrabbedTRCheck();
+					}
+					else
+					{
+						bHammerEquip = true;
+						//GrabbedRightActorLTCheck();
+					}
+				}
+				else if (TraceWeapon->GetTwoHandedEquip() && TraceWeapon->GetSwordWeapon())
+				{
+					const USkeletalMeshSocket* TSSocket = GetMesh()->GetSocketByName(FName("hand_l_TSSocket"));
+					TSSocket->AttachActor(TraceWeapon, GetMesh());
+					bTwoHandedSwordEquip = true;
+					//GrabbedRightActorLTCheck();
+				}
+				else if (TraceWeapon->GetBowEquip() && TraceWeapon->GetBowWeapon())
+				{
+					const USkeletalMeshSocket* BowSocket = GetMesh()->GetSocketByName(FName("hand_l_BSocket"));
+					BowSocket->AttachActor(TraceWeapon, GetMesh());
+					bBowEquip = true;
+					//GrabbedTRCheck();
+				}
+				LeftEquippedWeapon = TraceWeapon;
+				bLeftWeaponEquip = true;
+				bWeaponIsLeftHand = true;
+			}
+			else if (TraceItem)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("This is LeftItem"));
+				TraceItem->SetItemState(EItemState::EIS_Equip);
+				LeftHandSocket->AttachActor(TraceItem, GetMesh());
+				LeftEquippedItem = TraceItem;
+				bLeftItemEquip = true;
+				//GrabbedTRCheck();
+			}
+
+
+		}
+		else if (UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(EKeys::RightMouseButton))
+		{
+			//RightHand
+			const USkeletalMeshSocket* RightHandSocket = GetMesh()->GetSocketByName(FName("hand_r_Socket"));
+
+			if (TraceWeapon)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("This is RightWeapon"));
+				TraceWeapon->SetItemState(EItemState::EIS_Equip);
+				if (TraceWeapon->GetOneHandedEquip() && TraceWeapon->GetFistWeapon())
+				{
+					const USkeletalMeshSocket* FistSocket = GetMesh()->GetSocketByName(FName("hand_r_FSocket"));
+					FistSocket->AttachActor(TraceWeapon, GetMesh());
+					bRightKnuckleEquip = true;
+					//GrabbedTLCheck();
+				}
+				else if ((TraceWeapon->GetOneHandedEquip() && TraceWeapon->GetSwordWeapon()) ||
+					(TraceWeapon->GetTwoHandedEquip() && TraceWeapon->GetHammerWeapon()))
+				{
+					RightHandSocket->AttachActor(TraceWeapon, GetMesh());
+					if (TraceWeapon->GetOneHandedEquip() && TraceWeapon->GetSwordWeapon())
+					{
+						bRightSwordEquip = true;
+						//GrabbedTLCheck();
+					}
+					else
+					{
+						bHammerEquip = true;
+						//GrabbedLeftActorRTCheck();
+					}
+				}
+				else if (TraceWeapon->GetTwoHandedEquip() && TraceWeapon->GetSwordWeapon())
+				{
+					const USkeletalMeshSocket* TSSocket = GetMesh()->GetSocketByName(FName("hand_r_TSSocket"));
+					TSSocket->AttachActor(TraceWeapon, GetMesh());
+					bTwoHandedSwordEquip = true;
+					//GrabbedLeftActorRTCheck();
+				}
+				else if (TraceWeapon->GetBowEquip() && TraceWeapon->GetBowWeapon())
+				{
+					const USkeletalMeshSocket* BowSocket = GetMesh()->GetSocketByName(FName("hand_r_BSocket"));
+					BowSocket->AttachActor(TraceWeapon, GetMesh());
+					bBowEquip = true;
+				}
+				RightEquippedWeapon = TraceWeapon;
+				bRightWeaponEquip = true;
+				bWeaponIsLeftHand = true;
+				//GrabbedTLCheck();
+			}
+			else if (TraceItem)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("This is RightItem"));
 				TraceItem->SetItemState(EItemState::EIS_Equip);
@@ -740,7 +898,7 @@ void ATeam_ProjectCharacter::ReleaseActor()
 				bRightWeaponEquip = false;
 				bWeaponIsRightHand = false;
 			}
-			
+
 			bLeftWeaponEquip = false;
 			bWeaponIsLeftHand = false;
 			bLeftKnuckleEquip = false;
@@ -756,7 +914,7 @@ void ATeam_ProjectCharacter::ReleaseActor()
 			LeftEquippedItem->SetItemState(EItemState::EIS_Ground);
 			LeftEquippedItem = nullptr;
 			bLeftItemEquip = false;
-				
+
 		}
 
 	}
@@ -782,7 +940,7 @@ void ATeam_ProjectCharacter::ReleaseActor()
 			bTwoHandedSwordEquip = false;
 			bHammerEquip = false;
 			RightEquippedWeapon = nullptr;
-			
+
 		}
 		else if (RightEquippedItem)
 		{
@@ -847,7 +1005,7 @@ void ATeam_ProjectCharacter::GrabbedLeftActorRTCheck()
 void ATeam_ProjectCharacter::GrabbedTLCheck()
 {
 	FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld, true);
-	
+
 	if (LeftEquippedWeapon != nullptr)
 	{
 		if (LeftEquippedWeapon->GetTwoHandedEquip())
@@ -886,7 +1044,7 @@ bool ATeam_ProjectCharacter::TwoHandedCombatCheck()
 {
 	if (RightEquippedWeapon != nullptr)
 	{
-		if (RightEquippedWeapon->GetTwoHandedEquip()||RightEquippedWeapon->GetBowEquip())
+		if (RightEquippedWeapon->GetTwoHandedEquip() || RightEquippedWeapon->GetBowEquip())
 		{
 			if (LeftEquippedItem != nullptr || LeftEquippedWeapon != nullptr)
 			{
@@ -896,7 +1054,7 @@ bool ATeam_ProjectCharacter::TwoHandedCombatCheck()
 	}
 	else if (LeftEquippedWeapon != nullptr)
 	{
-		if (LeftEquippedWeapon->GetTwoHandedEquip()|| LeftEquippedWeapon->GetBowEquip())
+		if (LeftEquippedWeapon->GetTwoHandedEquip() || LeftEquippedWeapon->GetBowEquip())
 		{
 			if (RightEquippedItem != nullptr || RightEquippedWeapon != nullptr)
 			{
@@ -960,7 +1118,7 @@ void ATeam_ProjectCharacter::AttachWeaponBack()
 				else if (LeftEquippedWeapon->GetTwoHandedEquip() && LeftEquippedWeapon->GetHammerWeapon())
 				{
 					const USkeletalMeshSocket* THBackSocket = GetMesh()->GetSocketByName(FName("UnEquip_HWeaponSocket"));
-				
+
 					LeftEquippedWeapon->DetachFromActor(DetachmentTransformRules);
 					LeftEquippedWeapon->SetItemState(EItemState::EIS_Ground);
 
@@ -1071,7 +1229,7 @@ void ATeam_ProjectCharacter::DetachWeaponBack()
 		if (LeftEquippedWeapon == nullptr)
 		{
 			const USkeletalMeshSocket* LeftHandSocket = GetMesh()->GetSocketByName(FName("hand_l_Socket"));
-			
+
 
 			if (AttachedWeapon != nullptr)
 			{
@@ -1205,11 +1363,6 @@ void ATeam_ProjectCharacter::PutActor()
 
 		if (AActor* HitActor = HitResult.GetActor())
 		{
-			if (IPickup_Interface* Interface = Cast<IPickup_Interface>(HitActor))
-			{
-				Interface->Puton();
-				// InventoryComponent->AddItemToInventory(HitActor);
-			}
 		}
 	}
 }
@@ -1237,18 +1390,18 @@ void ATeam_ProjectCharacter::OpenInventory()
 
 void ATeam_ProjectCharacter::SprintStart()
 {
-	if ((GetInputAxisValue(TEXT("Move Right / Left")) == 0)&&(GetInputAxisValue(TEXT("Move Forward / Backward")) > 0))
+	if ((GetInputAxisValue(TEXT("Move Right / Left")) == 0) && (GetInputAxisValue(TEXT("Move Forward / Backward")) > 0))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("We are now sprinting."));
 		CurrentStanding = EStanding::ESD_Sprinting;
 		SetStanding(CurrentStanding);
 	}
-	
+
 }
 
 void ATeam_ProjectCharacter::SprintEnd()
 {
-	if(bSprint == true)
+	if (bSprint == true)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("We have stopped sprinting."));
 		CurrentStanding = EStanding::ESD_Standing;
@@ -1312,7 +1465,7 @@ void ATeam_ProjectCharacter::StopJumping()
 {
 	bPressedJump = false;
 
-	if(!bIsDead || !bLayingDown)
+	if (!bIsDead || !bLayingDown)
 		ResetJumpState();
 }
 
