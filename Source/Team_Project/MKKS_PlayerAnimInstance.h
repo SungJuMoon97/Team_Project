@@ -154,11 +154,11 @@ private:
 		meta = (AllowPrivateAccess = "true"))
 		bool bDoAttacking;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon,
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon,
 		meta = (AllowPrivateAccess = "true"))
 		bool bTwohandedKick;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Motion,
 		meta = (AllowPrivateAccess = "true"))
 		bool bIsDead;
 

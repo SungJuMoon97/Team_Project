@@ -40,8 +40,8 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	//PlayerStat
 	Health(100.f),MaxStamina(1.0f), MaxHungry(100.0f),MaxThirsty(100.0f),
 	currentStamina(1.0f),staminaSprintUsageRate(0.05f),staminaRechargeRate(0.01f),
-	CurrentHungry(100.0f), CurrentThirsty(100.f),HungryRate(0.5f),ThirstyRate(10.8f),
-	FoodWaterDrainRate(1.0f),//배고픔목마름줄어드는시간
+	CurrentHungry(100.0f), CurrentThirsty(100.f),HungryRate(0.5f),ThirstyRate(0.8f),
+	FoodWaterDrainRate(10.0f),//배고픔목마름줄어드는시간
 	//BowAiming Setting
 	CameraCurrentFOV(90.0f), CameraDefaultFOV(90.0f),CameraZoomedFOV(50.0f),ZoomInterpSpeed(20.0f),
 	bIsHoldingItem(false),
@@ -216,7 +216,6 @@ void ATeam_ProjectCharacter::LeftHand()
 					{
 						bTwohandedKick = true;
 						AnimInstance->Montage_Play(RTwoHandedKickMontage);
-						//bTwohandedKick = false;
 					}
 					else
 					{
