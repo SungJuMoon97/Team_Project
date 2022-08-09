@@ -55,7 +55,7 @@
 		},
 		{
 			"Name": "CommonLoadingScreen",
-			"Enabled": true,
+			"Enabled": false,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/655175e6418341be8924dd4108d7dd9f"
 		}
 	]
