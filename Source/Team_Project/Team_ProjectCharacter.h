@@ -80,8 +80,51 @@ public:
 	UPROPERTY()
 		class UInventoryPanel* PlayerInventoryPanel;
 
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
 		float Health;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float MaxHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float MaxHeadHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float MaxBodyHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float MaxRightArmHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float MaxLeftArmHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float MaxRightLegHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float MaxLeftLegHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float CurrentHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float CurrentHeadHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float CurrentBodyHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float CurrentRightArmHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float CurrentLeftArmHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float CurrentRightLegHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float CurrentLeftLegHealth;
 
 protected:
 
@@ -119,7 +162,6 @@ protected:
 	// Open Inventory
 	void OpenInventory();
 	bool bIsInventoryOpen;
-	bool bIsHoldingItem;
 
 	UFUNCTION(BlueprintCallable, Category = "Items")
 		void UseItem(class AItem* Item);
@@ -209,6 +251,45 @@ private:
 
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 		class AWeapon* AttachedWeapon;
+
+	UPROPERTY(VisibleAnywhere)
+	class UBarWidget* HealthWidget;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* HeadDamageBox;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* BodyDamageBox;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* RightArmDamageBox1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* RightArmDamageBox2;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* LeftArmDamageBox1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* LeftArmDamageBox2;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* RightLegDamageBox1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* RightLegDamageBox2;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* RightLegDamageBox3;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* LeftLegDamageBox1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* LeftLegDamageBox2;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DamageBox, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* LeftLegDamageBox3;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Motion,
@@ -338,16 +419,6 @@ protected:
 	//CurrentHungry, Thirsty
 	UFUNCTION(BlueprintCallable)
 		void DecreaseFoodWater();
-
-	// HP
-	float MaxHealth;
-	float CurrentHealth;
-	float MaxHeadHealth;
-	float MaxBodyHealth;
-	float MaxRightArmHealth;
-	float MaxLeftArmHealth;
-	float MaxRightLegHealth;
-	float MaxLeftLegHealth;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")

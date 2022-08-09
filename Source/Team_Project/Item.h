@@ -12,7 +12,7 @@ class UStaticMeshComponent;
 class ATeam_ProjectCharacter;
 
 UCLASS(Abstract, BlueprintType, Blueprintable, DefaultToInstanced)
-class TEAM_PROJECT_API AItem : public AActor
+class TEAM_PROJECT_API AItem : public AActor, public IPickup_Interface
 {
 	GENERATED_BODY()
 	

@@ -39,6 +39,7 @@ AActor* AInstanceItem::Pickup(ATeam_ProjectCharacter* PickingUpActor)
 	return nullptr;
 }
 
+<<<<<<< HEAD
 //void AInstanceItem::Puton()
 //{
 //	// hide actor and disable collision
@@ -52,3 +53,18 @@ AActor* AInstanceItem::Pickup(ATeam_ProjectCharacter* PickingUpActor)
 //	Mesh->SetHiddenInGame(false);
 //	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 //}
+=======
+void AInstanceItem::Puton()
+{
+	// hide actor and disable collision
+	Mesh->SetHiddenInGame(true);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AInstanceItem::Drop()
+{
+	// drop actor and enable collision
+	Mesh->SetHiddenInGame(false);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+}
+>>>>>>> origin/KPrevious-Work

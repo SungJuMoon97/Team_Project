@@ -20,7 +20,6 @@ public:
 		float HealthToHeal;
 
 
-
 protected:
 	virtual void Use(class ATeam_ProjectCharacter* Character) override;
 

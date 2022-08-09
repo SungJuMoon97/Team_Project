@@ -3,6 +3,8 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -44,11 +46,12 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	FoodWaterDrainRate(10.0f),//배고픔목마름줄어드는시간
 	//BowAiming Setting
 	CameraCurrentFOV(90.0f), CameraDefaultFOV(90.0f),CameraZoomedFOV(50.0f),ZoomInterpSpeed(20.0f),
-	bIsHoldingItem(false),
 	MaxHealth(600.f), MaxHeadHealth(100.f), MaxBodyHealth(100.f), MaxRightArmHealth(100.f), MaxLeftArmHealth(100.f), MaxRightLegHealth(100.f), MaxLeftLegHealth(100.f),
 	//WeaponEquip
 	bLeftKnuckleEquip(false), bRightKnuckleEquip(false), bHammerEquip(false),bLeftSwordEquip(false), bRightSwordEquip(false),
-	bTwoHandedSwordEquip(false), bBowEquip(false)
+	bTwoHandedSwordEquip(false), bBowEquip(false),
+	CurrentHeadHealth(100.f), CurrentBodyHealth(100.f), CurrentRightArmHealth(100.f), CurrentLeftArmHealth(100.f), CurrentRightLegHealth(100.f), CurrentLeftLegHealth(100.f),
+	CurrentHealth(600.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
@@ -94,14 +97,52 @@ ATeam_ProjectCharacter::ATeam_ProjectCharacter() :
 	ThirdPersonCameraBoom->bUsePawnControlRotation = true;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	Inventory = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
+
+	HeadDamageBox = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HeadDamageBox"));
+	BodyDamageBox = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BodyDamageBox"));
+	RightArmDamageBox1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightArmDamageBox1"));
+	RightArmDamageBox2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightArmDamageBox2"));
+	LeftArmDamageBox1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftArmDamageBox1"));
+	LeftArmDamageBox2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftArmDamageBox2"));
+	RightLegDamageBox1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightLegDamageBox1"));
+	RightLegDamageBox2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightLegDamageBox2"));
+	RightLegDamageBox3 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightLegDamageBox3"));
+	LeftLegDamageBox1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftLegDamageBox1"));
+	LeftLegDamageBox2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftLegDamageBox2"));
+	LeftLegDamageBox3 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftLegDamageBox3"));
+
+	FName HeadDamageSocket(TEXT("HeadDamageSocket"));
+	FName BodyDamageSocket(TEXT("BodyDamageSocket"));
+	FName RightArmDamageSocket1(TEXT("RightArmDamageSocket1"));
+	FName RightArmDamageSocket2(TEXT("RightArmDamageSocket2"));
+	FName LeftArmDamageSocket1(TEXT("LeftArmDamageSocket1"));
+	FName LeftArmDamageSocket2(TEXT("LeftArmDamageSocket2"));
+	FName RightLegDamageSocket1(TEXT("RightLegDamageSocket1"));
+	FName RightLegDamageSocket2(TEXT("RightLegDamageSocket2"));
+	FName RightLegDamageSocket3(TEXT("RightLegDamageSocket3"));
+	FName LeftLegDamageSocket1(TEXT("LeftLegDamageSocket1"));
+	FName LeftLegDamageSocket2(TEXT("LeftLegDamageSocket2"));
+	FName LeftLegDamageSocket3(TEXT("LeftLegDamageSocket3"));
+
+
+	HeadDamageBox->SetupAttachment(GetMesh(), HeadDamageSocket);
+	BodyDamageBox->SetupAttachment(GetMesh(), BodyDamageSocket);
+	RightArmDamageBox1->SetupAttachment(GetMesh(), RightArmDamageSocket1);
+	RightArmDamageBox2->SetupAttachment(GetMesh(), RightArmDamageSocket2);
+	LeftArmDamageBox1->SetupAttachment(GetMesh(), LeftArmDamageSocket1);
+	LeftArmDamageBox2->SetupAttachment(GetMesh(), LeftArmDamageSocket2);
+	RightLegDamageBox1->SetupAttachment(GetMesh(), RightLegDamageSocket1);
+	RightLegDamageBox2->SetupAttachment(GetMesh(), RightLegDamageSocket2);
+	RightLegDamageBox3->SetupAttachment(GetMesh(), RightLegDamageSocket3);
+	LeftLegDamageBox1->SetupAttachment(GetMesh(), LeftLegDamageSocket1);
+	LeftLegDamageBox2->SetupAttachment(GetMesh(), LeftLegDamageSocket2);
+	LeftLegDamageBox3->SetupAttachment(GetMesh(), LeftLegDamageSocket3);
 }
 
 void ATeam_ProjectCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ATeam_ProjectCharacter::DecreaseFoodWater, FoodWaterDrainRate, true, 6.f);
-
-	BarWidget();
 }
 
 void ATeam_ProjectCharacter::Tick(float DeltaTime)
@@ -111,6 +152,7 @@ void ATeam_ProjectCharacter::Tick(float DeltaTime)
 	InputTimeCheck();
 	Stamina(DeltaTime);
 	BowAiming(DeltaTime);
+	BarWidget();
 }
 
 void ATeam_ProjectCharacter::LeftHand()
@@ -435,6 +477,20 @@ void ATeam_ProjectCharacter::BarWidget()
 	}
 }
 
+void ATeam_ProjectCharacter::BarWidget()
+{
+	if (IsLocallyControlled() && PlayerWidgetClass)
+	{
+		AMKKS_PlayerController* FPC = GetController<AMKKS_PlayerController>();
+		check(FPC);
+		PlayerWidget = CreateWidget<UBarWidget>(FPC, PlayerWidgetClass);
+		check(PlayerWidget);
+		PlayerWidget->AddToViewport();
+		MaxHealth = (MaxHeadHealth + MaxBodyHealth + MaxRightArmHealth + MaxLeftArmHealth + MaxRightLegHealth + MaxLeftLegHealth);
+		PlayerWidget->SetHealth(CurrentHealth, MaxHealth);
+	}
+}
+
 void ATeam_ProjectCharacter::SetViewType(EViewType ViewType)
 {
 	
@@ -665,14 +721,8 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAction("ViewChange", IE_Pressed, this, &ATeam_ProjectCharacter::ViewChange);
 	PlayerInputComponent->BindAction("StanceChange", IE_Pressed, this, &ATeam_ProjectCharacter::StanceChange);
 	PlayerInputComponent->BindAction("StandingChange", IE_Released, this, &ATeam_ProjectCharacter::StandingChange);
-	// Item Interact binding (Press E)
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ATeam_ProjectCharacter::Interact);
 	PlayerInputComponent->BindAction("AddToInventory", IE_Pressed, this, &ATeam_ProjectCharacter::AddToInventory);
-	// AddToInventory binding (Press F)
-	PlayerInputComponent->BindAction("AddToInventory", IE_Pressed, this, &ATeam_ProjectCharacter::AddToInventory);
-	// AddToInventory binding (Press F)
-	PlayerInputComponent->BindAction("AddToInventory", IE_Pressed, this, &ATeam_ProjectCharacter::AddToInventory);
-	// OpenInventory binding (Press I)
 	PlayerInputComponent->BindAction("OpenInventory", IE_Pressed, this, &ATeam_ProjectCharacter::OpenInventory);
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ATeam_ProjectCharacter::SprintStart);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ATeam_ProjectCharacter::SprintEnd);
@@ -681,7 +731,6 @@ void ATeam_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &ATeam_ProjectCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("Turn Right / Left Gamepad", this, &ATeam_ProjectCharacter::TurnAtRate);
-	//PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &ATeam_ProjectCharacter::TurnRate);
 	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("Look Up / Down Gamepad", this, &ATeam_ProjectCharacter::LookUpAtRate);
 }
@@ -1330,10 +1379,6 @@ void ATeam_ProjectCharacter::PutActor()
 
 		if (AActor* HitActor = HitResult.GetActor())
 		{
-			/*if (IPickup_Interface* Interface = Cast<IPickup_Interface>(HitActor))
-			{
-				Interface->Puton();
-			}*/
 		}
 	}
 }
@@ -1517,5 +1562,3 @@ void ATeam_ProjectCharacter::DecreaseFoodWater()
 		SetStanding(CurrentStanding);
 	}
 }
-
-
