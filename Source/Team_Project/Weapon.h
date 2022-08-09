@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Item.h"
 #include "Enum_Collection.h"
+#include "Components/CapsuleComponent.h"
 #include "Weapon.generated.h"
 
 /**
@@ -18,12 +19,32 @@ class TEAM_PROJECT_API AWeapon : public AItem
 public:
 	AWeapon();
 
-	virtual void Tick(float DeltaTime);
-	void GetWeaponType(EWeaponType Value);
+	void SetWeaponType(EWeaponType Type);
+	void SetWeaponHand(EWeaponHand Kind);
+	void WeaponCheck();
 
 protected:
-
+	virtual void Tick(float DeltaTIme) override;
+	
 private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties",
+		meta = (AllowPrivateAccess = "true"))
+		class UCapsuleComponent* WPCollision;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		EWeaponHand CurrentWeaponHand;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		EWeaponType CurrentWeaponType;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties",
+		meta = (AllowPrivateAccess = "true"))
+		USkeletalMeshComponent* ItemMesh;
+
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		ATeam_ProjectCharacter* MyCharacter;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attack,
 			meta = (AllowPrivateAccess = "true"))
@@ -45,10 +66,49 @@ private:
 		meta = (AllowPrivateAccess = "true"))
 		float AttackModifierMax;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bBowEquip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bTwoHandedEquip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bOneHandedEquip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bKnuckleEquip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bFistWeapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bSwordWeapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bHammerWeapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon,
+		meta = (AllowPrivateAccess = "true"))
+		bool bBowWeapon;
+
 
 
 public:
-
-
-
+	FORCEINLINE USkeletalMeshComponent* GetItemMesh() { return ItemMesh; }
+	FORCEINLINE bool GetBowEquip() const { return bBowEquip; }
+	FORCEINLINE bool GetTwoHandedEquip() const { return bTwoHandedEquip; }
+	FORCEINLINE bool GetOneHandedEquip() const { return bOneHandedEquip; }
+	FORCEINLINE bool GetKnuckleEquip() const { return bKnuckleEquip; }
+	FORCEINLINE bool GetFistWeapon() const { return bFistWeapon; }
+	FORCEINLINE bool GetSwordWeapon() const { return bSwordWeapon; }
+	FORCEINLINE bool GetHammerWeapon() const { return bHammerWeapon; }
+	FORCEINLINE bool GetBowWeapon() const { return bBowWeapon; }
+	virtual void SetItemState(EItemState State) override;
 };

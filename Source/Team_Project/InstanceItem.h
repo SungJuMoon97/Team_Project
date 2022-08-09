@@ -32,7 +32,7 @@ public:
 	virtual AActor* Pickup(ATeam_ProjectCharacter* PickingUpActor) override;
 
 	// hide actor and disable collision
-	virtual void Puton() override;
+	/*virtual void Puton() override;
 
-	virtual void Drop() override;
+	virtual void Drop() override;*/
 };

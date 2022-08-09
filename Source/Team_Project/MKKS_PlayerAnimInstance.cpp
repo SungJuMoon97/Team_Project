@@ -40,13 +40,25 @@ void UMKKS_PlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 		MovementOffsetYaw = UKismetMathLibrary::NormalizedDeltaRotator(
 			MovementRotation, AimRotation).Yaw;
 
-		MoveForwardBack = Team_ProjectCharacter->GetInputAxisValue(TEXT("Move Forward / Backward"));
-		MoveRightLeft = Team_ProjectCharacter->GetInputAxisValue(TEXT("Move Right / Left"));
+		MovementOffsetPitch = UKismetMathLibrary::NormalizedDeltaRotator(
+			MovementRotation, AimRotation).Pitch;
+
+		AimOffsetYaw = UKismetMathLibrary::NormalizedDeltaRotator(Team_ProjectCharacter->GetBaseAimRotation(),Team_ProjectCharacter->GetActorRotation()).Yaw;
+		AimOffsetPitch = UKismetMathLibrary::NormalizedDeltaRotator(Team_ProjectCharacter->GetBaseAimRotation(), Team_ProjectCharacter->GetActorRotation()).Pitch;
+		
+		MoveForwardBack = //UKismetMathLibrary::NormalizeAxis(Team_ProjectCharacter->GetInputAxisValue(TEXT("Move Forward / Backward")));
+			Team_ProjectCharacter->GetInputAxisValue(TEXT("Move Forward / Backward"));
+		MoveRightLeft = //UKismetMathLibrary::NormalizeAxis(Team_ProjectCharacter->GetInputAxisValue(TEXT("Move Right / Left")));
+			Team_ProjectCharacter->GetInputAxisValue(TEXT("Move Right / Left"));
+		
 
 		if (Team_ProjectCharacter->GetVelocity().Size() > 0.0f)
 		{
 			LastMovementOffsetYaw = MovementOffsetYaw;
 		}
+		bDoAttacking = Team_ProjectCharacter->GetDoAttacking();
+
+		bSprint = Team_ProjectCharacter->GetIsSprint();
 
 		bCombatState = Team_ProjectCharacter->GetCombatState();
 
@@ -56,10 +68,50 @@ void UMKKS_PlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 
 		bLayingDown = Team_ProjectCharacter->GetLyingDown();
 
-		if (bSitting || bCrouching && bLayingDown)
+		bLeftSwordEquip = Team_ProjectCharacter->GetLeftSwordEquip();
+
+		bLeftKnuckleEquip = Team_ProjectCharacter->GetLeftKnuckleEquip();
+
+		bRightSwordEquip = Team_ProjectCharacter->GetRightSwordEquip();
+
+		bRightKnuckleEquip = Team_ProjectCharacter->GetRightKnuckleEquip();
+
+		bTwoHandedSwordEquip = Team_ProjectCharacter->GetTwoHandedSwordEquip();
+
+		bHammerEquip = Team_ProjectCharacter->GetHammerEquip();
+
+		bBowEquip = Team_ProjectCharacter->GetBowEquip();
+
+		bLeftWeaponEquip = Team_ProjectCharacter->GetLeftWeaponEquip();
+
+		bLeftItemEquip = Team_ProjectCharacter->GetLeftItemEquip();
+
+		bRightWeaponEquip = Team_ProjectCharacter->GetRightWeaponEquip();
+
+		bRightItemEquip = Team_ProjectCharacter->GetRightItemEquip();
+
+		bTwoHandedEquip = Team_ProjectCharacter->GetTwoHandedEquip();
+
+		bIsDead = Team_ProjectCharacter->GetIsDead();
+
+		bTwohandedKick = Team_ProjectCharacter->GetTwoHandedKick();
+
+		if (bSprint && MoveRightLeft != 0)
 		{
-			bSitting = false;
-			bCrouching = false;
+			UE_LOG(LogTemp, Warning, TEXT("We have stopped sprinting."));
+			Team_ProjectCharacter->CurrentStanding = EStanding::ESD_Standing;
+			Team_ProjectCharacter->SetStanding(Team_ProjectCharacter->CurrentStanding);
+		}
+
+		if (bSitting || bCrouching || bLayingDown || bIsDead)
+		{
+			bSprint = false;
+		
+			if (bSitting || bCrouching && (bLayingDown || bIsDead))
+			{
+				bSitting = false;
+				bCrouching = false;
+			}
 		}
 
 		if ((Team_ProjectCharacter->CurrentStanceMode == EStance::ES_Combat)&&(bLayingDown == true))
@@ -78,7 +130,6 @@ void UMKKS_PlayerAnimInstance::UpdateAnimationProperties(float DeltaTime)
 			Team_ProjectCharacter->SetStanding(Team_ProjectCharacter->CurrentStanding);
 			UE_LOG(LogTemp, Warning, TEXT("Laying to Crouch"));
 		}
-
 	}
 
 }

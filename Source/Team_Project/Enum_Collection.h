@@ -48,6 +48,7 @@ enum class EWeaponHand : uint8
 	EWH_OneHanded UMETA(DisplayName = "OneHandedWeapon"),
 	EWH_TwoHanded UMETA(DisplayName = "TwoHandedWeapon"),
 	EWH_Fist UMETA(DisplayName = "FistWeapon"),
+	EWH_Bow UMETA(DisplayName = "BowWeapon"),
 
 	EWH_MAX UMETA(DisplayName = "EWH_MAX")
 };
@@ -59,6 +60,19 @@ enum class EStanding : uint8
 	ESD_Sitting UMETA(DisplayName = "Sitting"),
 	ESD_Crouching UMETA(DisplayName = "Crouching"),
 	ESD_LayingDown UMETA(DisplayName = "LyingDown"),
+	ESD_Sprinting UMETA(DisplayName = "Sprinting"),
+	ESD_Dead UMETA(DisplayName = "Dead"),
 
 	ESD_MAX UMETA(DisplayName = "ESD_MAX")
+};
+
+UENUM(BlueprintType)
+enum class EItemState : uint8
+{
+	EIS_Ground UMETA(DisplayName = "Ground"),
+	EIS_Equip UMETA(DisplayName = "Equip"),
+	EIS_Puton UMETA(DisplayName = "Puton"),
+	EIS_Drop UMETA(DisplayName = "Drop"),
+
+	EIS_MAX UMETA(DisplayName = "EIS_MAX")
 };

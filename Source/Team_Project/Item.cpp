@@ -3,12 +3,16 @@
 
 #include "Item.h"
 #include "InventoryComponent.h"
+#include "Enum_Collection.h"
 #include "Team_ProjectCharacter.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
-AItem::AItem()
+AItem::AItem():
+	ItemState(EItemState::EIS_Ground)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -18,49 +22,54 @@ AItem::AItem()
 	UseActionText = FText::FromString("Use");
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("InsItemMesh"));
-	
+	//CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
+	SetItemState(ItemState);
 
+	RootComponent = Mesh;
 }
 
-AActor* AItem::Pickup(ATeam_ProjectCharacter* PickingUpActor)
+void AItem::SetItemState(EItemState State)
 {
-	if (GetRootComponent()->IsSimulatingPhysics())
+	switch (State)
 	{
-		if (UPrimitiveComponent* PrimComponent = Cast<UPrimitiveComponent>(GetComponentByClass(UPrimitiveComponent::StaticClass())))
-		{
-			PrimComponent->SetSimulatePhysics(false);
-			AttachToComponent(PickingUpActor->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachSocket"));
-			return this;
-		}
-	}
-	else
-	{
-		AttachToComponent(PickingUpActor->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AttachSocket"));
-		return this;
-	}
-	return nullptr;
-}
+	case EItemState::EIS_Ground:
+		Mesh->SetSimulatePhysics(true);
+		Mesh->SetEnableGravity(true);
+		Mesh->SetVisibility(true);
+		Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		break;
 
-void AItem::Puton()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Hide!"));
-	// hide actor and disable collision
-	Mesh->SetHiddenInGame(true);
-	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-}
+	case EItemState::EIS_Equip:
+		// Set mesh properties
+		Mesh->SetSimulatePhysics(false);
+		Mesh->SetEnableGravity(false);
+		Mesh->SetVisibility(true);
+		Mesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		break;
 
-void AItem::Drop()
-{
-	// drop actor and enable collision
-	Mesh->SetHiddenInGame(false);
-	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	case EItemState::EIS_Puton:
+		// hide actor and disable collision
+		UE_LOG(LogTemp, Warning, TEXT("Hide!"));
+		Mesh->SetHiddenInGame(true);
+		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		break;
+
+	case EItemState::EIS_Drop:
+		// drop actor and enable collision
+		Mesh->SetHiddenInGame(false);
+		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		break;
+	}
 }
 
 // Called when the game starts or when spawned
 void AItem::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	SetItemState(ItemState);
 }
 
 // Called every frame
